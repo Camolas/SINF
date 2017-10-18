@@ -1,0 +1,290 @@
+FEUP-SINF
+
+#AulaTP1
+ ftp
+
+#AulaTP2
+
+##Temas (Escolhido P3)
+
+ •P1 (Online/Web Store)
+    ◦ Independente da ERP (todos os temas)
+    ◦ Extensao necessaria ao ERP
+       ▸ Sistema de Pontos (faturacao)
+    ◦ Avaliacao com integracao do primavera
+
+ • P2 (Sales Order Picking)
+    ◦ Tipo IKEA (gestao do material/disposicao)
+    ◦ Melhor caminho para ir buscar o material/peso/volume etc/
+    ◦ App para otimizar o trabalho (minimzar esfoco)
+    ◦ Basic Usage Objectives (Dados Mestre)
+    ◦ Entradas e saidas de stock
+    ◦ Criar armazens(fisico ou logico)
+    ◦ Ex: SAGE etc
+
+ • P3 (360 Company Dashboard)
+    ◦ Ver o estado da empresa
+    ◦ Todos os dados que fazem sentido para a gestao diaria
+    ◦ So ler dados do primavera
+       ▸ Nao escreve nada!!
+    ◦ Obtencao de dados pelo SAF-T
+       ▸ Primavera e obrigado a exportar em xml!
+       ▸ Parse e agregacao dos dados
+    ◦ Componentes fora do SAF-T 
+       ▸ Fazer Fetch no Primavera
+
+ • P4 (Sales Force Automation)
+    ◦ Centrar empresa ou App na equipa de vendas
+       ▸ Gerir visitas
+       ▸ Gerir Oportunidades
+       ▸ Clientes
+       ▸ Contactos etc
+    ◦ Info sobre stocks/clientes
+    ◦ Criar ordens de venda/Reservas
+    ◦ Estas casos sao extensiveis
+       ▸ Ver o que ‘e possivel fazer
+       ▸ nao esquecer do impossivel/dificil
+
+   Todos estes temas podem pertencer a mesma empresa.
+   DashBoard ‘e o banco de dados de tudo (engloba todo ERP)
+   Documento de especificacao
+      • Imformation Aqrchitecture
+         ▸ CoreNPath
+   
+##Imformation Architecture (Core N Path)
+   
+   Ciencia que estrutura e define a informacao para ser gerida facilmente
+   Ter em conta
+      • Quem usa
+      • Contudo
+      • Contexto
+
+   Perder tempo com o que interessa!
+   Pontos Importantes!
+      • Para vender esquecer logins etc
+      • Focar em:
+         ▸ Categorias
+         ▸ Formas de pesquisa
+         ▸ Vistas Interessantes e diferenciadoras
+         ▸ Vistas Sem interesse bleh
+
+   • O Core
+      ◦ Razao pela qual os users vem ao site ou app
+      ◦ Garantir para cada contexto a forma clara para que serve
+         ▸ Em Cada Core ha 2 componentes
+            ▹ Como Chegar la
+               ▪ Ex: Como chegar a pagina do produto
+               ▪ Passos Ex(via google??) 
+               ▪ Pensar para Alem da APP
+   • Outward Path
+      ◦ Ligado ao que tras retorno
+         ▸ Check-out
+         ▸ Fase de encomenda
+         ▸ Pagar etc.
+      ◦ Todas as acoes que ajudam a ter um retorno de investimento
+
+   Em resumo
+      • O que interessa
+      • Como Chego la
+      • O que posso fazer para criar valor para a empresa
+   
+   Exemplo
+      Para cada projeto focar no que ha valor para a app
+      Convencer a venda da app
+
+   Core View:
+      Idealmente um mockup (belo)[Ser belo nao interessa]
+      So ter o que realmente interessa
+      Reconhecer Padroes e relacoes entre eles
+      Nao esquecer das etapas comuns... (logins etc)
+
+   Possibilidade de desagregar o dashboard
+   Defenir para cada Core View:
+      • Elementos
+      • Inwards
+      • Objetivos
+      • Outwards
+
+   Falar do que cria Valor
+   Mais Diretos ao Cliente
+   
+Varios SAF-T e estrutura
+   •Primavera
+
+CoreView:
+   • Main Core View Current Balance
+      ◦ Sales orders
+      ◦ Purchases
+      ◦ Inventory
+      ◦ Accounts payable
+
+Basic Usage Objetives:
+   Aprender a usar o primavera
+
+
+
+#AulaTP3
+   Entregas dia 16 \0/
+
+   Topicos:
+   • Conteudo do primavera
+
+   VM: 
+   • Aceder ao ficheiro de credentials.txt
+      ◦ Urs e Password
+      ◦ Acesso ao PKB
+         ▸ Knowledge base do primavera
+   • C:/Sinf
+      ◦ Code_Examples
+         ▸ Servicos ja criados FirstRest
+      ◦ Manuais_Primavera
+         ▸ Atualizados no PKB
+      ◦ Videos operacionais
+         ▸ Duvidas etc....
+
+   • 2 Executaveis
+      ◦ Profissional ERP (Dados mestres e transacionais)
+         ▸ Modulos de compras, vendas, financas etc
+         ▸ Look N Feel nao interessa para nada
+         ▸ Modulos
+            ▹ Exploracao
+            ▹ Algures um Mapa com valores de vendas etc
+               ▪ Mantem integridade da coisa
+            ▹ Utilitarios
+               ▪ Familias?...
+         ▸ Conjunto de Modulos em que alguns nao vao ser necessarios
+            ▹ Contabilidade
+               ▪ P3
+            ▹ Tesouraria
+               ▪ P1,P4
+               ▪ Recibo
+            ▹ Vendas 
+               ▪ P3
+               ▪ Dados Mestre e depois Transacionais
+               ▪ Muitos, mas mesmo muitos documentos de vendas
+                  ▫ Nao interessa
+                  ▫ Podes cria-se documentos
+                     • Nao Esquecer do Documento Amizade
+               ▪ Primavera tem tabelas relacionadas
+                  ▫ F4 Serve para tudo
+                     • Porcaria
+                  ▫ Outra coisa linda
+                     • Janela abre uma vez 
+                        ◦ Nao Fecha....
+               ▪ Dado Mestre tem autocomplete :D
+               ▪ Para os Produtos
+                  ▫ Clico no F4 Favorito
+                  ▫ Escolho
+                  ▫ F4 outravez
+                  ▫ Informacao onde esta
+                  ▫ Descricao
+                  ▫ Data de entrega [...]
+                  ▫ IVA :(
+                  ▫ Preco Unitario
+                  ▫ Possibilidade de Desconto
+                  ▫ Fundamental:
+                     • Unidade de Medida
+                     • Aguas
+                        ◦ Compro Paletes e vendo garrafas
+                     • Muito IMPORTANTE
+                  ▫ Data de Vencimento
+                     • Definido nas Condicoes de pagamento
+                  ▫ Estado 
+                     • Estado/Trace da encomenda
+               ▪ Finalmente Grava-se
+                  ▫ Campos Minimos Obrigatorios!
+                     • Nao Esquecer
+               ▪ SALE ORDERS tem que sair no SAFT!!
+               ▪ Criar uma Guia!
+                  ▫ Guia De Remessa (F4)
+                  ▫ Cliente
+                  ▫ Em vez de voltar a registar outravez
+                     • Menu → Contexto
+                     • Transformacao de Documento
+                        ◦ A partir de um conjunto de documentos
+                        ◦ Escolher a encomenda
+                        ◦ Pode se escolher o numero de items
+                  ▫ A partir do momento que a ordem de venda ‘e criada
+                     • Tudo o resto tem que estar associado a esse documento
+               ▪ Criar tudo em fluxo para os dados irem todos direitinhos
+            ▹ Compras
+               ▪ P2,P3
+               ▪ Lojas online
+                  ▫ Atencao a familias
+               ▪ Precos diferentes
+               ▪ IMPORTANTE
+                  ▫ Se o iva esta ou nao incluido
+                  ▫ Consumidor Final Sempre com IVA
+                  ▫ Entre empresas IVA pode ser ignorado
+                     • Por Produto
+               ▪ Encomendas VFA
+            ▹ Inventario
+               ▪ P2,P3
+            ▹ Contactos e Oportunidades
+               ▪ P4
+            ▹ Declaracoes Fiscais e Oficiais
+               ▪ P3
+            ▹ Tabelas/Menus /!\
+         ▸ Compras Online
+            ▹ Gera um Sales Order
+               ▪ Delivery
+               ▪ Invoice
+
+
+      ◦ Administrador (Backoffice)
+         ▸ Criar users, empresas, parametros de configuracao
+            ▹ anos fiscais etc...
+         ▸ Users
+            ▹ sinf
+               ▪ User utilizado para config 
+               ▪ nao convem modificar
+         ▸ Empresas
+            ▹ Inicialmente DEMOSINF
+               ▪ Clientes
+               ▪ Fornecedores
+               ▪ Faturas
+               ▪ Etc
+            ▹ Usa-se a BD DEMOSINF para os dados
+               ▪ Ou Cria-se uma nova empresa
+            ▹ Um dos grandes objetivos e povoar com dados
+               ▪ Dashboard convem usar o DEMOSINF :)
+            ▹ Procupar com:
+               ▪ Obrigatorio
+                  ▫ Cenas fiscais....
+                  ▫ Domocilio fiscal...
+            ▹ DEMOSINF
+               ▪ Pode ser necessario ativar
+                  ▫ Exportacao de dados (Ficheiro SAFT)
+                  ▫ Exportar a ultima....
+      
+      
+   • Importante criar um projeto novo
+      ◦ Referencias
+      ◦ PriEngine
+         ▸ Ativa a engine para aceder ao motor do primavera
+      ◦ Importante fazer a VIEW
+         ▸ Interoperabilidade em C#
+      ◦ FirstREST
+         ▸ Tem modelos
+         ▸ Artigos etc
+         ▸ PriEngine
+            ▹ Init da coisa
+         ▸ PriIntegration
+            ▹ Controllers e assim..
+            ▹ Atencao a boas praticas
+         ▸ ClientController
+            ▹ Rotas e metodos
+               ▪ Get
+               ▪ Post
+               ▪ Push
+               ▪ Delete
+         ▸ Perceber Primeiro
+            ▹ Dados envio/recepcao >> Para o relatorio
+            ▹ Dados para aceder o Primavera
+      ◦ Todas as empresas ficam com uma BD
+         ▸ Prefixo PRI
+         ▸ Nomes de Tabelas:
+            ▹ Portugues
+            ▹ AutoExplicativas
+               ▪ Maior parte
+               ▪ Vendas CabecDoc
