@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using FirstREST.Lib_Primavera.Model;
+using System.Text.RegularExpressions;
 
 
 namespace FirstREST.Controllers
@@ -23,27 +24,49 @@ namespace FirstREST.Controllers
 
 
         // GET api/cliente/5    
-        public Lib_Primavera.Model.DocVenda Get(string id)
+        public dynamic/*Lib_Primavera.Model.DocVenda*/ Get(string id)
         {
-            Lib_Primavera.Model.DocVenda docvenda = Lib_Primavera.PriIntegration.Encomenda_Get(id);
-            if (docvenda == null)
-            {
-                throw new HttpResponseException(
-                        Request.CreateResponse(HttpStatusCode.NotFound));
 
+            int letterCounter = Regex.Matches(id, @"[a-zA-Z]").Count;
+            if (letterCounter == 0)
+            {
+                Lib_Primavera.Model.DocVenda docvenda = Lib_Primavera.PriIntegration.Encomenda_Get(id);
+                if (docvenda == null)
+                {
+                    throw new HttpResponseException(
+                            Request.CreateResponse(HttpStatusCode.NotFound));
+
+                }
+                else
+                {
+                    return docvenda;
+                }
             }
             else
             {
-                return docvenda;
+                IEnumerable<Lib_Primavera.Model.DocVenda> encomendas = Lib_Primavera.PriIntegration.Encomendas_List(id);
+                if (encomendas == null)
+                {
+                    throw new HttpResponseException(
+                            Request.CreateResponse(HttpStatusCode.NotFound));
+
+                }
+                else
+                {
+                    return encomendas;
+                }
             }
+
+
         }
 
 
-        public HttpResponseMessage Post(Lib_Primavera.Model.DocVenda dv)
+        public HttpResponseMessage Post([FromBody]Lib_Primavera.Model.DocVenda dv)
         {
+            System.Diagnostics.Debug.WriteLine(dv.Entidade);
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             erro = Lib_Primavera.PriIntegration.Encomendas_New(dv);
-
+            
             if (erro.Erro == 0)
             {
                 var response = Request.CreateResponse(

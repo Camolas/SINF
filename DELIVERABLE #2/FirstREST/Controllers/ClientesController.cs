@@ -23,6 +23,7 @@ namespace FirstREST.Controllers
         // GET api/cliente/5    
         public Cliente Get(string id)
         {
+            System.Diagnostics.Debug.WriteLine(id);
             Lib_Primavera.Model.Cliente cliente = Lib_Primavera.PriIntegration.GetCliente(id);
             if (cliente == null)
             {
