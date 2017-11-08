@@ -1,10 +1,11 @@
 <?php
-    session_set_cookie_params(3600, '/SINF/DELIVERABLE%20%232/Webpage/');
+    $BASE_DIR = 'C:\\xampp\\htdocs\\SINF\\DELIVERABLE #2\\Webpage\\';
+    $BASE_URL = '/SINF/DELIVERABLE%20%232/Webpage/';
+
+    session_set_cookie_params(3600, $BASE_URL);
     session_start();
 
     error_reporting(E_ERROR | E_WARNING); // E_NOTICE by default
-
-	$BASE_DIR = 'C:\\xampp\\htdocs\\SINF\\DELIVERABLE #2\\Webpage\\';
 
     $conn = new PDO('pgsql:host=localhost;dbname=postgres', 'postgres', 'postgres');
     $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);

@@ -8,7 +8,7 @@
 	    $_SESSION['field_errors'][] = "Password field cannot be empty.";
     if(!$_POST['email'] || !$_POST['password']) {
         $_SESSION['form_values'] = $_POST;
-        header('Location: ../../');
+        header('Location: ' . $BASE_URL);
         exit;
     }
 
@@ -41,5 +41,5 @@
         $_SESSION['error_messages'][] = 'Invalid email.';
     }
 
-    header('Location: ../../');
+    header('Location: ' . $BASE_URL);
 ?>

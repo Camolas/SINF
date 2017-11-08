@@ -11,7 +11,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-lg-12">
-                    <form action="../actions/authentication/login.php" method="post" id="login-form" style="display: block;">
+                    <form action="<?=$BASE_URL?>actions/authentication/login.php" method="post" id="login-form" style="display: block;">
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
