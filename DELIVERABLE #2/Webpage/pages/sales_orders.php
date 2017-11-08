@@ -5,7 +5,7 @@
 	// Get cURL resource
 	$curl = curl_init();
 	// Set some options - we are passing in a useragent too here
-	curl_setopt($curl, CURLOPT_URL, 'http://localhost:49822/api/DocVenda/');
+	curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/DocVenda/');
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	// Send the request & save response to $resp
 	$resp = curl_exec($curl);
