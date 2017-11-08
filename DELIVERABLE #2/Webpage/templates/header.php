@@ -255,7 +255,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="../actions/authentication/logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -314,3 +314,19 @@
             </div>
             <!-- /.navbar-static-side -->
         </nav>
+		
+		<div id="messages">
+			<div class="col-md-6 col-md-offset-3">
+				<?php foreach ($success_messages as $message) { ?>
+				<p class="text-success"><?=$message?></p>
+				<?php } ?>
+				
+				<?php foreach ($error_messages as $message) { ?>
+				<p class="text-danger"><?=$message?></p>
+				<?php } ?>
+				
+				<?php foreach ($field_errors as $message) { ?>
+				<p class="text-danger"><?=$message?></p>
+				<?php } ?>
+			</div>
+		</div>

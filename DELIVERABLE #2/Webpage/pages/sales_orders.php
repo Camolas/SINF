@@ -1,4 +1,6 @@
 <?php
+	include('../config/init.php');
+	include('../actions/authentication/verify_login.php');
 
 	// Get cURL resource
 	$curl = curl_init();

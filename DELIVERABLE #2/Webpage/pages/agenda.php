@@ -1,4 +1,7 @@
 <?php
+	include('../config/init.php');
+	include('../actions/authentication/verify_login.php');
+
 $table_headers = ["Rendering engine","Browser","Platform(s)","Engine version","CSS grade"];
 $entry = [
 		"Rendering engine"=> "Trident",
