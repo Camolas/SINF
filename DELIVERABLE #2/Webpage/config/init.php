@@ -11,6 +11,8 @@
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $conn->exec('SET SCHEMA \'public\'');
+	
+	$PRIMAVERA_ADDRESS = 'http://localhost:49822/';
 
     $LOG_FILE = $BASE_DIR . "logfile.txt";
     $MESSAGE_TYPE = 3;
