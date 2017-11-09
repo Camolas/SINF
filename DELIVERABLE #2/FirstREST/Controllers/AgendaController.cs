@@ -29,5 +29,65 @@ namespace FirstREST.Controllers
                 return activity;
             }
         }
+
+        public HttpResponseMessage Post(Activity activity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
+            erro = Lib_Primavera.PriIntegration.InsertActivityObj(activity);
+            if (erro.Erro == 0)
+            {
+                var response = Request.CreateResponse(HttpStatusCode.Created, activity);
+                string uri = Url.Link("DefaultApi", new { activityId = activity.id });
+                response.Headers.Location = new Uri(uri);
+                return response;
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+        }
+
+        public HttpResponseMessage Put(string id, Activity activity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
+            try
+            {
+                erro = Lib_Primavera.PriIntegration.UpdActivity(activity);
+                if (erro.Erro == 0)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, erro.Descricao);
+                }
+            }
+            catch (Exception exc)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, erro.Descricao);
+            }
+        }
+
+        public HttpResponseMessage Delete(string id)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
+            try
+            {
+                erro = Lib_Primavera.PriIntegration.DelActivity(id);
+                if (erro.Erro == 0)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, erro.Descricao);
+                }
+            }
+            catch (Exception exc)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, erro.Descricao);
+
+            }
+        }
     }
 }

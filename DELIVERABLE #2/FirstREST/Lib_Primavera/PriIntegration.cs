@@ -679,8 +679,8 @@ namespace FirstREST.Lib_Primavera
                     listActivities.Add(new Model.Activity
                     {
                         id = objList.Valor("IdActivity"),
-                       /* date = dateTime.ToShortDateString(),
-                        hour = timeSpan.ToString(),*/
+                        /* date = dateTime.ToShortDateString(),
+                         hour = timeSpan.ToString(),*/
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         location = objList.Valor("Location"),
@@ -715,6 +715,124 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
+        }
+
+        public static Lib_Primavera.Model.RespostaErro UpdActivity(Lib_Primavera.Model.Activity activity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.Actividades.Existe(activity.id) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "A actividade não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        objActivity = PriEngine.Engine.CRM.Actividades.Edita(activity.id);
+                        objActivity.set_EmModoEdicao(true);
+
+                        //objActivity.set_DataInicio();
+                        objActivity.set_Resumo(activity.title);
+                        objActivity.set_LocalRealizacao(activity.location);
+                        objActivity.set_Descricao(activity.notes);
+
+                        PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
+
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+        }
+
+        public static Lib_Primavera.Model.RespostaErro DelActivity(string activityId)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.Actividades.Existe(activityId) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "O cliente não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        PriEngine.Engine.CRM.Actividades.Remove(activityId);
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+        }
+
+        public static Lib_Primavera.Model.RespostaErro InsertActivityObj(Model.Activity activity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    objActivity.set_ID(activity.id);
+                    //objActivity.set_DataInicio();
+                    objActivity.set_Resumo(activity.title);
+                    objActivity.set_LocalRealizacao(activity.location);
+                    objActivity.set_Descricao(activity.notes);
+
+                    PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
+
+                    erro.Erro = 0;
+                    erro.Descricao = "Sucesso";
+                    return erro;
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
         }
 
         #endregion Agenda
