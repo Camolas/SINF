@@ -7,6 +7,18 @@ namespace FirstREST.Lib_Primavera.Model
 {
     public class Activity
     {
+        public string id
+        {
+            get;
+            set;
+        }
+
+        public string date
+        {
+            get;
+            set;
+        }
+
         public string hour
         {
             get;
@@ -31,7 +43,7 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public string note
+        public string notes
         {
             get;
             set;

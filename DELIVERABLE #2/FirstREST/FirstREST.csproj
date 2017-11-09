@@ -68,8 +68,16 @@
       <HintPath>..\..\..\..\..\Program Files\Common Files\PRIMAVERA\SG900\Interop.GcpBE900.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Interop.ICrmBS900">
+      <HintPath>..\..\..\..\..\Program Files\PRIMAVERA\SG900\Apl\Interop.ICrmBS900.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Interop.ICrmDS900">
+      <HintPath>..\..\..\..\..\Program Files\PRIMAVERA\SG900\Apl\Interop.ICrmDS900.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Interop.IGcpBS900">
-      <HintPath>..\..\..\Program Files\PRIMAVERA\SG900\Apl\Interop.IGcpBS900.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\PRIMAVERA\SG900\Apl\Interop.IGcpBS900.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.StdBE900">
@@ -360,6 +368,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
