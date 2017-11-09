@@ -86,7 +86,6 @@ namespace FirstREST.Controllers
             catch (Exception exc)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, erro.Descricao);
-
             }
         }
     }

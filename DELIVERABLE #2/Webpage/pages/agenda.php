@@ -1,18 +1,21 @@
 <?php
 	include('../config/init.php');
 	include('../actions/authentication/verify_login.php');
+	
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/agenda/');
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+	$resp = curl_exec($curl);
+	curl_close($curl);
+	
+	$obj = json_decode($resp);
 
-$table_headers = ["Rendering engine","Browser","Platform(s)","Engine version","CSS grade"];
-$entry = [
-		"Rendering engine"=> "Trident",
-		"Browser"=>"Internet Explorer 4.0",
-		"Platform(s)"=>"Win 95+",
-		"Engine version"=>"4",
-		"CSS grade"=>"X"
-	];
-$entries = [];
-for ($i=0; $i < 1000; $i++)
-	array_push($entries, $entry);
+	$table_headers = ["Hour","Title","Type","Location","Notes"];
+	$entries = [];
+	foreach ($obj as $activity) {
+		$entry = [$activity->hour, $activity->title, $activity->type, $activity->location, $activity->notes];
+		array_push($entries, $entry);
+	}
 
 	include('../templates/header.php');
 	include('../templates/agenda.php');
