@@ -49,6 +49,7 @@ namespace FirstREST.Controllers
 
         public HttpResponseMessage Put(string id, Activity activity)
         {
+            activity.id = id;
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {

@@ -708,7 +708,7 @@ namespace FirstREST.Lib_Primavera
                 myActivity.date = objActivity.get_DataInicio().Date.ToShortDateString();
                 myActivity.hour = objActivity.get_DataInicio().TimeOfDay.ToString();
                 myActivity.title = objActivity.get_Resumo();
-                //myActivity.type = TypeReference(objActivity.get_IDTipoActividade);
+                myActivity.type = GetActivityType(objActivity.get_IDTipoActividade());
                 myActivity.location = objActivity.get_LocalRealizacao();
                 myActivity.notes = objActivity.get_Descricao();
                 return myActivity;
@@ -738,8 +738,10 @@ namespace FirstREST.Lib_Primavera
 
                         //objActivity.set_DataInicio();
                         objActivity.set_Resumo(activity.title);
+                        objActivity.set_IDTipoActividade(GetActivityTypeId(activity.type));
                         objActivity.set_LocalRealizacao(activity.location);
                         objActivity.set_Descricao(activity.notes);
+                        objActivity.set_DataUltAct(DateTime.Now);
 
                         PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
 
@@ -808,11 +810,28 @@ namespace FirstREST.Lib_Primavera
             {
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
-                    objActivity.set_ID(activity.id);
                     //objActivity.set_DataInicio();
                     objActivity.set_Resumo(activity.title);
+                    objActivity.set_IDTipoActividade(GetActivityTypeId(activity.type));
                     objActivity.set_LocalRealizacao(activity.location);
                     objActivity.set_Descricao(activity.notes);
+                    objActivity.set_Estado("0");
+                    objActivity.set_CriadoPor("DEMOSINF");
+                    objActivity.set_DataCriacao(DateTime.Now);
+                    objActivity.set_DataUltAct(DateTime.Now);
+                    objActivity.set_Duracao(1); // arbitrary
+                    objActivity.set_TodoDia(true);
+                    objActivity.set_IntegrarOutlook(false);
+                    objActivity.set_ComPeriodicidade(false);
+                    objActivity.set_LembrarAntes(false);
+                    objActivity.set_CorreccaoMonetaria(false);
+                    objActivity.set_ActividadeGrupo(false);
+                    objActivity.set_ActividadeComDataLimite(false);
+                    objActivity.set_IncluiUtilizadoresERP(false);
+                    objActivity.set_IncluiContactoPrincipal(false);
+                    objActivity.set_IncluiOutrosContactos(false);
+                    objActivity = PriEngine.Engine.CRM.Actividades.PreencheDadosRelacionados(objActivity);
+                    activity.id = objActivity.get_ID();
 
                     PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
 
@@ -833,6 +852,43 @@ namespace FirstREST.Lib_Primavera
                 erro.Descricao = ex.Message;
                 return erro;
             }
+        }
+
+        public static string GetActivityTypeId(string activityType)
+        {
+            StdBELista objList;
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 Id " +
+                    "FROM TiposTarefa " +
+                    "WHERE Descricao LIKE '" + activityType + "'"
+                    );
+
+                return objList.Valor("Id");
+            }
+            else
+                return null;
+        }
+
+        public static string GetActivityType(string activityTypeId)
+        {
+            string myActivityTypeId = activityTypeId.Replace("{", "").Replace("}", "");
+            StdBELista objList;
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 Descricao " +
+                    "FROM TiposTarefa " +
+                    "WHERE Id LIKE '" + myActivityTypeId + "'"
+                    );
+                System.Diagnostics.Debug.WriteLine(myActivityTypeId);
+                return objList.Valor("Descricao");
+            }
+            else
+                return null;
         }
 
         #endregion Agenda
