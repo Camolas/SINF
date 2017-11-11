@@ -43,8 +43,8 @@
 
 		array_push($entries, $entry);
 	}
-	include('../templates/header.php');
-	include('../templates/table.php');
+	include('../templates/common/header.php');
+	include('../templates/common/table.php');
 	include('../templates/orderButton.php');
-	include('../templates/footer.php');
+	include('../templates/common/footer.php');
 ?>

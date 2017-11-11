@@ -1,5 +1,4 @@
-<div id="page-wrapper">
-	
+
 	<?php
 	
 	// Get cURL resource
@@ -83,4 +82,3 @@
 			print $obj->{'Morada'};
 		?>
     </div>
-</div>

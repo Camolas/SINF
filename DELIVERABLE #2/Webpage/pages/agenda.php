@@ -1,8 +1,8 @@
 <?php
 	include('../config/init.php');
-	include('../actions/authentication/verify_login.php');
+	//include('../actions/authentication/verify_login.php');
 	
-	$curl = curl_init();
+	/*$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/agenda/');
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$resp = curl_exec($curl);
@@ -15,10 +15,9 @@
 	foreach ($obj as $activity) {
 		$entry = [$activity->hour, $activity->title, $activity->type, $activity->location, $activity->notes];
 		array_push($entries, $entry);
-	}
+	}*/
 
-	include('../templates/header.php');
+	include('../templates/common/header.php');
 	include('../templates/agenda.php');
-	include('../templates/table.php');
-	include('../templates/footer.php');
+	include('../templates/common/footer.php');
 ?>

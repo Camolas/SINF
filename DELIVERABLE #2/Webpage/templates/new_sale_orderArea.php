@@ -7,8 +7,6 @@
 			});
 		});
 </script>
-	
-<div id="page-wrapper">
 <?php
 	
 	if (!empty($_GET["entity"]) && !empty($_GET["serie"]) && !empty($_GET["prod_code"]) && !empty($_GET["prod_quant"]))
@@ -63,7 +61,6 @@
         <div class="col-lg-12">
             <h1 class="page-header">New Order</h1>
         </div>
-        <!-- /.col-lg-12 -->
     </div>
 	
 
@@ -100,5 +97,3 @@
 		
 		<br>
 	</div>
-
-</div>
