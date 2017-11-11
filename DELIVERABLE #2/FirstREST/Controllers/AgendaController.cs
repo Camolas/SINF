@@ -10,13 +10,13 @@ namespace FirstREST.Controllers
 {
     public class AgendaController : ApiController
     {
-        // GET: /Agenda/
+        // GET: /agenda/
         public IEnumerable<Activity> Get()
         {
             return Lib_Primavera.PriIntegration.ListActivities();
         }
 
-        // GET: /Agenda/activityId
+        // GET: /agenda/<activity_id>
         public Activity Get(string id)
         {
             Lib_Primavera.Model.Activity activity = Lib_Primavera.PriIntegration.GetActivity(id);

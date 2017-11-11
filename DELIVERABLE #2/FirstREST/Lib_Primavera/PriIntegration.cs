@@ -239,7 +239,6 @@ namespace FirstREST.Lib_Primavera
 
         #endregion Cliente;   // -----------------------------  END   CLIENTE    -----------------------
 
-
         #region Artigo
 
         public static Lib_Primavera.Model.Artigo GetArtigo(string codArtigo)
@@ -310,8 +309,6 @@ namespace FirstREST.Lib_Primavera
         }
 
         #endregion Artigo
-
-
 
         #region DocCompra
 
@@ -878,5 +875,45 @@ namespace FirstREST.Lib_Primavera
         }
 
         #endregion Agenda
+
+        #region TargetCustomers
+
+        public static List<Model.TargetCustomer> ListTargetCustomers(string target_customer = null)
+        {
+            StdBELista objList;
+
+            List<Model.TargetCustomer> listTargetCustomers = new List<Model.TargetCustomer>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT Cliente AS Id, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, LocalRealizacao AS Location " +
+                    "FROM Clientes, Tarefas " + // TODO: InsertActivityObj() does not add the client (it should add)
+                    "WHERE Clientes.Cliente = Tarefas.EntidadePrincipal" +
+                    (target_customer == null ? "" : " AND Cliente LIKE '" + target_customer + "'")
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listTargetCustomers.Add(new Model.TargetCustomer
+                    {
+                        id = objList.Valor("Id"),
+                        name = objList.Valor("Name"),
+                        phone_number = objList.Valor("PhoneNumber"),
+                        //date = objList.Valor("Date"),
+                        location = objList.Valor("Location")
+                    });
+                    objList.Seguinte();
+
+                }
+
+                return listTargetCustomers;
+            }
+            else
+                return null;
+        }
+
+        #endregion
+
     }
 }
