@@ -810,30 +810,22 @@ namespace FirstREST.Lib_Primavera
             {
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
-                    //objActivity.set_DataInicio();
+                    string dateHour = activity.date + " " + activity.hour;  // Example: 2017-11-11 16h40
+                    string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
+                    int[] date = new int[dateHourStr.Length];
+                    for (var i = 0; i < dateHourStr.Length; i++)
+                        date[i] = int.Parse(dateHourStr[i]);
+
+                    objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
                     objActivity.set_Resumo(activity.title);
                     objActivity.set_IDTipoActividade(GetActivityTypeId(activity.type));
                     objActivity.set_LocalRealizacao(activity.location);
                     objActivity.set_Descricao(activity.notes);
-                    objActivity.set_Estado("0");
-                    objActivity.set_CriadoPor("DEMOSINF");
-                    objActivity.set_DataCriacao(DateTime.Now);
-                    objActivity.set_DataUltAct(DateTime.Now);
-                    objActivity.set_Duracao(1); // arbitrary
-                    objActivity.set_TodoDia(true);
-                    objActivity.set_IntegrarOutlook(false);
-                    objActivity.set_ComPeriodicidade(false);
-                    objActivity.set_LembrarAntes(false);
-                    objActivity.set_CorreccaoMonetaria(false);
-                    objActivity.set_ActividadeGrupo(false);
-                    objActivity.set_ActividadeComDataLimite(false);
-                    objActivity.set_IncluiUtilizadoresERP(false);
-                    objActivity.set_IncluiContactoPrincipal(false);
-                    objActivity.set_IncluiOutrosContactos(false);
+                    objActivity.set_DataFim(objActivity.get_DataInicio());
                     objActivity = PriEngine.Engine.CRM.Actividades.PreencheDadosRelacionados(objActivity);
-                    activity.id = objActivity.get_ID();
 
                     PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
+                    activity.id = objActivity.get_ID();
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
