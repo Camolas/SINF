@@ -736,13 +736,7 @@ namespace FirstREST.Lib_Primavera
                         objActivity = PriEngine.Engine.CRM.Actividades.Edita(activity.id);
                         objActivity.set_EmModoEdicao(true);
 
-                        //objActivity.set_DataInicio();
-                        objActivity.set_Resumo(activity.title);
-                        objActivity.set_IDTipoActividade(GetActivityTypeId(activity.type));
-                        objActivity.set_LocalRealizacao(activity.location);
-                        objActivity.set_Descricao(activity.notes);
-                        objActivity.set_DataUltAct(DateTime.Now);
-
+                        setCrmBEActividadeFields(activity, objActivity);
                         PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
 
                         erro.Erro = 0;
@@ -810,18 +804,7 @@ namespace FirstREST.Lib_Primavera
             {
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
-                    string dateHour = activity.date + " " + activity.hour;  // Example: 2017-11-11 16h40
-                    string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
-                    int[] date = new int[dateHourStr.Length];
-                    for (var i = 0; i < dateHourStr.Length; i++)
-                        date[i] = int.Parse(dateHourStr[i]);
-
-                    objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
-                    objActivity.set_Resumo(activity.title);
-                    objActivity.set_IDTipoActividade(GetActivityTypeId(activity.type));
-                    objActivity.set_LocalRealizacao(activity.location);
-                    objActivity.set_Descricao(activity.notes);
-                    objActivity.set_DataFim(objActivity.get_DataInicio());
+                    setCrmBEActividadeFields(activity, objActivity);
                     objActivity = PriEngine.Engine.CRM.Actividades.PreencheDadosRelacionados(objActivity);
 
                     PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
@@ -866,21 +849,32 @@ namespace FirstREST.Lib_Primavera
 
         public static string GetActivityType(string activityTypeId)
         {
-            string myActivityTypeId = activityTypeId.Replace("{", "").Replace("}", "");
-            StdBELista objList;
-
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
-                objList = PriEngine.Engine.Consulta(
-                    "SELECT TOP 1 Descricao " +
-                    "FROM TiposTarefa " +
-                    "WHERE Id LIKE '" + myActivityTypeId + "'"
-                    );
-                System.Diagnostics.Debug.WriteLine(myActivityTypeId);
-                return objList.Valor("Descricao");
+                Interop.CrmBE900.CrmBETipoActividade objActivityType = PriEngine.Engine.CRM.TiposActividade.Edita(activityTypeId);
+                if (objActivityType != null)
+                    return objActivityType.get_Descricao();
+                else
+                    return null;
             }
             else
                 return null;
+        }
+
+        private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
+        {
+            string dateHour = myActivity.date + " " + myActivity.hour;  // Example: 2017-11-11 16h40
+            string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
+            int[] date = new int[dateHourStr.Length];
+            for (var i = 0; i < dateHourStr.Length; i++)
+                date[i] = int.Parse(dateHourStr[i]);
+
+            objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
+            objActivity.set_Resumo(myActivity.title);
+            objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
+            objActivity.set_LocalRealizacao(myActivity.location);
+            objActivity.set_Descricao(myActivity.notes);
+            objActivity.set_DataFim(objActivity.get_DataInicio());
         }
 
         #endregion Agenda
