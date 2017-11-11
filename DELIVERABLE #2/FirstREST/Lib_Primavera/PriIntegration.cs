@@ -661,7 +661,7 @@ namespace FirstREST.Lib_Primavera
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS IdActivity, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "SELECT Tarefas.Id AS IdActivity, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " //+
                     //"AND DATEDIFF(day, 2000-11-09, Tarefas.DataInicio) >= 0 " +
@@ -680,6 +680,7 @@ namespace FirstREST.Lib_Primavera
                          hour = timeSpan.ToString(),*/
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
+                        client = objList.Valor("Client"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
                     });
@@ -706,6 +707,7 @@ namespace FirstREST.Lib_Primavera
                 myActivity.hour = objActivity.get_DataInicio().TimeOfDay.ToString();
                 myActivity.title = objActivity.get_Resumo();
                 myActivity.type = GetActivityType(objActivity.get_IDTipoActividade());
+                myActivity.client = objActivity.get_EntidadePrincipal();
                 myActivity.location = objActivity.get_LocalRealizacao();
                 myActivity.notes = objActivity.get_Descricao();
                 return myActivity;
@@ -869,6 +871,7 @@ namespace FirstREST.Lib_Primavera
             objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
+            objActivity.set_EntidadePrincipal(myActivity.client);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
             objActivity.set_DataFim(objActivity.get_DataInicio());
@@ -888,7 +891,7 @@ namespace FirstREST.Lib_Primavera
             {
                 objList = PriEngine.Engine.Consulta(
                     "SELECT Cliente AS Id, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, LocalRealizacao AS Location " +
-                    "FROM Clientes, Tarefas " + // TODO: InsertActivityObj() does not add the client (it should add)
+                    "FROM Clientes, Tarefas " +
                     "WHERE Clientes.Cliente = Tarefas.EntidadePrincipal" +
                     (target_customer == null ? "" : " AND Cliente LIKE '" + target_customer + "'")
                     );

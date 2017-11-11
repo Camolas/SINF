@@ -37,6 +37,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public string client
+        {
+            get;
+            set;
+        }
+
         public string location
         {
             get;
