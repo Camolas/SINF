@@ -9,7 +9,7 @@ namespace FirstREST.Lib_Primavera.Model
 {
     public class TargetCustomer
     {
-        public string id
+        public string customer_id
         {
             get;
             set;

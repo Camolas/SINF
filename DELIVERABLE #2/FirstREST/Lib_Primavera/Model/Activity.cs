@@ -43,6 +43,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public string representative_id
+        {
+            get;
+            set;
+        }
+
         public string location
         {
             get;

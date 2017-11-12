@@ -10,24 +10,16 @@ namespace FirstREST.Controllers
 {
     public class AgendaController : ApiController
     {
-        // GET: /agenda/
-        public IEnumerable<Activity> Get()
+        // GET: /agenda/?representative_id=<representative_id>&month=<month>&year=<year>
+        public IEnumerable<string> Get(string representative_id, string month, string year)
         {
-            return Lib_Primavera.PriIntegration.ListActivities();
+            return Lib_Primavera.PriIntegration.ListActivities(representative_id, month, year);
         }
 
-        // GET: /agenda/<activity_id>
-        public Activity Get(string id)
+        // GET: /agenda/?representative_id=<representative_id>&date=<date>
+        public IEnumerable<Activity> Get(string representative_id, string date)
         {
-            Lib_Primavera.Model.Activity activity = Lib_Primavera.PriIntegration.GetActivity(id);
-            if (activity == null)
-            {
-                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
-            }
-            else
-            {
-                return activity;
-            }
+            return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
         }
 
         public HttpResponseMessage Post(Activity activity)
@@ -43,7 +35,7 @@ namespace FirstREST.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "It was not possible to create the appointment.");
             }
         }
 

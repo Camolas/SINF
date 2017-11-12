@@ -10,16 +10,16 @@ namespace FirstREST.Controllers
 {
     public class Target_CustomersController : ApiController
     {
-        // GET: /target_customers/
-        public IEnumerable<TargetCustomer> Get()
+        // GET: /target_customers/?representative_id=<representative_id>
+        public IEnumerable<TargetCustomer> Get(string representative_id)
         {
-            return Lib_Primavera.PriIntegration.ListTargetCustomers();
+            return Lib_Primavera.PriIntegration.ListTargetCustomers(representative_id);
         }
 
-        // GET: /target_customers/<customer_id>
-        public IEnumerable<TargetCustomer> Get(string id)
+        // GET: /target_customers/?representative_id=<representative_id>&target_customer_id=<target_customer_id>
+        public IEnumerable<TargetCustomer> Get(string representative_id, string target_customer_id)
         {
-            return Lib_Primavera.PriIntegration.ListTargetCustomers(id);
+            return Lib_Primavera.PriIntegration.ListTargetCustomers(representative_id, target_customer_id);
         }
     }
 }

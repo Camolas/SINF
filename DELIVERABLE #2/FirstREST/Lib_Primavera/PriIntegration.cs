@@ -12,6 +12,9 @@ namespace FirstREST.Lib_Primavera
 {
     public class PriIntegration
     {
+        const string dateDivisor = "-";
+        const string hourDivisor = ":";
+        const string dateHourDivisor = " ";
 
 
         # region Cliente
@@ -429,7 +432,6 @@ namespace FirstREST.Lib_Primavera
 
         #endregion DocCompra
 
-
         #region DocsVenda
 
         public static Model.RespostaErro Encomendas_New(Model.DocVenda dv)
@@ -653,34 +655,76 @@ namespace FirstREST.Lib_Primavera
 
         #region Agenda
 
-        public static List<Model.Activity> ListActivities()
+        public static List<string> ListActivities(string representative_id, string month, string year)
+        {
+            int numberOfDays = DateTime.DaysInMonth(int.Parse(year), int.Parse(month));
+            StdBELista objList;
+            List<string> listNumActivities = new List<string>();
+            for (int i = 0; i < numberOfDays; i++)
+                listNumActivities.Add("0");
+
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT Day(Tarefas.DataInicio) AS Day, COUNT(Tarefas.Id) AS Count " +
+                    "FROM Tarefas, TiposTarefa " +
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.Utilizador LIKE '" + representative_id + "' " +
+                    "AND Year(Tarefas.DataInicio) = " + year + " " +
+                    "AND Month(Tarefas.DataInicio) = " + month + " " +
+                    "GROUP BY Day(Tarefas.DataInicio) " +
+                    "ORDER BY Day, Count ASC"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    int day = objList.Valor("Day");
+                    listNumActivities[day - 1] = objList.Valor("Count").ToString();
+                    objList.Seguinte();
+                }
+
+                return listNumActivities;
+            }
+            else
+                return null;
+
+        }
+
+        public static List<Model.Activity> ListActivities(string representative_id, string date)
         {
             StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string[] dateParts = date.Split(new string[] { dateDivisor }, System.StringSplitOptions.None);
+                string year = dateParts[0];
+                string month = dateParts[1];
+                string day = dateParts[2];
+
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS IdActivity, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
-                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " //+
-                    //"AND DATEDIFF(day, 2000-11-09, Tarefas.DataInicio) >= 0 " +
-                    //"AND DATEDIFF(day, 2017-11-09, Tarefas.DataInicio) <= 0"
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.Utilizador LIKE '" + representative_id + "' " +
+                    "AND Year(Tarefas.DataInicio) = " + year + " " +
+                    "AND Month(Tarefas.DataInicio) = " + month + " " +
+                    "AND Day(Tarefas.DataInicio) = " + day
                     );
 
                 while (!objList.NoFim())
                 {
-                    /*System.Diagnostics.Debug.WriteLine((string)objList.Valor("DataInicio"));
-                    DateTime dateTime = DateTime.Parse(objList.Valor("DataInicio"));
-                    TimeSpan timeSpan = TimeSpan.Parse(objList.Valor("DataInicio"));*/
+                    DateTime dateTime = objList.Valor("DataInicio");
                     listActivities.Add(new Model.Activity
                     {
-                        id = objList.Valor("IdActivity"),
-                        /* date = dateTime.ToShortDateString(),
-                         hour = timeSpan.ToString(),*/
+                        id = objList.Valor("ActivityId"),
+                        date = GetDate(dateTime),
+                        hour = GetHour(dateTime),
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
                     });
@@ -694,7 +738,7 @@ namespace FirstREST.Lib_Primavera
 
         }
 
-        public static Model.Activity GetActivity(string activityId)
+        /*public static Model.Activity GetActivity(string activityId)
         {
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
@@ -703,18 +747,19 @@ namespace FirstREST.Lib_Primavera
                     return null;
                 Model.Activity myActivity = new Model.Activity();
                 myActivity.id = objActivity.get_ID();
-                myActivity.date = objActivity.get_DataInicio().Date.ToShortDateString();
-                myActivity.hour = objActivity.get_DataInicio().TimeOfDay.ToString();
+                myActivity.date = GetDate(objActivity.get_DataInicio());
+                myActivity.hour = GetHour(objActivity.get_DataInicio());
                 myActivity.title = objActivity.get_Resumo();
                 myActivity.type = GetActivityType(objActivity.get_IDTipoActividade());
                 myActivity.client = objActivity.get_EntidadePrincipal();
+                myActivity.representative_id = objActivity.get_Utilizador();
                 myActivity.location = objActivity.get_LocalRealizacao();
                 myActivity.notes = objActivity.get_Descricao();
                 return myActivity;
             }
             else
                 return null;
-        }
+        }*/
 
         public static Lib_Primavera.Model.RespostaErro UpdActivity(Lib_Primavera.Model.Activity activity)
         {
@@ -862,7 +907,7 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
-            string dateHour = myActivity.date + " " + myActivity.hour;  // Example: 2017-11-11 16h40
+            string dateHour = myActivity.date + dateHourDivisor + myActivity.hour;  // Example: 2017-11-11 16h40
             string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
             int[] date = new int[dateHourStr.Length];
             for (var i = 0; i < dateHourStr.Length; i++)
@@ -872,6 +917,7 @@ namespace FirstREST.Lib_Primavera
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
+            objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
             objActivity.set_DataFim(objActivity.get_DataInicio());
@@ -881,7 +927,7 @@ namespace FirstREST.Lib_Primavera
 
         #region TargetCustomers
 
-        public static List<Model.TargetCustomer> ListTargetCustomers(string target_customer = null)
+        public static List<Model.TargetCustomer> ListTargetCustomers(string representative_id, string target_customer = null)
         {
             StdBELista objList;
 
@@ -890,9 +936,10 @@ namespace FirstREST.Lib_Primavera
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Cliente AS Id, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, LocalRealizacao AS Location " +
+                    "SELECT Cliente AS CustomerId, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, Utilizador AS RepresentativeId, LocalRealizacao AS Location " +
                     "FROM Clientes, Tarefas " +
-                    "WHERE Clientes.Cliente = Tarefas.EntidadePrincipal" +
+                    "WHERE Clientes.Cliente LIKE Tarefas.EntidadePrincipal " +
+                    "AND Utilizador LIKE '" + representative_id + "'" +
                     (target_customer == null ? "" : " AND Cliente LIKE '" + target_customer + "'")
                     );
 
@@ -900,10 +947,10 @@ namespace FirstREST.Lib_Primavera
                 {
                     listTargetCustomers.Add(new Model.TargetCustomer
                     {
-                        id = objList.Valor("Id"),
+                        customer_id = objList.Valor("CustomerId"),
                         name = objList.Valor("Name"),
                         phone_number = objList.Valor("PhoneNumber"),
-                        //date = objList.Valor("Date"),
+                        date = GetDateWithHour(objList.Valor("Date")),
                         location = objList.Valor("Location")
                     });
                     objList.Seguinte();
@@ -918,5 +965,23 @@ namespace FirstREST.Lib_Primavera
 
         #endregion
 
+        #region CommonFunctions
+
+        private static string GetDate(DateTime dateTime)
+        {
+            return dateTime.Year + dateDivisor + dateTime.Month + dateDivisor + dateTime.Day;
+        }
+
+        private static string GetHour(DateTime dateTime)
+        {
+            return dateTime.Hour + hourDivisor + dateTime.Minute;
+        }
+
+        private static string GetDateWithHour(DateTime dateTime)
+        {
+            return GetDate(dateTime) + dateHourDivisor + GetHour(dateTime);
+        }
+
+        #endregion
     }
 }
