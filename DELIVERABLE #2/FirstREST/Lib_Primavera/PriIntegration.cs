@@ -655,22 +655,23 @@ namespace FirstREST.Lib_Primavera
 
         #region Agenda
 
-        public static List<string> ListActivities(string representative_id, string month, string year)
+        public static List<string> ListActivities(string representativeId, string month, string year)
         {
-            int numberOfDays = DateTime.DaysInMonth(int.Parse(year), int.Parse(month));
             StdBELista objList;
             List<string> listNumActivities = new List<string>();
-            for (int i = 0; i < numberOfDays; i++)
-                listNumActivities.Add("0");
-
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+                int numberOfDays = DateTime.DaysInMonth(int.Parse(year), int.Parse(month));
+                for (int i = 0; i < numberOfDays; i++)
+                    listNumActivities.Add("0");
+
                 objList = PriEngine.Engine.Consulta(
                     "SELECT Day(Tarefas.DataInicio) AS Day, COUNT(Tarefas.Id) AS Count " +
                     "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.Utilizador LIKE '" + representative_id + "' " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
                     "GROUP BY Day(Tarefas.DataInicio) " +
@@ -691,13 +692,14 @@ namespace FirstREST.Lib_Primavera
 
         }
 
-        public static List<Model.Activity> ListActivities(string representative_id, string date)
+        public static List<Model.Activity> ListActivities(string representativeId, string date)
         {
             StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
                 string[] dateParts = date.Split(new string[] { dateDivisor }, System.StringSplitOptions.None);
                 string year = dateParts[0];
                 string month = dateParts[1];
@@ -707,7 +709,7 @@ namespace FirstREST.Lib_Primavera
                     "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.Utilizador LIKE '" + representative_id + "' " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
                     "AND Day(Tarefas.DataInicio) = " + day
@@ -927,7 +929,7 @@ namespace FirstREST.Lib_Primavera
 
         #region TargetCustomers
 
-        public static List<Model.TargetCustomer> ListTargetCustomers(string representative_id, string target_customer = null)
+        public static List<Model.TargetCustomer> ListTargetCustomers(string representativeId, string targetCustomer = null)
         {
             StdBELista objList;
 
@@ -935,12 +937,14 @@ namespace FirstREST.Lib_Primavera
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+
                 objList = PriEngine.Engine.Consulta(
                     "SELECT Cliente AS CustomerId, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, Utilizador AS RepresentativeId, LocalRealizacao AS Location " +
                     "FROM Clientes, Tarefas " +
                     "WHERE Clientes.Cliente LIKE Tarefas.EntidadePrincipal " +
-                    "AND Utilizador LIKE '" + representative_id + "'" +
-                    (target_customer == null ? "" : " AND Cliente LIKE '" + target_customer + "'")
+                    "AND Utilizador LIKE '" + dbRepresentativeId + "'" +
+                    (targetCustomer == null ? "" : " AND Cliente LIKE '" + targetCustomer + "'")
                     );
 
                 while (!objList.NoFim())
@@ -975,12 +979,15 @@ namespace FirstREST.Lib_Primavera
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+
                 objList = PriEngine.Engine.Consulta(
                     "SELECT CabecOportunidadesVenda.ID AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.IdProduto AS ProductId, ProdutosATP.Descricao AS ProductName, Tarefas.Resumo AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
                     "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Tarefas, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND Clientes.Cliente LIKE Vendedores.Vendedor " +
-                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor"
+                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1149,6 +1156,11 @@ namespace FirstREST.Lib_Primavera
         private static string GetDateWithHour(DateTime dateTime)
         {
             return GetDate(dateTime) + dateHourDivisor + GetHour(dateTime);
+        }
+
+        private static string GetDatabaseId(string primaveraId)
+        {
+            return primaveraId.Replace("{", string.Empty).Replace("}", string.Empty);
         }
 
         #endregion

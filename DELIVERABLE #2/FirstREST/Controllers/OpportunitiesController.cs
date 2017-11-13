@@ -29,7 +29,7 @@ namespace FirstREST.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest,erro.Descricao);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "It was not possible to create the opportunity.");
             }
         }
 
