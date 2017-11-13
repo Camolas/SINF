@@ -10,7 +10,7 @@ namespace FirstREST.Controllers
 {
     public class OpportunitiesController : ApiController
     {
-        // GET: /agenda/?representative_id=<representative_id>
+        // GET: /opportunities/?representative_id=<representative_id>
         public IEnumerable<Opportunity> Get(string representative_id)
         {
             return Lib_Primavera.PriIntegration.ListOpportunities(representative_id);

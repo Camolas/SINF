@@ -1141,6 +1141,27 @@ namespace FirstREST.Lib_Primavera
 
         #endregion
 
+        #region Dashboard
+
+        public static List<Model.Activity> GetDashboardTodayAgenda(string representativeId)
+        {
+            return ListActivities(representativeId, GetDate(DateTime.Today));
+        }
+
+        public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
+        {
+            // TODO
+            return new List<Model.Objectives>();
+        }
+
+        public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
+        {
+            // TODO
+            return new List<Model.Statistics>();
+        }
+
+        #endregion
+
         #region CommonFunctions
 
         private static string GetDate(DateTime dateTime)
