@@ -814,7 +814,7 @@ namespace FirstREST.Lib_Primavera
                     if (PriEngine.Engine.CRM.Actividades.Existe(activityId) == false)
                     {
                         erro.Erro = 1;
-                        erro.Descricao = "O cliente não existe";
+                        erro.Descricao = "A actividade não existe";
                         return erro;
                     }
                     else
@@ -961,6 +961,175 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
+        }
+
+        #endregion
+
+        #region Opportunities
+
+        public static List<Model.Opportunity> ListOpportunities(string representativeId)
+        {
+            StdBELista objList;
+
+            List<Model.Opportunity> listOpportunities = new List<Model.Opportunity>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT CabecOportunidadesVenda.ID AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.IdProduto AS ProductId, ProdutosATP.Descricao AS ProductName, Tarefas.Resumo AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Tarefas, Vendedores " +
+                    "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
+                    "AND Clientes.Cliente LIKE Vendedores.Vendedor " +
+                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listOpportunities.Add(new Model.Opportunity
+                    {
+                        opportunity_id = objList.Valor("OpportunityId"),
+                        customer_id = objList.Valor("CustomerId"),
+                        customer_name = objList.Valor("CustomerName"),
+                        product_id = objList.Valor("ProductId"),
+                        product_name = objList.Valor("ProductName"),
+                        opportunity_type = objList.Valor("OpportunityType"),
+                        representative_id = objList.Valor("RepresentativeId")
+                    });
+                    objList.Seguinte();
+                }
+
+                return listOpportunities;
+            }
+            else
+                return null;
+        }
+
+        public static Lib_Primavera.Model.RespostaErro UpdOpportunity(Lib_Primavera.Model.Opportunity opportunity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunity.opportunity_id) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "A oportunidade não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunity.opportunity_id);
+                        objOpportunity.set_EmModoEdicao(true);
+
+                        objOpportunity.set_Vendedor(opportunity.representative_id);
+                        objOpportunity.set_Descricao(opportunity.opportunity_type);
+                        objOpportunity.set_Entidade(opportunity.customer_id);
+                        objOpportunity.set_Resumo(opportunity.product_id);
+
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+
+        }
+
+        public static Lib_Primavera.Model.RespostaErro DelOpportunity(string opportunityId)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunityId) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "A oportunidade não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+        }
+
+        public static Lib_Primavera.Model.RespostaErro InsertOpportunityObj(Model.Opportunity opportunity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    objOpportunity.set_ID(Guid.NewGuid().ToString());
+                    objOpportunity.set_IDCabecInterno(objOpportunity.get_ID());
+                    objOpportunity.set_Vendedor(opportunity.representative_id);
+                    objOpportunity.set_Descricao(opportunity.opportunity_type);
+                    objOpportunity.set_Entidade(opportunity.customer_id);
+                    objOpportunity.set_Resumo(opportunity.product_id);
+                    objOpportunity.set_TipoEntidade("C");
+                    objOpportunity.set_CicloVenda("CV_HW");
+                    objOpportunity.set_CriadoPor(opportunity.representative_id);
+                    objOpportunity.set_DataCriacao(DateTime.Now);
+                    objOpportunity.set_DataExpiracao(new DateTime(5000, 1, 1));
+                    objOpportunity.set_Moeda("EUR");
+
+                    PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                    opportunity.opportunity_id = objOpportunity.get_ID();
+
+                    erro.Erro = 0;
+                    erro.Descricao = "Sucesso";
+                    return erro;
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
         }
 
         #endregion

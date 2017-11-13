@@ -8,44 +8,38 @@ using FirstREST.Lib_Primavera.Model;
 
 namespace FirstREST.Controllers
 {
-    public class AgendaController : ApiController
+    public class OpportunitiesController : ApiController
     {
-        // GET: /agenda/?representative_id=<representative_id>&month=<month>&year=<year>
-        public IEnumerable<string> Get(string representative_id, string month, string year)
+        // GET: /agenda/?representative_id=<representative_id>
+        public IEnumerable<Opportunity> Get(string representative_id)
         {
-            return Lib_Primavera.PriIntegration.ListActivities(representative_id, month, year);
+            return Lib_Primavera.PriIntegration.ListOpportunities(representative_id);
         }
 
-        // GET: /agenda/?representative_id=<representative_id>&date=<date>
-        public IEnumerable<Activity> Get(string representative_id, string date)
-        {
-            return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
-        }
-
-        public HttpResponseMessage Post(Activity activity)
+        public HttpResponseMessage Post(Opportunity opportunity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
-            erro = Lib_Primavera.PriIntegration.InsertActivityObj(activity);
+            erro = Lib_Primavera.PriIntegration.InsertOpportunityObj(opportunity);
             if (erro.Erro == 0)
             {
-                var response = Request.CreateResponse(HttpStatusCode.Created, activity);
-                string uri = Url.Link("DefaultApi", new { id = activity.id });
+                var response = Request.CreateResponse(HttpStatusCode.Created, opportunity);
+                string uri = Url.Link("DefaultApi", new { id = opportunity.opportunity_id });
                 response.Headers.Location = new Uri(uri);
                 return response;
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "It was not possible to create the appointment.");
+                return Request.CreateResponse(HttpStatusCode.BadRequest,erro.Descricao);
             }
         }
 
-        public HttpResponseMessage Put(string id, Activity activity)
+        public HttpResponseMessage Put(string id, Opportunity opportunity)
         {
-            activity.id = id;
+            opportunity.opportunity_id = id;
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
-                erro = Lib_Primavera.PriIntegration.UpdActivity(activity);
+                erro = Lib_Primavera.PriIntegration.UpdOpportunity(opportunity);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
@@ -66,7 +60,7 @@ namespace FirstREST.Controllers
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
-                erro = Lib_Primavera.PriIntegration.DelActivity(id);
+                erro = Lib_Primavera.PriIntegration.DelOpportunity(id);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
