@@ -40,10 +40,10 @@ namespace FirstREST.Controllers
             }
         }
 
-        // PUT: /agenda/?activity_id=<activity_id>
-        public HttpResponseMessage Put(string activity_id, Activity activity)
+        // PUT: /agenda/?id=<id>
+        public HttpResponseMessage Put(string id, Activity activity)
         {
-            activity.id = activity_id;
+            activity.id = id;
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
@@ -63,13 +63,13 @@ namespace FirstREST.Controllers
             }
         }
 
-        // DELETE: /agenda/?activity_id=<activity_id>
-        public HttpResponseMessage Delete(string activity_id)
+        // DELETE: /agenda/?id=<id>
+        public HttpResponseMessage Delete(string id)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
-                erro = Lib_Primavera.PriIntegration.DelActivity(activity_id);
+                erro = Lib_Primavera.PriIntegration.DelActivity(id);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
