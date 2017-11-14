@@ -32,6 +32,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public double Desconto
+        {
+            get;
+            set;
+        }
+
         public double TotalMerc
         {
             get;
@@ -39,6 +45,12 @@ namespace FirstREST.Lib_Primavera.Model
         }
 
         public string Serie
+        {
+            get;
+            set;
+        }
+
+        public bool Anulado
         {
             get;
             set;

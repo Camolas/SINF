@@ -28,7 +28,7 @@
 	$entries = [];
 	foreach($obj as $k => $cur)
 	{
-		$table_headers = ["Date","Entity","Product (QTY) (PPU)(€) (TP)(€)","TotalMerc(€)"];
+		$table_headers = ["Date","Entity","Serie(NumDoc)","Product (QTY) (PPU)(€) (TP)(€)","TotalMerc(€)"];
 		
 		$LinhasDoc = $cur->{'LinhasDoc'};
 		
@@ -47,6 +47,7 @@
 		$entry = [
 				"Date"=> $cur->{'Data'},
 				"Entity"=> '<a href="profile.php?clientName=' . $cur->{'Entidade'} .'">' .$cur->{'Entidade'}.'</a>',
+				"Serie(NumDoc)"=> $cur->{'Serie'}.' ('.$cur->{'NumDoc'}. ') ',
 				"Product (QTY) (PPU)(€) (TP)(€)" => $products_info,
 				"TotalMerc(€)"=> $cur->{'TotalMerc'}
 			];
