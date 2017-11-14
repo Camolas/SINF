@@ -15,7 +15,6 @@
 		</div>
 
 		<h3></h3>
-		<small>To see example with events navigate to march 2013</small>
 	</div>
 
 	<div class="row">
@@ -41,18 +40,6 @@
 		</div>
 	</div>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/underscore/underscore-min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-	<script type="text/javascript" src="http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/bootstrap-calendar/js/calendar.js"></script>
-	<script type="text/javascript" src="http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/bootstrap-calendar/js/app.js"></script>
-
-	<script type="text/javascript">
-		var disqus_shortname = 'bootstrapcalendar'; // required: replace example with your forum shortname
-		(function() {
-			var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-			dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-			(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-		})();
-	</script>
+	

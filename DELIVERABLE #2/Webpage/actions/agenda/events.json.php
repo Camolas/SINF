@@ -8,20 +8,10 @@ $resp = curl_exec($curl);
 curl_close($curl);
 	
 $obj = json_decode($resp);
-pr($obj);
+//	pr($obj);
 $string = '{"success": 1,"result": [';
 
-
-function pr($data)
-{
-    echo "<pre>";
-    print_r($data); // or var_dump($data);
-    echo "</pre>";
-}
-
-
-/*
-
+?>
 
 {
 	"success": 1,
@@ -100,5 +90,3 @@ function pr($data)
 		}
 	]
 }
-*/
-?>
