@@ -16,6 +16,7 @@ namespace FirstREST.Controllers
             return Lib_Primavera.PriIntegration.ListOpportunities(representative_id);
         }
 
+        // POST: /opportunities
         public HttpResponseMessage Post(Opportunity opportunity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
@@ -33,9 +34,10 @@ namespace FirstREST.Controllers
             }
         }
 
-        public HttpResponseMessage Put(string id, Opportunity opportunity)
+        // PUT: /opportunities/?opportunity_id=<opportunity_id>
+        public HttpResponseMessage Put(string opportunity_id, Opportunity opportunity)
         {
-            opportunity.opportunity_id = id;
+            opportunity.opportunity_id = opportunity_id;
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
@@ -55,12 +57,13 @@ namespace FirstREST.Controllers
             }
         }
 
-        public HttpResponseMessage Delete(string id)
+        // DELETE: /opportunities/?opportunity_id=<opportunity_id>
+        public HttpResponseMessage Delete(string opportunity_id)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
-                erro = Lib_Primavera.PriIntegration.DelOpportunity(id);
+                erro = Lib_Primavera.PriIntegration.DelOpportunity(opportunity_id);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);

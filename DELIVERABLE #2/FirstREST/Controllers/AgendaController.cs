@@ -22,6 +22,7 @@ namespace FirstREST.Controllers
             return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
         }
 
+        // POST: /agenda
         public HttpResponseMessage Post(Activity activity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
@@ -39,9 +40,10 @@ namespace FirstREST.Controllers
             }
         }
 
-        public HttpResponseMessage Put(string id, Activity activity)
+        // PUT: /agenda/?activity_id=<activity_id>
+        public HttpResponseMessage Put(string activity_id, Activity activity)
         {
-            activity.id = id;
+            activity.id = activity_id;
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
@@ -61,12 +63,13 @@ namespace FirstREST.Controllers
             }
         }
 
-        public HttpResponseMessage Delete(string id)
+        // DELETE: /agenda/?activity_id=<activity_id>
+        public HttpResponseMessage Delete(string activity_id)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
             try
             {
-                erro = Lib_Primavera.PriIntegration.DelActivity(id);
+                erro = Lib_Primavera.PriIntegration.DelActivity(activity_id);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
