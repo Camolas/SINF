@@ -1,39 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+using System.Web;
+using System.Web.Mvc;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class TargetCustomer
+    public class Opportunity
     {
+        public string opportunity_id
+        {
+            get;
+            set;
+        }
+
         public string customer_id
         {
             get;
             set;
         }
 
-        public string name
+        public string customer_name
         {
             get;
             set;
         }
 
-        public string date
+        public string product_id
         {
             get;
             set;
         }
 
-        public string location
+        public string product_name
         {
             get;
             set;
         }
 
-        public string phone_number
+        public string opportunity_type
+        {
+            get;
+            set;
+        }
+
+        public string representative_id
         {
             get;
             set;

@@ -219,14 +219,21 @@
     <Compile Include="Controllers\AgendaController.cs" />
     <Compile Include="Controllers\ArtigosController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DocCompraController.cs" />
     <Compile Include="Controllers\DocVendaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OpportunitiesController.cs" />
+    <Compile Include="Controllers\TargetCustomersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Lib_Primavera\Model\Activity.cs" />
+    <Compile Include="Lib_Primavera\Model\Objectives.cs" />
+    <Compile Include="Lib_Primavera\Model\Opportunity.cs" />
+    <Compile Include="Lib_Primavera\Model\Statistics.cs" />
+    <Compile Include="Lib_Primavera\Model\TargetCustomer.cs" />
     <Compile Include="Lib_Primavera\PriIntegration.cs" />
     <Compile Include="Lib_Primavera\Model\Artigo.cs" />
     <Compile Include="Lib_Primavera\Model\Cliente.cs" />

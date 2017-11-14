@@ -12,6 +12,9 @@ namespace FirstREST.Lib_Primavera
 {
     public class PriIntegration
     {
+        const string dateDivisor = "-";
+        const string hourDivisor = ":";
+        const string dateHourDivisor = " ";
 
 
         # region Cliente
@@ -429,7 +432,6 @@ namespace FirstREST.Lib_Primavera
 
         #endregion DocCompra
 
-
         #region DocsVenda
 
         public static Model.RespostaErro Encomendas_New(Model.DocVenda dv)
@@ -653,34 +655,78 @@ namespace FirstREST.Lib_Primavera
 
         #region Agenda
 
-        public static List<Model.Activity> ListActivities()
+        public static List<string> ListActivities(string representativeId, string month, string year)
+        {
+            StdBELista objList;
+            List<string> listNumActivities = new List<string>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+                int numberOfDays = DateTime.DaysInMonth(int.Parse(year), int.Parse(month));
+                for (int i = 0; i < numberOfDays; i++)
+                    listNumActivities.Add("0");
+
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT Day(Tarefas.DataInicio) AS Day, COUNT(Tarefas.Id) AS Count " +
+                    "FROM Tarefas, TiposTarefa " +
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
+                    "AND Year(Tarefas.DataInicio) = " + year + " " +
+                    "AND Month(Tarefas.DataInicio) = " + month + " " +
+                    "GROUP BY Day(Tarefas.DataInicio) " +
+                    "ORDER BY Day, Count ASC"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    int day = objList.Valor("Day");
+                    listNumActivities[day - 1] = objList.Valor("Count").ToString();
+                    objList.Seguinte();
+                }
+
+                return listNumActivities;
+            }
+            else
+                return null;
+
+        }
+
+        public static List<Model.Activity> ListActivities(string representativeId, string date)
         {
             StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+                string[] dateParts = date.Split(new string[] { dateDivisor }, System.StringSplitOptions.None);
+                string year = dateParts[0];
+                string month = dateParts[1];
+                string day = dateParts[2];
+
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS IdActivity, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
-                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " //+
-                    //"AND DATEDIFF(day, 2000-11-09, Tarefas.DataInicio) >= 0 " +
-                    //"AND DATEDIFF(day, 2017-11-09, Tarefas.DataInicio) <= 0"
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
+                    "AND Year(Tarefas.DataInicio) = " + year + " " +
+                    "AND Month(Tarefas.DataInicio) = " + month + " " +
+                    "AND Day(Tarefas.DataInicio) = " + day
                     );
 
                 while (!objList.NoFim())
                 {
-                    /*System.Diagnostics.Debug.WriteLine((string)objList.Valor("DataInicio"));
-                    DateTime dateTime = DateTime.Parse(objList.Valor("DataInicio"));
-                    TimeSpan timeSpan = TimeSpan.Parse(objList.Valor("DataInicio"));*/
+                    DateTime dateTime = objList.Valor("DataInicio");
                     listActivities.Add(new Model.Activity
                     {
-                        id = objList.Valor("IdActivity"),
-                        /* date = dateTime.ToShortDateString(),
-                         hour = timeSpan.ToString(),*/
+                        id = objList.Valor("ActivityId"),
+                        date = GetDate(dateTime),
+                        hour = GetHour(dateTime),
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
                     });
@@ -694,7 +740,7 @@ namespace FirstREST.Lib_Primavera
 
         }
 
-        public static Model.Activity GetActivity(string activityId)
+        /*public static Model.Activity GetActivity(string activityId)
         {
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
@@ -703,18 +749,19 @@ namespace FirstREST.Lib_Primavera
                     return null;
                 Model.Activity myActivity = new Model.Activity();
                 myActivity.id = objActivity.get_ID();
-                myActivity.date = objActivity.get_DataInicio().Date.ToShortDateString();
-                myActivity.hour = objActivity.get_DataInicio().TimeOfDay.ToString();
+                myActivity.date = GetDate(objActivity.get_DataInicio());
+                myActivity.hour = GetHour(objActivity.get_DataInicio());
                 myActivity.title = objActivity.get_Resumo();
                 myActivity.type = GetActivityType(objActivity.get_IDTipoActividade());
                 myActivity.client = objActivity.get_EntidadePrincipal();
+                myActivity.representative_id = objActivity.get_Utilizador();
                 myActivity.location = objActivity.get_LocalRealizacao();
                 myActivity.notes = objActivity.get_Descricao();
                 return myActivity;
             }
             else
                 return null;
-        }
+        }*/
 
         public static Lib_Primavera.Model.RespostaErro UpdActivity(Lib_Primavera.Model.Activity activity)
         {
@@ -769,7 +816,7 @@ namespace FirstREST.Lib_Primavera
                     if (PriEngine.Engine.CRM.Actividades.Existe(activityId) == false)
                     {
                         erro.Erro = 1;
-                        erro.Descricao = "O cliente não existe";
+                        erro.Descricao = "A actividade não existe";
                         return erro;
                     }
                     else
@@ -862,7 +909,7 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
-            string dateHour = myActivity.date + " " + myActivity.hour;  // Example: 2017-11-11 16h40
+            string dateHour = myActivity.date + dateHourDivisor + myActivity.hour;  // Example: 2017-11-11 16h40
             string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
             int[] date = new int[dateHourStr.Length];
             for (var i = 0; i < dateHourStr.Length; i++)
@@ -872,6 +919,7 @@ namespace FirstREST.Lib_Primavera
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
+            objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
             objActivity.set_DataFim(objActivity.get_DataInicio());
@@ -881,7 +929,7 @@ namespace FirstREST.Lib_Primavera
 
         #region TargetCustomers
 
-        public static List<Model.TargetCustomer> ListTargetCustomers(string target_customer = null)
+        public static List<Model.TargetCustomer> ListTargetCustomers(string representativeId, string targetCustomer = null)
         {
             StdBELista objList;
 
@@ -889,21 +937,24 @@ namespace FirstREST.Lib_Primavera
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Cliente AS Id, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, LocalRealizacao AS Location " +
+                    "SELECT Cliente AS CustomerId, Nome AS Name, Fac_Tel AS PhoneNumber, DataInicio AS Date, Utilizador AS RepresentativeId, LocalRealizacao AS Location " +
                     "FROM Clientes, Tarefas " +
-                    "WHERE Clientes.Cliente = Tarefas.EntidadePrincipal" +
-                    (target_customer == null ? "" : " AND Cliente LIKE '" + target_customer + "'")
+                    "WHERE Clientes.Cliente LIKE Tarefas.EntidadePrincipal " +
+                    "AND Utilizador LIKE '" + dbRepresentativeId + "'" +
+                    (targetCustomer == null ? "" : " AND Cliente LIKE '" + targetCustomer + "'")
                     );
 
                 while (!objList.NoFim())
                 {
                     listTargetCustomers.Add(new Model.TargetCustomer
                     {
-                        id = objList.Valor("Id"),
+                        customer_id = objList.Valor("CustomerId"),
                         name = objList.Valor("Name"),
                         phone_number = objList.Valor("PhoneNumber"),
-                        //date = objList.Valor("Date"),
+                        date = GetDateWithHour(objList.Valor("Date")),
                         location = objList.Valor("Location")
                     });
                     objList.Seguinte();
@@ -918,5 +969,221 @@ namespace FirstREST.Lib_Primavera
 
         #endregion
 
+        #region Opportunities
+
+        public static List<Model.Opportunity> ListOpportunities(string representativeId)
+        {
+            StdBELista objList;
+
+            List<Model.Opportunity> listOpportunities = new List<Model.Opportunity>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT CabecOportunidadesVenda.ID AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.IdProduto AS ProductId, ProdutosATP.Descricao AS ProductName, Tarefas.Resumo AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Tarefas, Vendedores " +
+                    "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
+                    "AND Clientes.Cliente LIKE Vendedores.Vendedor " +
+                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listOpportunities.Add(new Model.Opportunity
+                    {
+                        opportunity_id = objList.Valor("OpportunityId"),
+                        customer_id = objList.Valor("CustomerId"),
+                        customer_name = objList.Valor("CustomerName"),
+                        product_id = objList.Valor("ProductId"),
+                        product_name = objList.Valor("ProductName"),
+                        opportunity_type = objList.Valor("OpportunityType"),
+                        representative_id = objList.Valor("RepresentativeId")
+                    });
+                    objList.Seguinte();
+                }
+
+                return listOpportunities;
+            }
+            else
+                return null;
+        }
+
+        public static Lib_Primavera.Model.RespostaErro UpdOpportunity(Lib_Primavera.Model.Opportunity opportunity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunity.opportunity_id) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "A oportunidade não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunity.opportunity_id);
+                        objOpportunity.set_EmModoEdicao(true);
+
+                        objOpportunity.set_Vendedor(opportunity.representative_id);
+                        objOpportunity.set_Descricao(opportunity.opportunity_type);
+                        objOpportunity.set_Entidade(opportunity.customer_id);
+                        objOpportunity.set_Resumo(opportunity.product_id);
+
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+
+        }
+
+        public static Lib_Primavera.Model.RespostaErro DelOpportunity(string opportunityId)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunityId) == false)
+                    {
+                        erro.Erro = 1;
+                        erro.Descricao = "A oportunidade não existe";
+                        return erro;
+                    }
+                    else
+                    {
+                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);
+                        erro.Erro = 0;
+                        erro.Descricao = "Sucesso";
+                        return erro;
+                    }
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir a empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+        }
+
+        public static Lib_Primavera.Model.RespostaErro InsertOpportunityObj(Model.Opportunity opportunity)
+        {
+            Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
+            Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
+            try
+            {
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                {
+                    objOpportunity.set_ID(Guid.NewGuid().ToString());
+                    objOpportunity.set_IDCabecInterno(objOpportunity.get_ID());
+                    objOpportunity.set_Vendedor(opportunity.representative_id);
+                    objOpportunity.set_Descricao(opportunity.opportunity_type);
+                    objOpportunity.set_Entidade(opportunity.customer_id);
+                    objOpportunity.set_Resumo(opportunity.product_id);
+                    objOpportunity.set_TipoEntidade("C");
+                    objOpportunity.set_CicloVenda("CV_HW");
+                    objOpportunity.set_CriadoPor(opportunity.representative_id);
+                    objOpportunity.set_DataCriacao(DateTime.Now);
+                    objOpportunity.set_DataExpiracao(new DateTime(5000, 1, 1));
+                    objOpportunity.set_Moeda("EUR");
+
+                    PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                    opportunity.opportunity_id = objOpportunity.get_ID();
+
+                    erro.Erro = 0;
+                    erro.Descricao = "Sucesso";
+                    return erro;
+                }
+                else
+                {
+                    erro.Erro = 1;
+                    erro.Descricao = "Erro ao abrir empresa";
+                    return erro;
+                }
+            }
+            catch (Exception ex)
+            {
+                erro.Erro = 1;
+                erro.Descricao = ex.Message;
+                return erro;
+            }
+        }
+
+        #endregion
+
+        #region Dashboard
+
+        public static List<Model.Activity> GetDashboardTodayAgenda(string representativeId)
+        {
+            return ListActivities(representativeId, GetDate(DateTime.Today));
+        }
+
+        public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
+        {
+            // TODO
+            return new List<Model.Objectives>();
+        }
+
+        public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
+        {
+            // TODO
+            return new List<Model.Statistics>();
+        }
+
+        #endregion
+
+        #region CommonFunctions
+
+        private static string GetDate(DateTime dateTime)
+        {
+            return dateTime.Year + dateDivisor + dateTime.Month + dateDivisor + dateTime.Day;
+        }
+
+        private static string GetHour(DateTime dateTime)
+        {
+            return dateTime.Hour + hourDivisor + dateTime.Minute;
+        }
+
+        private static string GetDateWithHour(DateTime dateTime)
+        {
+            return GetDate(dateTime) + dateHourDivisor + GetHour(dateTime);
+        }
+
+        private static string GetDatabaseId(string primaveraId)
+        {
+            return primaveraId.Replace("{", string.Empty).Replace("}", string.Empty);
+        }
+
+        #endregion
     }
 }

@@ -7,33 +7,21 @@ using System.Web.Http;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class TargetCustomer
+    public class Objectives : ApiController
     {
-        public string customer_id
+        public string clients
         {
             get;
             set;
         }
 
-        public string name
+        public string products
         {
             get;
             set;
         }
 
-        public string date
-        {
-            get;
-            set;
-        }
-
-        public string location
-        {
-            get;
-            set;
-        }
-
-        public string phone_number
+        public string earnings
         {
             get;
             set;
