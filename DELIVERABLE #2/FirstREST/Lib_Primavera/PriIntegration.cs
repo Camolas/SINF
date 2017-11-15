@@ -251,6 +251,7 @@ namespace FirstREST.Lib_Primavera
             Model.Artigo myArt = new Model.Artigo();
             //GcpBEArtigoMoeda artigo_info = new GcpBEArtigoMoeda();
             StdBELista objListCab;
+            StdBELista objListCab2;
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
@@ -262,6 +263,7 @@ namespace FirstREST.Lib_Primavera
                 else
                 {
                     objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='"+ codArtigo+"'");
+                    objListCab2 = PriEngine.Engine.Consulta("SELECT SUM(PrecoLiquido) as TotalEarnings From LinhasDoc where Artigo='" + codArtigo + "'");
                     objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(codArtigo);
                     myArt.CodArtigo = objArtigo.get_Artigo();
                     myArt.DescArtigo = objArtigo.get_Descricao();
@@ -273,6 +275,7 @@ namespace FirstREST.Lib_Primavera
                     myArt.PVP1 = objListCab.Valor("PVP1");
                     myArt.PVP2 = objListCab.Valor("PVP2");
                     myArt.PVP3 = objListCab.Valor("PVP3");
+                    myArt.TotalEarnings = Convert.ToDouble(objListCab2.Valor("TotalEarnings").ToString("N3")); ;
 
                     return myArt;
                 }
