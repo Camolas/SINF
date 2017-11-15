@@ -545,7 +545,7 @@ namespace FirstREST.Lib_Primavera
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 objListCab = PriEngine.Engine.Consulta("SELECT TOP 50 id, Entidade, Data, NumDoc, TotalMerc, Serie From CabecDoc where TipoDoc='ECL' ORDER BY Data DESC");
-                
+
                 while (!objListCab.NoFim())
                 {
                     desc = PriEngine.Engine.Consulta("SELECT Desconto From Clientes where Cliente='" + objListCab.Valor("Entidade") + "'");
@@ -688,7 +688,7 @@ namespace FirstREST.Lib_Primavera
             return null;
         }
 
-        public static Model.DocVenda Encomenda_Get(string serie,string numdoc)
+        public static Model.DocVenda Encomenda_Get(string serie, string numdoc)
         {
 
             System.Diagnostics.Debug.WriteLine("get com serie");
@@ -796,7 +796,7 @@ namespace FirstREST.Lib_Primavera
                         //PriEngine.Engine.Comercial.Vendas.ActualizaValorAtributoID(id, "Entidade", dv.Entidade);
                         //PriEngine.Engine.Comercial.Vendas.ActualizaValorAtributoID(id, "Serie", dv.Serie);
                         //objCli.set_Entidade(dv.Entidade);
-                        
+
                         //objCli.set_Serie(dv.Serie);
 
                         GcpBELinhasDocumentoVenda linhasDoc = objCli.get_Linhas();
@@ -808,8 +808,8 @@ namespace FirstREST.Lib_Primavera
                         lstlindv = dv.LinhasDoc;
                         double preco_unitario;
 
-                        System.Diagnostics.Debug.WriteLine(lstlindv.Count);       
-                        
+                        System.Diagnostics.Debug.WriteLine(lstlindv.Count);
+
                         foreach (Model.LinhaDocVenda lin in lstlindv)
                         {
                             artigo_info = GetArtigo(lin.CodArtigo);
@@ -833,9 +833,9 @@ namespace FirstREST.Lib_Primavera
                         //if (objCli.get_Entidade() != dv.Entidade) 
                         //objCli.set_Entidade(dv.Entidade);
                         PriEngine.Engine.Comercial.Vendas.Actualiza(objCli);
-                        
+
                         //PriEngine.Engine.Comercial.Vendas.ActualizaValorAtributoID(id, "Entidade", dv.Entidade);
-                        
+
                         //if (objCli.get_Serie() != dv.Serie)
                         //objCli.set_Serie(dv.Serie);
                         //PriEngine.Engine.Comercial.Vendas.ActualizaValorAtributoID(id, "Serie", dv.Serie);

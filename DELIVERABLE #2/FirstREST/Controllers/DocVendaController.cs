@@ -60,6 +60,24 @@ namespace FirstREST.Controllers
 
         }
 
+        // GET api/cliente/5    
+        public dynamic/*Lib_Primavera.Model.DocVenda*/ Get(string serie,string id)
+        {
+
+            Lib_Primavera.Model.DocVenda docvenda = Lib_Primavera.PriIntegration.Encomenda_Get(serie,id);
+            if (docvenda == null)
+                {
+                    throw new HttpResponseException(
+                            Request.CreateResponse(HttpStatusCode.NotFound));
+
+                }
+                else
+                {
+                    return docvenda;
+                }
+
+        }
+
 
         public HttpResponseMessage Post([FromBody]Lib_Primavera.Model.DocVenda dv)
         {
@@ -84,14 +102,14 @@ namespace FirstREST.Controllers
         }
 
 
-        public HttpResponseMessage Put(int id, Lib_Primavera.Model.Cliente cliente)
+        public HttpResponseMessage Put(string id, [FromBody]Lib_Primavera.Model.DocVenda dv)
         {
 
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
 
             try
             {
-                erro = Lib_Primavera.PriIntegration.UpdCliente(cliente);
+                erro = Lib_Primavera.PriIntegration.UpdOrder(id,dv);
                 if (erro.Erro == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, erro.Descricao);
@@ -113,13 +131,13 @@ namespace FirstREST.Controllers
         public HttpResponseMessage Delete(string id)
         {
 
-
+            System.Diagnostics.Debug.WriteLine("Deleting");
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
 
             try
             {
 
-                erro = Lib_Primavera.PriIntegration.DelCliente(id);
+                erro = Lib_Primavera.PriIntegration.CancelOrder(id);
 
                 if (erro.Erro == 0)
                 {
