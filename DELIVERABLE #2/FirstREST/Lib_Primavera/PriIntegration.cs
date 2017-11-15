@@ -1413,7 +1413,13 @@ namespace FirstREST.Lib_Primavera
                     objOpportunity.set_Moeda("EUR");
 
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
-                    opportunity.opportunity_id = objOpportunity.get_ID();
+                    opportunity.opportunity_id = objOpportunity.get_Oportunidade();
+                    Model.Cliente customer = GetCliente(opportunity.customer_id);
+                    if (customer != null)
+                        opportunity.customer_name = customer.NomeCliente;
+                    Model.Artigo product = GetArtigo(opportunity.product_id);
+                    if (product != null)
+                        opportunity.product_name = product.DescArtigo;
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
