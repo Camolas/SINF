@@ -262,7 +262,7 @@ namespace FirstREST.Lib_Primavera
                 }
                 else
                 {
-                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='"+ codArtigo+"'");
+                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='" + codArtigo + "'");
                     objListCab2 = PriEngine.Engine.Consulta("SELECT SUM(PrecoLiquido) as TotalEarnings From LinhasDoc where Artigo='" + codArtigo + "'");
                     objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(codArtigo);
                     myArt.CodArtigo = objArtigo.get_Artigo();
@@ -1180,7 +1180,7 @@ namespace FirstREST.Lib_Primavera
                 return null;
         }
 
-        public static string GetActivityType(string activityTypeId)
+        /*public static string GetActivityType(string activityTypeId)
         {
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
@@ -1192,7 +1192,7 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
-        }
+        }*/
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
@@ -1391,8 +1391,16 @@ namespace FirstREST.Lib_Primavera
             {
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
-                    objOpportunity.set_ID(Guid.NewGuid().ToString());
-                    objOpportunity.set_IDCabecInterno(objOpportunity.get_ID());
+                    StdBELista objList = PriEngine.Engine.Consulta(
+                        "SELECT COUNT(Oportunidade) AS NumOpportunities " +
+                        "FROM CabecOportunidadesVenda"
+                        );
+
+                    int numOpportunities = objList.Valor("NumOpportunities");
+                    string opportunityNumber = (numOpportunities + 1).ToString();
+                    string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
+
+                    objOpportunity.set_Oportunidade(opportunityId);
                     objOpportunity.set_Vendedor(opportunity.representative_id);
                     objOpportunity.set_Descricao(opportunity.opportunity_type);
                     objOpportunity.set_Entidade(opportunity.customer_id);
