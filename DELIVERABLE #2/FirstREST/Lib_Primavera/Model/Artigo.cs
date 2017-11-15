@@ -25,5 +25,29 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public double PVP1
+        {
+            get;
+            set;
+        }
+
+        public double PVP2
+        {
+            get;
+            set;
+        }
+
+        public double PVP3
+        {
+            get;
+            set;
+        }
+
+        public double TotalEarnings
+        {
+            get;
+            set;
+        }
+
     }
 }

@@ -22,6 +22,7 @@ namespace FirstREST.Controllers
             return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
         }
 
+        // POST: /agenda
         public HttpResponseMessage Post(Activity activity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
@@ -39,6 +40,7 @@ namespace FirstREST.Controllers
             }
         }
 
+        // PUT: /agenda/?id=<id>
         public HttpResponseMessage Put(string id, Activity activity)
         {
             activity.id = id;
@@ -61,6 +63,7 @@ namespace FirstREST.Controllers
             }
         }
 
+        // DELETE: /agenda/?id=<id>
         public HttpResponseMessage Delete(string id)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
