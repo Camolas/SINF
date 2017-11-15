@@ -1269,12 +1269,12 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.ID AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.IdProduto AS ProductId, ProdutosATP.Descricao AS ProductName, Tarefas.Resumo AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Tarefas, Vendedores " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.ArtigoGCP AS ProductId, ProdutosATP.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
-                    "AND Clientes.Cliente LIKE Vendedores.Vendedor " +
-                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor " +
-                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
+                    "AND CabecOportunidadesVenda.Resumo LIKE ProdutosATP.ArtigoGCP " +
+                    "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1287,7 +1287,7 @@ namespace FirstREST.Lib_Primavera
                         product_id = objList.Valor("ProductId"),
                         product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
-                        representative_id = objList.Valor("RepresentativeId")
+                        representative_id = objList.Valor("RepresentativeId").ToString()
                     });
                     objList.Seguinte();
                 }
