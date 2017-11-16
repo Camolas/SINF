@@ -1,4 +1,4 @@
-<div id="page-wrapper">
+
 <?php
 	
 	if (!empty($_GET["bttn_press"])){
@@ -23,4 +23,3 @@
 	<br><br>
 	<input type="submit" class="btn btn-danger btn" value="Confirm order cancellation">
 </form>
-</div>

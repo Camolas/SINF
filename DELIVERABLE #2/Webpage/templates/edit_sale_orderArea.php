@@ -6,8 +6,7 @@
 			});
 		});
 </script>
-	
-<div id="page-wrapper">
+
 <?php
 	
 	if (!empty($_GET["entity"]) && !empty($_GET["serie"]))
@@ -128,4 +127,3 @@
 		<br>
 	</div>
 
-</div>

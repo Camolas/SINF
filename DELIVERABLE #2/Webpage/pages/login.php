@@ -1,6 +1,6 @@
 <?php
 	include('../config/init.php');
-	include('../templates/header.php'); 
+	include('../templates/common/header.php'); 
 	include('../templates/login.php');
-	include('../templates/footer.php');
+	include('../templates/common/footer.php');
 ?>
