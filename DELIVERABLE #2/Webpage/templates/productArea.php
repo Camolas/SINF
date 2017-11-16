@@ -1,5 +1,4 @@
-<div id="page-wrapper">
-	
+
 	<?php
 	
 	// Get cURL resource
@@ -43,4 +42,3 @@
 			print $obj->{'TotalEarnings'};
 		?>
     </div>
-</div>

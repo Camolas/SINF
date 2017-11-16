@@ -1027,6 +1027,46 @@ namespace FirstREST.Lib_Primavera
 
         }
 
+        public static List<Model.Activity> ListActivities(string representativeId)
+        {
+            StdBELista objList;
+            List<Model.Activity> listActivities = new List<Model.Activity>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                string dbRepresentativeId = GetDatabaseId(representativeId);
+
+                objList = PriEngine.Engine.Consulta(
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.DataFim, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa " +
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' "
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listActivities.Add(new Model.Activity
+                    {
+                        id = objList.Valor("ActivityId"),
+                        strating_date = GetDateWithHour(objList.Valor("DataInicio")),
+                        ending_date = GetDateWithHour(objList.Valor("DataFim")),
+                        title = objList.Valor("Title"),
+                        type = objList.Valor("Type"),
+                        client = objList.Valor("Client"),
+                        representative_id = objList.Valor("RepresentativeId"),
+                        location = objList.Valor("Location"),
+                        notes = objList.Valor("Notes")
+                    });
+                    objList.Seguinte();
+                }
+
+                return listActivities;
+            }
+            else
+                return null;
+
+        }
+
         /*public static Model.Activity GetActivity(string activityId)
         {
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
@@ -1196,20 +1236,23 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
+            /*
+            // desculpa Luís
             string dateHour = myActivity.date + dateHourDivisor + myActivity.hour;  // Example: 2017-11-11 16h40
             string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
             int[] date = new int[dateHourStr.Length];
             for (var i = 0; i < dateHourStr.Length; i++)
-                date[i] = int.Parse(dateHourStr[i]);
+                date[i] = int.Parse(dateHourStr[i]);*/
 
-            objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
+            //objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
+            objActivity.set_DataInicio(Convert.ToDateTime(myActivity.strating_date));
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
-            objActivity.set_DataFim(objActivity.get_DataInicio());
+            objActivity.set_DataFim(Convert.ToDateTime(myActivity.ending_date));
         }
 
         #endregion Agenda

@@ -22,7 +22,12 @@ namespace FirstREST.Controllers
             return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
         }
 
-        // POST: /agenda
+        // GET: /agenda/?representative_id=<representative_id>
+        public IEnumerable<Activity> Get(string representative_id)
+        {
+            return Lib_Primavera.PriIntegration.ListActivities(representative_id);
+        }
+
         public HttpResponseMessage Post(Activity activity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();

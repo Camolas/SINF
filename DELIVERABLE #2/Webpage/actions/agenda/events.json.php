@@ -2,17 +2,59 @@
 include('../../config/init.php');
 
 $curl = curl_init();
-curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/agenda/');
+curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/agenda/?representative_id=' . $_SESSION['user_id']);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 $resp = curl_exec($curl);
 curl_close($curl);
 	
-$obj = json_decode($resp);
-//	pr($obj);
+$obj = json_decode($resp, true);
 $string = '{"success": 1,"result": [';
 
-?>
+foreach ($obj as $key => $value) {
+	$class = "event-success";
+	if(strcmp($value['type'], 'Compromisso') == 0) {
+		$class = "event-important";
+	} else if(strcmp($value['type'],'Envio de Carta') == 0) {
+		$class = "event-success";
+	}else if(strcmp($value['type'], 'Reunião') == 0) {
+		$class = "event-warning";
+	}else if(strcmp($value['type'], 'Envio de Email') == 0) {
+		$class = "event-info";
+	}else if(strcmp($value['type'], 'Telefonema') == 0) {
+		$class = "event-inverse";
+	}else if(strcmp($value['type'], 'Cobrança') == 0) {
+		$class = "event-special";
+	}else if(strcmp($value['type'], 'Tarefa') == 0) {
+		$class = "event-important";
+	}else if(strcmp($value['type'], 'Envio de Proposta') == 0) {
+		$class = "event-success";
+	}else if(strcmp($value['type'], 'Apresentação de proposta') == 0) {
+		$class = "event-warning";
+	}
+	$string = $string . '{
+							"id": "' . $value['id'] . '",
+							"title": "' . $value['title'] . '",
+							"url": "' . $BASE_URL. 'pages/activity.php?title=' .$value['title'] .
+																	'&client=' .$value['client'] .
+																	'&type=' . $value['type'] .
+																	'&location=' . $value['location'] .
+																	'&notes=' . $value['notes'] .
+																	'&strating_date=' . $value['strating_date'] .
+																	'&ending_date=' . $value['ending_date'] .
+																	'&id=' . $value['id'] .'",
+							"class": "' . $class . '",
+							"start": "' . strtotime($value['strating_date'])*1000 . '",
+							"end": "' . strtotime($value['ending_date'])*1000 . '"}';
+	if($key != (sizeof($obj) - 1)){
+		$string = $string . ",";
+	}
+}
+$string = $string . ']}';
+echo $string;
 
+
+
+/*
 {
 	"success": 1,
 	"result": [
@@ -90,3 +132,6 @@ $string = '{"success": 1,"result": [';
 		}
 	]
 }
+
+*/
+?>

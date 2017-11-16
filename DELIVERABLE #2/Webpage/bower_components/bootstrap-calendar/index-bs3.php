@@ -2,6 +2,9 @@
 
 		<div class="pull-right form-inline">
 			<div class="btn-group">
+				<button class="btn btn-success" onclick=" relocate_home()">Create</button>
+			</div>
+			<div class="btn-group">
 				<button class="btn btn-primary" data-calendar-nav="prev">Prev</button>
 				<button class="btn btn-default" data-calendar-nav="today">Today</button>
 				<button class="btn btn-primary" data-calendar-nav="next">Next</button>
@@ -39,6 +42,13 @@
 			</div>
 		</div>
 	</div>
+	
+	<script>
+	function relocate_home()
+	{
+		 location.href = "<?=$BASE_URL?>pages/create_event.php";
+	} 
+	</script>
 
 	<script type="text/javascript" src="http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/underscore/underscore-min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

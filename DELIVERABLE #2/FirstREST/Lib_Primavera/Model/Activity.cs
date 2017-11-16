@@ -60,5 +60,15 @@ namespace FirstREST.Lib_Primavera.Model
             get;
             set;
         }
+        public string strating_date
+        {
+            get;
+            set;
+        }
+        public string ending_date
+        {
+            get;
+            set;
+        }
     }
 }
