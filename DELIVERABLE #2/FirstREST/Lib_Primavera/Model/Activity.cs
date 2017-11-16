@@ -13,13 +13,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public string date
+        public string start_date
         {
             get;
             set;
         }
-
-        public string hour
+        public string end_date
         {
             get;
             set;
@@ -56,16 +55,6 @@ namespace FirstREST.Lib_Primavera.Model
         }
 
         public string notes
-        {
-            get;
-            set;
-        }
-        public string strating_date
-        {
-            get;
-            set;
-        }
-        public string ending_date
         {
             get;
             set;

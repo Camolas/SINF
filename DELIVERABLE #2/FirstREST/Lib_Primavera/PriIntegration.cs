@@ -943,7 +943,7 @@ namespace FirstREST.Lib_Primavera
 
         #region Agenda
 
-        public static List<string> ListActivities(string representativeId, string month, string year)
+        /*public static List<string> ListActivities(string representativeId, string month, string year)
         {
             StdBELista objList;
             List<string> listNumActivities = new List<string>();
@@ -977,8 +977,7 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
-
-        }
+        }*/
 
         public static List<Model.Activity> ListActivities(string representativeId, string date)
         {
@@ -994,7 +993,7 @@ namespace FirstREST.Lib_Primavera
                 string day = dateParts[2];
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
@@ -1005,12 +1004,13 @@ namespace FirstREST.Lib_Primavera
 
                 while (!objList.NoFim())
                 {
-                    DateTime dateTime = objList.Valor("DataInicio");
+                    DateTime startDateTime = objList.Valor("StartDate");
+                    DateTime endDateTime = objList.Valor("EndDate");
                     listActivities.Add(new Model.Activity
                     {
                         id = objList.Valor("ActivityId"),
-                        date = GetDate(dateTime),
-                        hour = GetHour(dateTime),
+                        start_date = GetDateWithHour(startDateTime),
+                        end_date = GetDateWithHour(endDateTime),
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
@@ -1025,7 +1025,6 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
-
         }
 
         public static List<Model.Activity> ListActivities(string representativeId)
@@ -1038,7 +1037,7 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio, Tarefas.DataFim, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
                     "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' "
@@ -1049,8 +1048,8 @@ namespace FirstREST.Lib_Primavera
                     listActivities.Add(new Model.Activity
                     {
                         id = objList.Valor("ActivityId"),
-                        strating_date = GetDateWithHour(objList.Valor("DataInicio")),
-                        ending_date = GetDateWithHour(objList.Valor("DataFim")),
+                        start_date = GetDateWithHour(objList.Valor("StartDate")),
+                        end_date = GetDateWithHour(objList.Valor("EndDate")),
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
@@ -1065,7 +1064,6 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
-
         }
 
         /*public static Model.Activity GetActivity(string activityId)
@@ -1237,23 +1235,14 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
-            /*
-            // desculpa Luís
-            string dateHour = myActivity.date + dateHourDivisor + myActivity.hour;  // Example: 2017-11-11 16h40
-            string[] dateHourStr = dateHour.Split(new Char[] { ' ', '-', ':' });
-            int[] date = new int[dateHourStr.Length];
-            for (var i = 0; i < dateHourStr.Length; i++)
-                date[i] = int.Parse(dateHourStr[i]);*/
-
-            //objActivity.set_DataInicio(new DateTime(date[0], date[1], date[2], date[3], date[4], 0));
-            objActivity.set_DataInicio(Convert.ToDateTime(myActivity.strating_date));
+            objActivity.set_DataInicio(GetDateTime(myActivity.start_date));
+            objActivity.set_DataFim(GetDateTime(myActivity.end_date));
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
-            objActivity.set_DataFim(Convert.ToDateTime(myActivity.ending_date));
         }
 
         #endregion Agenda
@@ -1317,7 +1306,8 @@ namespace FirstREST.Lib_Primavera
                     "FROM CabecOportunidadesVenda, Clientes, Artigo " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
-                    "AND CabecOportunidadesVenda.CriadoPor = '" + dbRepresentativeId + "'"
+                    "AND CabecOportunidadesVenda.CriadoPor = '" + dbRepresentativeId + "'" +
+                    "AND CabecOportunidadesVenda.DataFecho IS NULL"
                     );
 
                 while (!objList.NoFim())
@@ -1404,7 +1394,19 @@ namespace FirstREST.Lib_Primavera
                     }
                     else
                     {
-                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);
+                        objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunityId);
+                        /*objOpportunity.get_LinhasActividade().RemoveTodos();
+                        objOpportunity.get_LinhasCicloVenda().RemoveTodos();
+                        objOpportunity.get_LinhasConcorrente().RemoveTodos();
+                        objOpportunity.get_LinhasContacto().RemoveTodos();
+                        objOpportunity.get_LinhasNota().RemoveTodos();
+                        PriEngine.Engine.CRM.PropostasOPV.Remove(objOpportunity.get_ID());
+                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);*/
+
+                        objOpportunity.set_EmModoEdicao(true);
+                        objOpportunity.set_DataFecho(DateTime.Now);
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1526,6 +1528,15 @@ namespace FirstREST.Lib_Primavera
         private static string GetDatabaseId(string primaveraId)
         {
             return primaveraId.Replace("{", string.Empty).Replace("}", string.Empty);
+        }
+
+        private static DateTime GetDateTime(string dateWithHour /* Example: 2017-11-11 16:40 */)
+        {
+            string[] dateHourStr = dateWithHour.Split(new Char[] { ' ', '-', ':' });
+            int[] date = new int[dateHourStr.Length];
+            for (var i = 0; i < dateHourStr.Length; i++)
+                date[i] = int.Parse(dateHourStr[i]);
+            return new DateTime(date[0], date[1], date[2], date[3], date[4], 0);
         }
 
         #endregion
