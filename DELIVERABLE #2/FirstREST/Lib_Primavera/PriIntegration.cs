@@ -262,7 +262,7 @@ namespace FirstREST.Lib_Primavera
                 }
                 else
                 {
-                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='"+ codArtigo+"'");
+                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='" + codArtigo + "'");
                     objListCab2 = PriEngine.Engine.Consulta("SELECT SUM(PrecoLiquido) as TotalEarnings From LinhasDoc where Artigo='" + codArtigo + "'");
                     objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(codArtigo);
                     myArt.CodArtigo = objArtigo.get_Artigo();
@@ -942,6 +942,7 @@ namespace FirstREST.Lib_Primavera
         #endregion DocsVenda
 
         #region Agenda
+
         public static List<string> ListActivities(string representativeId, string month, string year)
         {
             StdBELista objList;
@@ -1220,7 +1221,7 @@ namespace FirstREST.Lib_Primavera
                 return null;
         }
 
-        public static string GetActivityType(string activityTypeId)
+        /*public static string GetActivityType(string activityTypeId)
         {
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
@@ -1232,7 +1233,7 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
-        }
+        }*/
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
@@ -1312,12 +1313,12 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.ID AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.IdProduto AS ProductId, ProdutosATP.Descricao AS ProductName, Tarefas.Resumo AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Tarefas, Vendedores " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
-                    "AND Clientes.Cliente LIKE Vendedores.Vendedor " +
-                    "AND Tarefas.Utilizador LIKE Vendedores.Vendedor " +
-                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
+                    "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
+                    "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1330,7 +1331,7 @@ namespace FirstREST.Lib_Primavera
                         product_id = objList.Valor("ProductId"),
                         product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
-                        representative_id = objList.Valor("RepresentativeId")
+                        representative_id = objList.Valor("RepresentativeId").ToString()
                     });
                     objList.Seguinte();
                 }
@@ -1434,8 +1435,16 @@ namespace FirstREST.Lib_Primavera
             {
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
-                    objOpportunity.set_ID(Guid.NewGuid().ToString());
-                    objOpportunity.set_IDCabecInterno(objOpportunity.get_ID());
+                    StdBELista objList = PriEngine.Engine.Consulta(
+                        "SELECT COUNT(Oportunidade) AS NumOpportunities " +
+                        "FROM CabecOportunidadesVenda"
+                        );
+
+                    int numOpportunities = objList.Valor("NumOpportunities");
+                    string opportunityNumber = (numOpportunities + 1).ToString();
+                    string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
+
+                    objOpportunity.set_Oportunidade(opportunityId);
                     objOpportunity.set_Vendedor(opportunity.representative_id);
                     objOpportunity.set_Descricao(opportunity.opportunity_type);
                     objOpportunity.set_Entidade(opportunity.customer_id);
@@ -1448,7 +1457,13 @@ namespace FirstREST.Lib_Primavera
                     objOpportunity.set_Moeda("EUR");
 
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
-                    opportunity.opportunity_id = objOpportunity.get_ID();
+                    opportunity.opportunity_id = objOpportunity.get_Oportunidade();
+                    Model.Cliente customer = GetCliente(opportunity.customer_id);
+                    if (customer != null)
+                        opportunity.customer_name = customer.NomeCliente;
+                    Model.Artigo product = GetArtigo(opportunity.product_id);
+                    if (product != null)
+                        opportunity.product_name = product.DescArtigo;
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
