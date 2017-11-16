@@ -1307,7 +1307,8 @@ namespace FirstREST.Lib_Primavera
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
                     "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
-                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "' " +
+                    "AND CabecOportunidadesVenda.DataFecho IS NULL"
                     );
 
                 while (!objList.NoFim())
@@ -1395,7 +1396,19 @@ namespace FirstREST.Lib_Primavera
                     }
                     else
                     {
-                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);
+                        objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunityId);
+                        /*objOpportunity.get_LinhasActividade().RemoveTodos();
+                        objOpportunity.get_LinhasCicloVenda().RemoveTodos();
+                        objOpportunity.get_LinhasConcorrente().RemoveTodos();
+                        objOpportunity.get_LinhasContacto().RemoveTodos();
+                        objOpportunity.get_LinhasNota().RemoveTodos();
+                        PriEngine.Engine.CRM.PropostasOPV.Remove(objOpportunity.get_ID());
+                        PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);*/
+
+                        objOpportunity.set_EmModoEdicao(true);
+                        objOpportunity.set_DataFecho(DateTime.Now);
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
