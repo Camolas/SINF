@@ -942,6 +942,7 @@ namespace FirstREST.Lib_Primavera
         #endregion DocsVenda
 
         #region Agenda
+
         public static List<string> ListActivities(string representativeId, string month, string year)
         {
             StdBELista objList;
@@ -1269,10 +1270,10 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, ProdutosATP.ArtigoGCP AS ProductId, ProdutosATP.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, ProdutosATP, Vendedores " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
-                    "AND CabecOportunidadesVenda.Resumo LIKE ProdutosATP.ArtigoGCP " +
+                    "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
                     "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
                     "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"
                     );
