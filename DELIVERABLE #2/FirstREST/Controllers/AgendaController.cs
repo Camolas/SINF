@@ -11,16 +11,16 @@ namespace FirstREST.Controllers
     public class AgendaController : ApiController
     {
         // GET: /agenda/?representative_id=<representative_id>&month=<month>&year=<year>
-        public IEnumerable<string> Get(string representative_id, string month, string year)
+        /*public IEnumerable<string> Get(string representative_id, string month, string year)
         {
             return Lib_Primavera.PriIntegration.ListActivities(representative_id, month, year);
-        }
+        }*/
 
         // GET: /agenda/?representative_id=<representative_id>&date=<date>
-        public IEnumerable<Activity> Get(string representative_id, string date)
+        /*public IEnumerable<Activity> Get(string representative_id, string date)
         {
             return Lib_Primavera.PriIntegration.ListActivities(representative_id, date);
-        }
+        }*/
 
         // GET: /agenda/?representative_id=<representative_id>
         public IEnumerable<Activity> Get(string representative_id)
