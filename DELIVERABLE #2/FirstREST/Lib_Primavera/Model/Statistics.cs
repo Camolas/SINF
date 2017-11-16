@@ -20,11 +20,5 @@ namespace FirstREST.Lib_Primavera.Model
             get;
             set;
         }
-
-        public string most_profitable_area
-        {
-            get;
-            set;
-        }
     }
 }
