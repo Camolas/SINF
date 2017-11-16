@@ -1497,8 +1497,42 @@ namespace FirstREST.Lib_Primavera
 
         public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
         {
-            // TODO
-            return new List<Model.Objectives>();
+            List<Model.Objectives> listObjectives = new List<Model.Objectives>();
+            int month = DateTime.Now.Month;
+            int year = DateTime.Now.Year;
+
+            StdBELista objList1 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Clients.Client) AS NumClients " +
+                "FROM " +
+                "   (SELECT DISTINCT Entidade AS Client " +
+                "   FROM CabecDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Clients"
+                );
+
+            StdBELista objList2 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Products.Product) AS NumProducts " +
+                "FROM " +
+                "   (SELECT DISTINCT Artigo AS Product " +
+                "   FROM LinhasDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Products"
+                );
+
+            StdBELista objList3 = PriEngine.Engine.Consulta(
+                "SELECT SUM(TotalMerc) AS Revenue " +
+                "FROM CabecDoc " +
+                "WHERE MONTH(Data) = " + month + " " +
+                "AND YEAR(Data) = " + year
+                );
+
+            Model.Objectives objectives = new Model.Objectives();
+            objectives.clients = objList1.Valor("NumClients").ToString();
+            objectives.products = objList2.Valor("NumProducts").ToString();
+            objectives.earnings = objList3.Valor("Revenue").ToString();
+            listObjectives.Add(objectives);
+
+            return listObjectives;
         }
 
         public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
