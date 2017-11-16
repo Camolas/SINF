@@ -1,0 +1,27 @@
+  .mypanel {
+    border: 1px solid #eee;
+    width: 200px;
+    min-height: 100px;
+   margin-bottom:0px;
+    float: left;
+    margin-right: 10px;
+  }
+  .connectedSortable {
+	min-height: 100px;
+	padding: 5px 0 0 0;
+  }
+  
+  .panel-body{
+	  padding-right: 5px;
+	  padding-left: 5px;
+	  padding-top: 0px;
+	  padding-bottom: 0px;
+  }
+  
+  .panel {
+	  margin-bottom:10px;
+  }
+  
+  .buttonCreate {
+	  margin-bottom:10px;
+  }

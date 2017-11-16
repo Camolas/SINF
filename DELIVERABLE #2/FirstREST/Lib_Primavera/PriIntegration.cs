@@ -1275,7 +1275,7 @@ namespace FirstREST.Lib_Primavera
                     "FROM Clientes, Tarefas " +
                     "WHERE Clientes.Cliente LIKE Tarefas.EntidadePrincipal " +
                     "AND Utilizador LIKE '" + dbRepresentativeId + "'" +
-                    (targetCustomer == null ? "" : " AND Cliente LIKE '" + targetCustomer + "'")
+                    (targetCustomer == null ? "" : " AND Cliente LIKE '%" + targetCustomer + "%'")
                     );
 
                 while (!objList.NoFim())
@@ -1313,12 +1313,11 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.CriadoPor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, Artigo " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
-                    "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
-                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"
+                    "AND CabecOportunidadesVenda.CriadoPor = '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1362,7 +1361,6 @@ namespace FirstREST.Lib_Primavera
                         objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunity.opportunity_id);
                         objOpportunity.set_EmModoEdicao(true);
 
-                        objOpportunity.set_Vendedor(opportunity.representative_id);
                         objOpportunity.set_Descricao(opportunity.opportunity_type);
                         objOpportunity.set_Entidade(opportunity.customer_id);
                         objOpportunity.set_Resumo(opportunity.product_id);
@@ -1445,7 +1443,7 @@ namespace FirstREST.Lib_Primavera
                     string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
 
                     objOpportunity.set_Oportunidade(opportunityId);
-                    objOpportunity.set_Vendedor(opportunity.representative_id);
+                    objOpportunity.set_Vendedor("1");
                     objOpportunity.set_Descricao(opportunity.opportunity_type);
                     objOpportunity.set_Entidade(opportunity.customer_id);
                     objOpportunity.set_Resumo(opportunity.product_id);
@@ -1457,6 +1455,7 @@ namespace FirstREST.Lib_Primavera
                     objOpportunity.set_Moeda("EUR");
 
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                    string strin = PriEngine.Engine.CRM.OportunidadesVenda.CriaActividadeFaseCicloVenda("OPV004", "Ciclio");
                     opportunity.opportunity_id = objOpportunity.get_Oportunidade();
                     Model.Cliente customer = GetCliente(opportunity.customer_id);
                     if (customer != null)

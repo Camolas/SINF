@@ -38,7 +38,7 @@
 				  <option value="Apresentação de proposta">Apresentação de proposta</option>
 				</select>
 				<script>
-					document.getElementById("mySelect").value = "<?= $_GET['type'] ?>";
+					document.getElementById("mySelect").value ="<?= $_GET['type'] ?>";
 				</script>
 				<br>
 				<label>Client</label>
@@ -48,7 +48,7 @@
 				<input class="form-control" name="location" value="<?= $_GET['location'] ?>">
 				<br>
 				<label>Notes</label>
-				<textarea class="form-control" rows="3" name="notes"> <?= $_GET['notes'] ?></textarea>
+				<textarea class="form-control" rows="3" name="notes"><?= $_GET['notes'] ?></textarea>
 				<br>
 				<label>Strating Date</label>
 				<?php $old_date_timestamp = strtotime($_GET['strating_date']);
