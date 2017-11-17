@@ -43,8 +43,8 @@ foreach ($obj as $key => $value) {
 																	'&end_date=' . $value['end_date'] .
 																	'&id=' . $value['id'] .'",
 							"class": "' . $class . '",
-							"start": "' . (strtotime($value['start_date'])+24*3600)*1000 . '",
-							"end": "' . (strtotime($value['end_date'])+24*3600)*1000 . '"}';
+							"start": "' . (strtotime($value['start_date']))*1000 . '",
+							"end": "' . (strtotime($value['end_date']))*1000 . '"}';
 	if($key != (sizeof($obj) - 1)){
 		$string = $string . ",";
 	}
