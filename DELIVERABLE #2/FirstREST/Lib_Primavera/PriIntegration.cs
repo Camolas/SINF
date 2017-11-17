@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -600,15 +600,19 @@ namespace FirstREST.Lib_Primavera
             Model.LinhaDocVenda lindv = new Model.LinhaDocVenda();
             List<Model.LinhaDocVenda> listlindv = new
             List<Model.LinhaDocVenda>();
+            int numDoc = 50;
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
               
-                    objListLin = PriEngine.Engine.Consulta("SELECT TOP 50 idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido, Data from LinhasDoc where Artigo='" + artigo + "' ORDER BY Data DESC");
+                    objListLin = PriEngine.Engine.Consulta("SELECT idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido, Data from LinhasDoc where Artigo='" + artigo + "' ORDER BY Data DESC");
                     
 
                     while (!objListLin.NoFim())
                     {
+                        if (numDoc == 0)
+                            break;
+
                         listlindv = new List<Model.LinhaDocVenda>();
                         lindv = new Model.LinhaDocVenda();
                         lindv.IdCabecDoc = objListLin.Valor("idCabecDoc");
@@ -623,7 +627,7 @@ namespace FirstREST.Lib_Primavera
 
                         listlindv.Add(lindv);
 
-                        objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, NumDoc, Serie From CabecDoc where id='" + lindv.IdCabecDoc+"'");
+                        objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, NumDoc, Serie, TipoDoc From CabecDoc where id='" + lindv.IdCabecDoc+"'");
 
    
                         dv = new Model.DocVenda();
@@ -634,10 +638,12 @@ namespace FirstREST.Lib_Primavera
                         dv.Serie = objListCab.Valor("Serie");
 
                         dv.LinhasDoc = listlindv;
-                        listdv.Add(dv);
+                        if (objListCab.Valor("TipoDoc") == "ECL"){
+                            listdv.Add(dv);
+                            numDoc--;
+                        }
+
                         
-
-
                         
                         objListLin.Seguinte();
                     }
