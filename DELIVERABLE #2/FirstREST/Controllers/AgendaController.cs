@@ -28,6 +28,7 @@ namespace FirstREST.Controllers
             return Lib_Primavera.PriIntegration.ListActivities(representative_id);
         }
 
+        // POST: /agenda
         public HttpResponseMessage Post(Activity activity)
         {
             Lib_Primavera.Model.RespostaErro erro = new Lib_Primavera.Model.RespostaErro();
