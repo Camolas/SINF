@@ -27,22 +27,8 @@ namespace FirstREST.Controllers
         public dynamic/*Lib_Primavera.Model.DocVenda*/ Get(string id)
         {
 
-            int letterCounter = Regex.Matches(id, @"[a-zA-Z]").Count;
-            if (letterCounter == 0)
-            {
-                Lib_Primavera.Model.DocVenda docvenda = Lib_Primavera.PriIntegration.Encomenda_Get(id);
-                if (docvenda == null)
-                {
-                    throw new HttpResponseException(
-                            Request.CreateResponse(HttpStatusCode.NotFound));
-
-                }
-                else
-                {
-                    return docvenda;
-                }
-            }
-            else
+            int numberCounter = Regex.Matches(id, @"[0-9]").Count;
+            if (numberCounter == 0)
             {
                 IEnumerable<Lib_Primavera.Model.DocVenda> encomendas = Lib_Primavera.PriIntegration.Encomendas_List(id);
                 if (encomendas == null)
@@ -55,6 +41,22 @@ namespace FirstREST.Controllers
                 {
                     return encomendas;
                 }
+            }
+            else
+            {
+                IEnumerable<Lib_Primavera.Model.DocVenda> encomendas = Lib_Primavera.PriIntegration.Encomendas_List_Article(id);
+                if (encomendas == null)
+                {
+                    throw new HttpResponseException(
+                            Request.CreateResponse(HttpStatusCode.NotFound));
+
+                }
+                else
+                {
+                    return encomendas;
+                }
+
+
             }
 
 
