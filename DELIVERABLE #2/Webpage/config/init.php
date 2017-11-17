@@ -16,7 +16,7 @@
     $conn->exec('SET SCHEMA \'public\'');
 	*/
 	$PRIMAVERA_ADDRESS = 'http://localhost:49822/';
-	$BASE_URL = 'http://localhost/git/DELIVERABLE%20%232/Webpage/';
+	$BASE_URL = 'http://localhost/Development/SINF/DELIVERABLE%20%232/Webpage/';
 
     $LOG_FILE = $BASE_DIR . "logfile.txt";
     $MESSAGE_TYPE = 3;
@@ -32,7 +32,7 @@
     $_SESSION['form_values'] = [];
 	
 	// To remove
-	$_SESSION['user_id'] = "lucia.ribeiro";
+	$_SESSION['user_id'] = "1";
     $_SESSION['username'] = "sinf@fe.up.pt";
 	
 	

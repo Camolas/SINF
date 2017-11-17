@@ -5,7 +5,7 @@ $activity['opportunity_id'] = $_GET['opportunity_id'];
 $activity['customer_id'] = $_GET['customer_id'];
 $activity['product_id'] = $_GET['product_id'];
 $activity['opportunity_type'] = $_GET['opportunity_type'];
-$activity['representative_id'] = "1";
+$activity['representative_id'] = $_SESSION['user_id'];
 
 
 $json_act = json_encode($activity);
