@@ -4,7 +4,7 @@ include('../../config/init.php');
 $activity ['customer_id'] = $_POST['customer_id'];
 $activity ['product_id'] = $_POST['product_id'];
 $activity ['opportunity_type'] = $_POST['opportunity_type'];
-$activity ['representative_id'] = "1";
+$activity ['representative_id'] = $_SESSION['user_id'];
 
 $json_act = json_encode($activity);
 
