@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class Statistics : ApiController
+    public class Statistics
     {
         public string most_sold_product_name
         {
@@ -16,12 +16,6 @@ namespace FirstREST.Lib_Primavera.Model
         }
 
         public string most_profitable_product_name
-        {
-            get;
-            set;
-        }
-
-        public string most_profitable_area
         {
             get;
             set;

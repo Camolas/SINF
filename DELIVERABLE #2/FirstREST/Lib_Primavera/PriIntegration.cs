@@ -1497,14 +1497,91 @@ namespace FirstREST.Lib_Primavera
 
         public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
         {
-            // TODO
-            return new List<Model.Objectives>();
+            List<Model.Objectives> listObjectives = new List<Model.Objectives>();
+            int month = DateTime.Now.Month;
+            int year = DateTime.Now.Year;
+
+            StdBELista objList1 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Clients.Client) AS NumClients " +
+                "FROM " +
+                "   (SELECT DISTINCT Entidade AS Client " +
+                "   FROM CabecDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Clients"
+                );
+
+            StdBELista objList2 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Products.Product) AS NumProducts " +
+                "FROM " +
+                "   (SELECT DISTINCT Artigo AS Product " +
+                "   FROM LinhasDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Products"
+                );
+
+            StdBELista objList3 = PriEngine.Engine.Consulta(
+                "SELECT SUM(TotalMerc) AS Revenue " +
+                "FROM CabecDoc " +
+                "WHERE MONTH(Data) = " + month + " " +
+                "AND YEAR(Data) = " + year
+                );
+
+            Model.Objectives objectives = new Model.Objectives();
+            objectives.clients = objList1.Valor("NumClients").ToString();
+            objectives.products = objList2.Valor("NumProducts").ToString();
+            objectives.earnings = objList3.Valor("Revenue").ToString();
+            if (objectives.earnings.Equals(""))
+                objectives.earnings = "0";
+            listObjectives.Add(objectives);
+
+            return listObjectives;
         }
 
         public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
         {
-            // TODO
-            return new List<Model.Statistics>();
+            List<Model.Statistics> listStatistics = new List<Model.Statistics>();
+            int month = DateTime.Now.Month;
+            int year = DateTime.Now.Year;
+
+            StdBELista objList1 = PriEngine.Engine.Consulta(
+                "SELECT TOP 1 Artigo.Descricao AS MostSoldProduct " +
+                "FROM " +
+                "(SELECT Artigo AS Product, SUM(Quantidade) AS Quantity " +
+                "FROM [PRIDEMOSINF].[dbo].[LinhasDoc] " +
+                "WHERE Artigo IS NOT NULL " +
+                "GROUP BY Artigo) AS Products, [PRIDEMOSINF].[dbo].[Artigo] " +
+                "WHERE Products.Product LIKE Artigo.Artigo " +
+                "ORDER BY Quantity DESC"
+                );
+
+            StdBELista objList2 = PriEngine.Engine.Consulta(
+                "SELECT TOP 1 Artigo.Descricao AS MostProfitableProduct " +
+                "FROM " +
+                "(SELECT Artigo AS Product, SUM(PrecUnit * Quantidade) AS Revenue " +
+                "FROM [PRIDEMOSINF].[dbo].[LinhasDoc] " +
+                "WHERE Artigo IS NOT NULL " +
+                "GROUP BY Artigo) AS Products, [PRIDEMOSINF].[dbo].[Artigo] " +
+                "WHERE Products.Product LIKE Artigo.Artigo " +
+                "ORDER BY Revenue DESC"
+                );
+
+            Model.Statistics statistics = new Model.Statistics();
+            statistics.most_sold_product_name = objList1.Valor("MostSoldProduct");
+            statistics.most_profitable_product_name = objList2.Valor("MostProfitableProduct");
+            listStatistics.Add(statistics);
+
+            return listStatistics;
+        }
+
+        public static List<Model.Dashboard> GetDashboard(string representativeId)
+        {
+            List<Model.Dashboard> listDashboard = new List<Model.Dashboard>();
+            Model.Dashboard dashboard = new Model.Dashboard();
+            dashboard.today_agenda = GetDashboardTodayAgenda(representativeId);
+            dashboard.objectives = GetDashboardObjectives(representativeId);
+            dashboard.statistics = GetDashboardStatistics(representativeId);
+            listDashboard.Add(dashboard);
+            return listDashboard;
         }
 
         #endregion

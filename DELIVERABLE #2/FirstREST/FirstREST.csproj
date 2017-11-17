@@ -230,6 +230,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Lib_Primavera\Model\Activity.cs" />
+    <Compile Include="Lib_Primavera\Model\Dashboard.cs" />
     <Compile Include="Lib_Primavera\Model\Objectives.cs" />
     <Compile Include="Lib_Primavera\Model\Opportunity.cs" />
     <Compile Include="Lib_Primavera\Model\Statistics.cs" />
