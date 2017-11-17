@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class Statistics : ApiController
+    public class Statistics
     {
         public string most_sold_product_name
         {

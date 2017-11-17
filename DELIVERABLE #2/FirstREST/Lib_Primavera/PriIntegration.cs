@@ -1530,6 +1530,8 @@ namespace FirstREST.Lib_Primavera
             objectives.clients = objList1.Valor("NumClients").ToString();
             objectives.products = objList2.Valor("NumProducts").ToString();
             objectives.earnings = objList3.Valor("Revenue").ToString();
+            if (objectives.earnings.Equals(""))
+                objectives.earnings = "0";
             listObjectives.Add(objectives);
 
             return listObjectives;
@@ -1569,6 +1571,17 @@ namespace FirstREST.Lib_Primavera
             listStatistics.Add(statistics);
 
             return listStatistics;
+        }
+
+        public static List<Model.Dashboard> GetDashboard(string representativeId)
+        {
+            List<Model.Dashboard> listDashboard = new List<Model.Dashboard>();
+            Model.Dashboard dashboard = new Model.Dashboard();
+            dashboard.today_agenda = GetDashboardTodayAgenda(representativeId);
+            dashboard.objectives = GetDashboardObjectives(representativeId);
+            dashboard.statistics = GetDashboardStatistics(representativeId);
+            listDashboard.Add(dashboard);
+            return listDashboard;
         }
 
         #endregion

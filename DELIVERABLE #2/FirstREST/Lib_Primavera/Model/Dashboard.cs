@@ -7,21 +7,20 @@ using System.Web.Http;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class Objectives
+    public class Dashboard
     {
-        public string clients
+        public List<Activity> today_agenda
         {
             get;
             set;
         }
 
-        public string products
+        public List<Objectives> objectives
         {
             get;
             set;
         }
-
-        public string earnings
+        public List<Statistics> statistics
         {
             get;
             set;
