@@ -59,14 +59,16 @@ function updatePanelOrder(panel) {
 
 $(".panel").click(function() {
 	if($( this )[0].children[2]){
-		var customer_id = $( this )[0].children[0].innerText;
+		var opportunity_id = $( this )[0].children[0].innerText;
 		var customer_id = $( this )[0].children[1].innerText;
 		var product_id = $( this )[0].children[2].innerText;
 		var opportunity_type = $( this )[0].parentNode.parentNode.parentNode.children[0].innerText;
 		
 		
 	  document.getElementById("opportunity_type").value = opportunity_type;
-	  $( "#customer_id" )[0].value = title;
-	  $( "#product_id" )[0].value = name;
+	  $( "#customer_id" )[0].value = customer_id;
+	  $( "#product_id" )[0].value = product_id;
+	  $( "#opportunity_id" )[0].value = opportunity_id;
+	  $( "#deleteButton" ).attr("href", "http://localhost/git/DELIVERABLE%20%232/Webpage/actions/opportunity/delete_opportunity.php?opportunity_id=" + opportunity_id);
 	}
 });

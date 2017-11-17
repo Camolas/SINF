@@ -24,6 +24,6 @@ $resp = curl_exec($curl);
 curl_close($curl);
 
 if(strcmp($resp, "Sucesso") ==-1) {
-	echo "<h1>Updated! Reload the page!</h1>";
+	header("Location: " . $BASE_URL . "pages/opportunities.php");
 }
 ?>

@@ -20,9 +20,9 @@
 <label>Type</label>
 <p><?= $_GET['type'] ?></p>
 <label>Strating Date</label>
-<p><?= $_GET['strating_date'] ?></p>
+<p><?= $_GET['start_date'] ?></p>
 <label>Ending Date</label>
-<p><?= $_GET['ending_date'] ?></p>
+<p><?= $_GET['end_date'] ?></p>
 <label>Client</label>
 <p><?= $_GET['client'] ?></p>
 <label>Location</label>
@@ -30,7 +30,7 @@
 <label>Notes</label>
 <p><?= $_GET['notes'] ?></p>
 
-<a href="<?=$BASE_URL?>pages/update_event.php?id=<?=$_GET['id']?>&title=<?=$_GET['title']?>&type=<?=$_GET['type']?>&strating_date=<?=$_GET['strating_date']?>&ending_date=<?=$_GET['ending_date']?>&client=<?=$_GET['client']?>&location=<?=$_GET['location']?>&notes=<?=$_GET['notes']?>"><button type="button" class="btn btn-primary">Update</button></a>
+<a href="<?=$BASE_URL?>pages/update_event.php?id=<?=$_GET['id']?>&title=<?=$_GET['title']?>&type=<?=$_GET['type']?>&start_date=<?=$_GET['start_date']?>&end_date=<?=$_GET['end_date']?>&client=<?=$_GET['client']?>&location=<?=$_GET['location']?>&notes=<?=$_GET['notes']?>"><button type="button" class="btn btn-primary">Update</button></a>
 <a href="<?=$BASE_URL?>actions/event/delete_event.php?id=<?=$_GET['id']?>"><button type="button" class="btn btn-danger">Delete</button></a>
 </body>
 </html>

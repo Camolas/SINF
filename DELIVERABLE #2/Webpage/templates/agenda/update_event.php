@@ -16,8 +16,6 @@
         </div>
     </div>
 	
-
-	
 	<div class="well">
 	
 		<div class="form-group">
@@ -48,19 +46,17 @@
 				<input class="form-control" name="location" value="<?= $_GET['location'] ?>">
 				<br>
 				<label>Notes</label>
-				<textarea class="form-control" rows="3" name="notes"><?= $_GET['notes'] ?></textarea>
+				<textarea class="form-control" rows="3" name="notes"><?=$_GET['notes']?></textarea>
 				<br>
 				<label>Strating Date</label>
-				<?php $old_date_timestamp = strtotime($_GET['strating_date']);
-					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);
-					echo $new_date?>
-				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="strating_date">
+				<?php $old_date_timestamp = strtotime($_GET['start_date']);
+					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);?>
+				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="start_date">
 				<br>
-				<label>Ending Date</label><?= $_GET['ending_date'] ?>
-				<?php $old_date_timestamp = strtotime($_GET['ending_date']);
-					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);
-					echo $new_date?>
-				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="ending_date">
+				<label>Ending Date</label>
+				<?php $old_date_timestamp = strtotime($_GET['end_date']);
+					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);?>
+				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="end_date">
 				<br>
 				<br>
 				<input name="id" type="hidden" value="<?= $_GET['id'] ?>">

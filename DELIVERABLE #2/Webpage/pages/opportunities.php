@@ -11,8 +11,6 @@
 	// Close request to clear up some resources
 	curl_close($curl);
 	
-	pr($resp[0]);
-	
 	include('../templates/common/header.php');
 	include('../templates/opportunities/opportunities.php');
 	include('../templates/common/footer.php');

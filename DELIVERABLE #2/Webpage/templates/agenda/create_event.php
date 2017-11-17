@@ -36,11 +36,11 @@
 				<textarea class="form-control" rows="3" name="notes"></textarea>
 				<br>
 				<label>Strating Date</label>
-				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="strating_date">
+				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="start_date">
 				
 				<br>
 				<label>Ending Date</label>
-				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="ending_date">
+				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="end_date">
 				<br>
 				<br>
 				<input type="submit" class="btn btn-default btn" value="Submit">

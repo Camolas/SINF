@@ -50,6 +50,6 @@
 	} 
 	</script>
 
-	<script type="text/javascript" src="http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/underscore/underscore-min.js"></script>
+	<script type="text/javascript" src="<?=$BASE_URL?>bower_components/underscore/underscore-min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	

@@ -7,8 +7,8 @@ $activity['type'] = $_POST['type'];
 $activity['client'] = $_POST['client'];
 $activity['location'] = $_POST['location'];
 $activity['notes'] = $_POST['notes'];
-$activity['strating_date'] = explode ('T' , $_POST['strating_date'])[0] . ' ' . explode ('T' , $_POST['strating_date'])[1];
-$activity['ending_date'] = explode ('T' , $_POST['ending_date'])[0] . ' ' . explode ('T' , $_POST['ending_date'])[1];
+$activity['start_date'] = explode ('T' , $_POST['start_date'])[0] . ' ' . explode ('T' , $_POST['start_date'])[1];
+$activity['end_date'] = explode ('T' , $_POST['end_date'])[0] . ' ' . explode ('T' , $_POST['end_date'])[1];
 $activity['representative_id'] = $_SESSION['user_id'];
 
 

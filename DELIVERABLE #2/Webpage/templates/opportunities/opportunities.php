@@ -121,7 +121,7 @@ function printRest($arr, $type) {
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-	   <form action="<?= $BASE_URL?>actions/opportunity/update_oppotunity.php" method="post">
+	   <form action="<?= $BASE_URL?>actions/opportunity/update_oppotunity.php" method="get">
       <div class="modal-body">
 		  Customer id:<br>
 		  <input type="text" name="customer_id" id="customer_id">
@@ -138,12 +138,14 @@ function printRest($arr, $type) {
 			  <option value="Ready to close">Ready to close</option>
 			</select>
 		  <br>
+		  
+		  <input type="hidden" name="opportunity_id" id="opportunity_id">
 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <input type="submit" class="btn btn-info" value="Update">
-        <button type="button" class="btn btn-danger">Delete</button>
+        <a id="deleteButton"><button type="button" class="btn btn-danger">Delete</button>
       </div>
 	  </form> 
     </div>

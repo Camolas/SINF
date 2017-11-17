@@ -1,4 +1,4 @@
 <?php
 	include('../config/init.php');
-	include('../templates/activity.php');
+	include('../templates/agenda/activity.php');
 ?>
