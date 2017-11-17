@@ -8,6 +8,7 @@
 	    <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
+
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
@@ -19,11 +20,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($entries as $entry) { ?>
+                            <?php foreach($arr as $entry) { ?>
                             <tr class="odd gradeX">
-                                <?php foreach($entry as $key => $value) { ?>
+                                <?php foreach($entry as $key => $value) {
+									if($key != "customer_id"){									?>
                                 <td><?=$value?></td>
-                                <?php } ?>
+									<?php }} ?>
                             </tr>
                             <?php } ?>
                         </tbody>
