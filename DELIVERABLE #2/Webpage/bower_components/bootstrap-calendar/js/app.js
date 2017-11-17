@@ -19,9 +19,9 @@ today =  yyyy + '-' + mm + '-' + dd;
 	"use strict";
 
 	var options = {
-		events_source: 'http://localhost/git/DELIVERABLE%20%232/Webpage/actions/agenda/events.json.php',
+		events_source: '../actions/agenda/events.json.php',
 		view: 'month',
-		tmpl_path: 'http://localhost/git/DELIVERABLE%20%232/Webpage/bower_components/bootstrap-calendar/tmpls/',
+		tmpl_path: '../bower_components/bootstrap-calendar/tmpls/',
 		tmpl_cache: false,
         day: today,
 		onAfterEventsLoad: function(events) {
