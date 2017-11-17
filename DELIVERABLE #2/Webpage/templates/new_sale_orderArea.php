@@ -49,8 +49,7 @@
 	}
 	else
 	{
-
-		echo "An error occurred.";
+		//echo "An error occurred.";
 	}
 	
 
