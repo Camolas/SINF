@@ -11,6 +11,50 @@
 	// Close request to clear up some resources
 	curl_close($curl);
 	
+	// Get cURL resource
+	$curl2 = curl_init();
+	// Set some options - we are passing in a useragent too here
+	curl_setopt($curl2, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/DocVenda/' . $_GET["id"]);
+	curl_setopt($curl2, CURLOPT_RETURNTRANSFER, TRUE);
+	// Send the request & save response to $resp
+	$resp2 = curl_exec($curl2);
+	// Close request to clear up some resources
+	curl_close($curl2);
+		
+	$obj2 = json_decode($resp2);
+
+
+	$entries = [];
+	foreach($obj2 as $k => $cur)
+	{
+		$table_headers = ["Date","Entity","Serie(NumDoc)","QTY","PPU","Total Price"];
+		
+		$LinhasDoc = $cur->{'LinhasDoc'};
+		
+		$products = [];
+		$cod_arts =[];
+		foreach($LinhasDoc as $k => $cur2){
+			if ($cur2->{'Quantidade'} != 0){
+				$product_quant = $cur2->{'Quantidade'};
+				$product_unit_price = $cur2->{'PrecoUnitario'};
+				$product_liquid = $cur2->{'TotalLiquido'};
+			}
+		}
+		
+		$entry = [
+				"Date"=> $cur->{'Data'},
+				"Entity"=> '<a href="profile.php?clientName=' . $cur->{'Entidade'} .'">' .$cur->{'Entidade'}.'</a>',
+				"Serie(NumDoc)"=> $cur->{'Serie'}.' ('.$cur->{'NumDoc'}. ') ',
+				"QTY" => $product_quant,
+				"PPU" => $product_unit_price,
+				"Total Price" => $product_liquid
+			];
+		
+			
+		array_push($entries, $entry);
+	}
+	
+	
 	
 	?>	
 	
