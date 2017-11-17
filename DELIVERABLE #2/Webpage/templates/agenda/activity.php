@@ -16,9 +16,9 @@ body {width:90%;}
 <p><?= $_GET['title'] ?></p>
 <label>Type</label>
 <p><?= $_GET['type'] ?></p>
-<label>Strating Date</label>
+<label>Start Date</label>
 <p><?= $_GET['start_date'] ?></p>
-<label>Ending Date</label>
+<label>End Date</label>
 <p><?= $_GET['end_date'] ?></p>
 <label>Client</label>
 <p><?= $_GET['client'] ?></p>
