@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Bootstrap Admin Theme</title>
+    <title>Sinf Demo</title>
 	
 	<script>var $BASE_URL="<?=$BASE_URL?>";</script>
 
@@ -52,7 +52,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="dashboard.php">SB Admin v2.0</a>
+                <a class="navbar-brand" href="dashboard.php">SINF SFA</a>
             </div>
             <!-- /.navbar-header -->
 
