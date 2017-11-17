@@ -35,11 +35,11 @@
 				<label>Notes</label>
 				<textarea class="form-control" rows="3" name="notes"></textarea>
 				<br>
-				<label>Strating Date</label>
+				<label>Start Date</label>
 				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="start_date">
 				
 				<br>
-				<label>Ending Date</label>
+				<label>End Date</label>
 				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="end_date">
 				<br>
 				<br>

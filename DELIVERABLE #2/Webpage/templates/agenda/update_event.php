@@ -51,12 +51,12 @@ body {width:96%;}
 				<label>Notes</label>
 				<textarea class="form-control" rows="3" name="notes"><?=$_GET['notes']?></textarea>
 				<br>
-				<label>Strating Date</label>
+				<label>Start Date</label>
 				<?php $old_date_timestamp = strtotime($_GET['start_date']);
 					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);?>
 				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="start_date">
 				<br>
-				<label>Ending Date</label>
+				<label>End Date</label>
 				<?php $old_date_timestamp = strtotime($_GET['end_date']);
 					$new_date = date('Y-m-d\TH:i', $old_date_timestamp);?>
 				<input class="form-control" type="datetime-local" value="<?= $new_date?>" name="end_date">
