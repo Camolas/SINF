@@ -93,7 +93,7 @@
                             <a href="target_customers.php"><i class="fa fa-wrench fa-fw"></i> Target customers</a>
                         </li>
                         <li>
-                            <a href="opportunities.php"><i class="fa fa-sitemap fa-fw"></i> Opotunities</a>
+                            <a href="opportunities.php"><i class="fa fa-sitemap fa-fw"></i> Opportunities</a>
                         </li>
                     </ul>
                 </div>

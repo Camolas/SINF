@@ -83,7 +83,7 @@ function printRest($arr, $type) {
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-	  <form action="<?= $BASE_URL?>actions/opportunity/create_oppotunity.php" method="post">
+	  <form action="<?= $BASE_URL?>actions/opportunity/create_opportunity.php" method="post">
       <div class="modal-body">
 		  Customer id:<br>
 		  <input type="text" name="customer_id" value="SOFRIO">

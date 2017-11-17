@@ -50,7 +50,7 @@
 	else
 	{
 
-		echo "asdasd";
+		echo "An error occurred.";
 	}
 	
 
