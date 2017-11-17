@@ -34,10 +34,7 @@ $( function() {
 					console.log(this.responseText);
 				}
 			};
-			console.log("http://localhost/git/DELIVERABLE%20%232/Webpage/actions/opportunity/update_oppotunity.php?opportunity_id=" + opportunity_id +
-																															"&customer_id=" + customer_id +
-																															"&product_id=" + product_id);
-			xmlhttp.open("GET", "http://localhost/git/DELIVERABLE%20%232/Webpage/actions/opportunity/update_oppotunity.php?opportunity_id=" + opportunity_id +
+			xmlhttp.open("GET",$BASE_URL + "actions/opportunity/update_oppotunity.php?opportunity_id=" + opportunity_id +
 																															"&customer_id=" + customer_id +
 																															"&opportunity_type=" + opportunity_type +
 																															"&product_id=" + product_id, true);
@@ -69,6 +66,6 @@ $(".panel").click(function() {
 	  $( "#customer_id" )[0].value = customer_id;
 	  $( "#product_id" )[0].value = product_id;
 	  $( "#opportunity_id" )[0].value = opportunity_id;
-	  $( "#deleteButton" ).attr("href", "http://localhost/git/DELIVERABLE%20%232/Webpage/actions/opportunity/delete_opportunity.php?opportunity_id=" + opportunity_id);
+	  $( "#deleteButton" ).attr("href", $BASE_URL + "actions/opportunity/delete_opportunity.php?opportunity_id=" + opportunity_id);
 	}
 });

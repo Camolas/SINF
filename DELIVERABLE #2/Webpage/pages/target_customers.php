@@ -4,7 +4,12 @@
 	
 	$curl = curl_init();
 	// Set some options - we are passing in a useragent too here
-	curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/target_customers/?representative_id=' . $_SESSION['user_id']);
+
+	if($_GET['id']) {
+		curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/target_customers/?representative_id=' . $_SESSION['user_id'] . '&target_customer_id=' . $_GET['id']);
+	} else {
+		curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/target_customers/?representative_id=' . $_SESSION['user_id']);
+	}
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	// Send the request & save response to $resp
 	$resp = curl_exec($curl);

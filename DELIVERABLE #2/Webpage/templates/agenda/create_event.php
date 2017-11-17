@@ -43,7 +43,7 @@
 				<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . date('h:i')?>" name="end_date">
 				<br>
 				<br>
-				<input type="submit" class="btn btn-default btn" value="Submit">
+				<input type="submit" class="btn btn-default btn" value="Create">
 			</form>
         </div>
 		<br>
