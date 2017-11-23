@@ -1256,6 +1256,9 @@ namespace FirstREST.Lib_Primavera
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
+            objActivity.set_Estado("0");    // Estado: Pendente
+            objActivity.set_Prioridade("1");    // Prioridade: Normal
+            objActivity.set_TipoEntidadePrincipal("C"); // Tipo: Cliente
         }
 
         #endregion Agenda
