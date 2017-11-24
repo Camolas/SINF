@@ -754,7 +754,7 @@ namespace FirstREST.Lib_Primavera
             return null;
         }
 
-        public static Lib_Primavera.Model.RespostaErro UpdOrder(string id, Lib_Primavera.Model.DocVenda dv)
+         public static Lib_Primavera.Model.RespostaErro UpdOrder(string id, Lib_Primavera.Model.DocVenda dv)
         {
             Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
 
