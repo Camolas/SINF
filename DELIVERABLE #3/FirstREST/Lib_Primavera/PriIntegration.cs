@@ -1421,9 +1421,10 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.CRM.PropostasOPV.Remove(objOpportunity.get_ID());
                         PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);*/
 
-                        objOpportunity.set_EmModoEdicao(true);
+                        /*objOpportunity.set_EmModoEdicao(true);
                         objOpportunity.set_DataFecho(DateTime.Now);
-                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);*/
+                        PriEngine.Engine.CRM.OportunidadesVenda.RemoveID(objOpportunity.get_ID()); 
 
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1454,12 +1455,14 @@ namespace FirstREST.Lib_Primavera
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
                     StdBELista objList = PriEngine.Engine.Consulta(
-                        "SELECT COUNT(Oportunidade) AS NumOpportunities " +
-                        "FROM CabecOportunidadesVenda"
+                        "SELECT TOP 1 Oportunidade AS LastOpportunity " +
+                        "FROM CabecOportunidadesVenda " +
+                        "ORDER BY Oportunidade DESC"
                         );
 
-                    int numOpportunities = objList.Valor("NumOpportunities");
-                    string opportunityNumber = (numOpportunities + 1).ToString();
+                    string lastOpportunity = objList.Valor("LastOpportunity");
+                    int lastOpportunityNumber = int.Parse(lastOpportunity.Substring(3));
+                    string opportunityNumber = (lastOpportunityNumber + 1).ToString();
                     string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
 
                     objOpportunity.set_Oportunidade(opportunityId);
