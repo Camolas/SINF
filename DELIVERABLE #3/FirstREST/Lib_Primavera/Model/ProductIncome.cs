@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+using System.Web;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class Dashboard
+    public class ProductIncome
     {
-        public List<Activity> today_agenda
+        public string product_id
         {
             get;
             set;
         }
 
-        public Objectives objectives
+        public string product_name
         {
             get;
             set;
         }
-        public Statistics statistics
+
+        public string product_income
         {
             get;
             set;

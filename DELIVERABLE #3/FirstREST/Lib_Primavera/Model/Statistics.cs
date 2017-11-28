@@ -9,13 +9,13 @@ namespace FirstREST.Lib_Primavera.Model
 {
     public class Statistics
     {
-        public string most_sold_product_name
+        public List<ProductUnitsSold> most_sold_products
         {
             get;
             set;
         }
 
-        public string most_profitable_product_name
+        public List<ProductIncome> most_income_products
         {
             get;
             set;

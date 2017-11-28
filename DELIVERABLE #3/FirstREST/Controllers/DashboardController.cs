@@ -11,7 +11,7 @@ namespace FirstREST.Controllers
     public class DashboardController : ApiController
     {
         // GET: /dashboard/?representative_id=<representative_id>
-        public List<Dashboard> Get(string representative_id)
+        public Dashboard Get(string representative_id)
         {
             return Lib_Primavera.PriIntegration.GetDashboard(representative_id);
         }

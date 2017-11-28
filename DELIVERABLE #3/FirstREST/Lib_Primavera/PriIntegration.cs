@@ -1548,9 +1548,8 @@ namespace FirstREST.Lib_Primavera
             return ListActivities(representativeId, GetDate(DateTime.Today));
         }
 
-        public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
+        public static Model.Objectives GetDashboardObjectives(string representativeId)
         {
-            List<Model.Objectives> listObjectives = new List<Model.Objectives>();
             int month = DateTime.Now.Month;
             int year = DateTime.Now.Year;
 
@@ -1585,56 +1584,76 @@ namespace FirstREST.Lib_Primavera
             objectives.earnings = objList3.Valor("Revenue").ToString();
             if (objectives.earnings.Equals(""))
                 objectives.earnings = "0";
-            listObjectives.Add(objectives);
 
-            return listObjectives;
+            return objectives;
         }
 
-        public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
+        public static Model.Statistics GetDashboardStatistics(string representativeId)
         {
-            List<Model.Statistics> listStatistics = new List<Model.Statistics>();
             int month = DateTime.Now.Month;
             int year = DateTime.Now.Year;
 
             StdBELista objList1 = PriEngine.Engine.Consulta(
-                "SELECT TOP 1 Artigo.Descricao AS MostSoldProduct " +
-                "FROM " +
-                "(SELECT Artigo AS Product, SUM(Quantidade) AS Quantity " +
-                "FROM [PRIDEMOSINF].[dbo].[LinhasDoc] " +
-                "WHERE Artigo IS NOT NULL " +
-                "GROUP BY Artigo) AS Products, [PRIDEMOSINF].[dbo].[Artigo] " +
-                "WHERE Products.Product LIKE Artigo.Artigo " +
-                "ORDER BY Quantity DESC"
+                "SELECT TOP 25 LinhasDoc.Artigo AS ProductId, LinhasDoc.Descricao AS ProductName, SUM(LinhasDoc.Quantidade) AS UnitsSold " +
+                "FROM LinhasDoc, CabecDoc " +
+                "WHERE LinhasDoc.Artigo IS NOT NULL " +
+                "AND LinhasDoc.IdCabecDoc LIKE CabecDoc.Id " +
+                "AND YEAR(CabecDoc.Data) = " + year + " " +
+                "AND MONTH(CabecDoc.Data) = " + month + " " +
+                "GROUP BY LinhasDoc.Artigo, LinhasDoc.Descricao " +
+                "ORDER BY UnitsSold DESC"
                 );
+
+            List<Model.ProductUnitsSold> listProductUnitsSold = new List<Model.ProductUnitsSold>();
+            while (!objList1.NoFim())
+            {
+                Model.ProductUnitsSold productUnitsSold = new Model.ProductUnitsSold();
+                productUnitsSold.product_id = objList1.Valor("ProductId");
+                productUnitsSold.product_name = objList1.Valor("ProductName");
+                productUnitsSold.product_units_sold = objList1.Valor("UnitsSold").ToString();
+                listProductUnitsSold.Add(productUnitsSold);
+                objList1.Seguinte();
+            }
 
             StdBELista objList2 = PriEngine.Engine.Consulta(
-                "SELECT TOP 1 Artigo.Descricao AS MostProfitableProduct " +
+                "SELECT TOP 25 ProductId, ProductName, SUM(UnitsSold * UnitPrice) AS ProductIncome " +
                 "FROM " +
-                "(SELECT Artigo AS Product, SUM(PrecUnit * Quantidade) AS Revenue " +
-                "FROM [PRIDEMOSINF].[dbo].[LinhasDoc] " +
-                "WHERE Artigo IS NOT NULL " +
-                "GROUP BY Artigo) AS Products, [PRIDEMOSINF].[dbo].[Artigo] " +
-                "WHERE Products.Product LIKE Artigo.Artigo " +
-                "ORDER BY Revenue DESC"
+                "   (SELECT LinhasDoc.Artigo AS ProductId, LinhasDoc.Descricao AS ProductName, LinhasDoc.PrecUnit AS UnitPrice, SUM(LinhasDoc.Quantidade) AS UnitsSold " +
+                "   FROM LinhasDoc, CabecDoc " +
+                "   WHERE LinhasDoc.Artigo IS NOT NULL " +
+                "   AND LinhasDoc.IdCabecDoc LIKE CabecDoc.Id " +
+                "   AND YEAR(CabecDoc.Data) = " + year + " " +
+                "   AND MONTH(CabecDoc.Data) = " + month + " " +
+                "   GROUP BY LinhasDoc.Artigo, LinhasDoc.Descricao, LinhasDoc.PrecUnit) AS ProductsAggregatedData " +
+                "GROUP BY ProductId, ProductName " +
+                "ORDER BY ProductIncome DESC"
                 );
 
-            Model.Statistics statistics = new Model.Statistics();
-            statistics.most_sold_product_name = objList1.Valor("MostSoldProduct");
-            statistics.most_profitable_product_name = objList2.Valor("MostProfitableProduct");
-            listStatistics.Add(statistics);
+            List<Model.ProductIncome> listProductIncome = new List<Model.ProductIncome>();
+            while (!objList2.NoFim())
+            {
+                Model.ProductIncome productIncome = new Model.ProductIncome();
+                productIncome.product_id = objList2.Valor("ProductId");
+                productIncome.product_name = objList2.Valor("ProductName");
+                productIncome.product_income = objList2.Valor("ProductIncome").ToString();
+                listProductIncome.Add(productIncome);
+                objList2.Seguinte();
+            }
 
-            return listStatistics;
+            Model.Statistics statistics = new Model.Statistics();
+            statistics.most_sold_products = listProductUnitsSold;
+            statistics.most_income_products = listProductIncome;
+
+            return statistics;
         }
 
-        public static List<Model.Dashboard> GetDashboard(string representativeId)
+        public static Model.Dashboard GetDashboard(string representativeId)
         {
-            List<Model.Dashboard> listDashboard = new List<Model.Dashboard>();
             Model.Dashboard dashboard = new Model.Dashboard();
             dashboard.today_agenda = GetDashboardTodayAgenda(representativeId);
             dashboard.objectives = GetDashboardObjectives(representativeId);
             dashboard.statistics = GetDashboardStatistics(representativeId);
-            listDashboard.Add(dashboard);
-            return listDashboard;
+            return dashboard;
         }
 
         #endregion
