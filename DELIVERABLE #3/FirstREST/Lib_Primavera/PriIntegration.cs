@@ -1357,8 +1357,8 @@ namespace FirstREST.Lib_Primavera
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
                     "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
-                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "' "+
-                    "AND CabecOportunidadesVenda.DataFecho IS NULL"
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"    // "' " +
+                    //"AND CabecOportunidadesVenda.DataFecho IS NULL"
                     );
 
                 while (!objList.NoFim())
