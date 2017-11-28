@@ -1352,7 +1352,7 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, Vendedores.Vendedor AS RepresentativeId " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
                     "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
@@ -1363,6 +1363,17 @@ namespace FirstREST.Lib_Primavera
 
                 while (!objList.NoFim())
                 {
+                    int state = objList.Valor("OpportunityState");
+                    string opportunityState;
+                    if(state == 0)
+                        opportunityState = "Open";
+                    else if(state == 1)
+                        opportunityState = "Wins";
+                    else if(state == 2)
+                        opportunityState = "Lost";
+                    else
+                        throw new Exception("Invalid opportunity state in database");
+
                     listOpportunities.Add(new Model.Opportunity
                     {
                         opportunity_id = objList.Valor("OpportunityId"),
@@ -1371,6 +1382,7 @@ namespace FirstREST.Lib_Primavera
                         product_id = objList.Valor("ProductId"),
                         product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
+                        opportunity_state = opportunityState,
                         representative_id = objList.Valor("RepresentativeId").ToString()
                     });
                     objList.Seguinte();
@@ -1402,11 +1414,7 @@ namespace FirstREST.Lib_Primavera
                         objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunity.opportunity_id);
                         objOpportunity.set_EmModoEdicao(true);
 
-                        objOpportunity.set_Vendedor(opportunity.representative_id);
-                        objOpportunity.set_Descricao(opportunity.opportunity_type);
-                        objOpportunity.set_Entidade(opportunity.customer_id);
-                        objOpportunity.set_Resumo(opportunity.product_id);
-
+                        setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
 
                         erro.Erro = 0;
@@ -1500,10 +1508,7 @@ namespace FirstREST.Lib_Primavera
                     string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
 
                     objOpportunity.set_Oportunidade(opportunityId);
-                    objOpportunity.set_Vendedor(opportunity.representative_id);
-                    objOpportunity.set_Descricao(opportunity.opportunity_type);
-                    objOpportunity.set_Entidade(opportunity.customer_id);
-                    objOpportunity.set_Resumo(opportunity.product_id);
+                    setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
                     objOpportunity.set_TipoEntidade("C");
                     objOpportunity.set_CicloVenda("CV_HW");
                     objOpportunity.set_CriadoPor(opportunity.representative_id);
@@ -1537,6 +1542,22 @@ namespace FirstREST.Lib_Primavera
                 erro.Descricao = ex.Message;
                 return erro;
             }
+        }
+
+        private static void setMainCrmBEOportunidadeVendaFields(Model.Opportunity opportunity, Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity)
+        {
+            objOpportunity.set_Vendedor(opportunity.representative_id);
+            objOpportunity.set_Descricao(opportunity.opportunity_type);
+            objOpportunity.set_Entidade(opportunity.customer_id);
+            objOpportunity.set_Resumo(opportunity.product_id);
+            if (opportunity.opportunity_state.Equals("Open"))
+                objOpportunity.set_EstadoVenda(0);
+            else if (opportunity.opportunity_state.Equals("Wins"))
+                objOpportunity.set_EstadoVenda(1);
+            else if (opportunity.opportunity_state.Equals("Lost"))
+                objOpportunity.set_EstadoVenda(2);
+            else
+                throw new Exception("Invalid opportunity state");
         }
 
         #endregion
