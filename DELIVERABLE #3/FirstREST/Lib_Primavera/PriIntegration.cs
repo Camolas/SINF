@@ -1006,10 +1006,9 @@ namespace FirstREST.Lib_Primavera
                 string day = dateParts[2];
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Contactos.Contacto AS ContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa, Contactos " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.IdContactoPrincipal LIKE Contactos.Id " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
@@ -1028,7 +1027,7 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
-                        contact_id = objList.Valor("ContactId"),
+                        contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
@@ -1044,19 +1043,17 @@ namespace FirstREST.Lib_Primavera
 
         public static List<Model.Activity> ListActivities(string representativeId)
         {
-            StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
-                objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Contactos.Contacto AS ContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa, Contactos " +
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.IdContactoPrincipal LIKE Contactos.Id " +
-                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' "
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1069,7 +1066,7 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
-                        contact_id = objList.Valor("ContactId"),
+                        contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
@@ -1218,7 +1215,7 @@ namespace FirstREST.Lib_Primavera
             }
         }
 
-        public static string GetActivityTypeId(string activityType)
+        private static string GetActivityTypeId(string activityType)
         {
             StdBELista objList;
 
@@ -1252,24 +1249,50 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
-            StdBELista objList = PriEngine.Engine.Consulta(
-                  "SELECT TOP 1 IdContactoPrincipal AS DBContactId " +
-                  "FROM Contactos " +
-                  "WHERE Contacto LIKE '" + myActivity.contact_id + "'"
-                  );
-
             objActivity.set_DataInicio(GetDateTime(myActivity.start_date));
             objActivity.set_DataFim(GetDateTime(myActivity.end_date));
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
-            objActivity.set_IDContactoPrincipal(objList.Valor("DBContactId"));
+            if (myActivity.contact_id != null && !myActivity.contact_id.Equals(""))
+            {
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 Id AS DBContactId " +
+                    "FROM Contactos " +
+                    "WHERE Contacto LIKE '" + myActivity.contact_id + "'"
+                    );
+                if (objList.Vazia())
+                    throw new Exception("Invalid contact id");
+                else
+                {
+                    string dbContactId = objList.Valor("DBContactId");
+                    objActivity.set_IDContactoPrincipal(dbContactId);
+                }
+            }
+            else
+                objActivity.set_IDContactoPrincipal(null);
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
             objActivity.set_Estado("0");    // Estado: Pendente
             objActivity.set_Prioridade("1");    // Prioridade: Normal
             objActivity.set_TipoEntidadePrincipal("C"); // Tipo: Cliente
+        }
+
+        private static string GetContactId(string dbContactId)
+        {
+            string myDBContactId = GetDatabaseId(dbContactId);
+            string contactId = "";
+            if (myDBContactId != null && !myDBContactId.Equals(""))
+            {
+                StdBELista objList2 = PriEngine.Engine.Consulta(
+                    "SELECT Contacto AS ContactId " +
+                    "FROM Contactos " +
+                    "WHERE Id LIKE '" + myDBContactId + "'"
+                    );
+                contactId = objList2.Valor("ContactId");
+            }
+            return contactId;
         }
 
         #endregion Agenda
