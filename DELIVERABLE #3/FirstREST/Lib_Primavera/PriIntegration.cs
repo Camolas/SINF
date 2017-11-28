@@ -1006,9 +1006,10 @@ namespace FirstREST.Lib_Primavera
                 string day = dateParts[2];
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Contactos.Contacto AS ContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, Contactos " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IdContactoPrincipal LIKE Contactos.Id " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
@@ -1027,6 +1028,7 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        contact_id = objList.Valor("ContactId"),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
@@ -1050,9 +1052,10 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Contactos.Contacto AS ContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, Contactos " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IdContactoPrincipal LIKE Contactos.Id " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' "
                     );
 
@@ -1066,6 +1069,7 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        contact_id = objList.Valor("ContactId"),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
                         notes = objList.Valor("Notes")
@@ -1248,11 +1252,18 @@ namespace FirstREST.Lib_Primavera
 
         private static void setCrmBEActividadeFields(Model.Activity myActivity, Interop.CrmBE900.CrmBEActividade objActivity)
         {
+            StdBELista objList = PriEngine.Engine.Consulta(
+                  "SELECT TOP 1 IdContactoPrincipal AS DBContactId " +
+                  "FROM Contactos " +
+                  "WHERE Contacto LIKE '" + myActivity.contact_id + "'"
+                  );
+
             objActivity.set_DataInicio(GetDateTime(myActivity.start_date));
             objActivity.set_DataFim(GetDateTime(myActivity.end_date));
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
+            objActivity.set_IDContactoPrincipal(objList.Valor("DBContactId"));
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
             objActivity.set_Descricao(myActivity.notes);
