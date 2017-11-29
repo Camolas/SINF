@@ -44,7 +44,7 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public string state
+        public string opportunity_state
         {
             get;
             set;
