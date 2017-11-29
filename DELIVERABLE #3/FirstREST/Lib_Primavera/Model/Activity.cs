@@ -60,6 +60,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public string opportunity_id
+        {
+            get;
+            set;
+        }
+
         public string notes
         {
             get;

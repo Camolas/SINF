@@ -1006,9 +1006,10 @@ namespace FirstREST.Lib_Primavera
                 string day = dateParts[2];
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
@@ -1030,6 +1031,7 @@ namespace FirstREST.Lib_Primavera
                         contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
+                        opportunity_id = objList.Valor("OpportunityId"),
                         notes = objList.Valor("Notes")
                     });
                     objList.Seguinte();
@@ -1050,9 +1052,10 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 StdBELista objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
                     );
 
@@ -1069,6 +1072,7 @@ namespace FirstREST.Lib_Primavera
                         contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
+                        opportunity_id = objList.Valor("OpportunityId"),
                         notes = objList.Valor("Notes")
                     });
                     objList.Seguinte();
@@ -1273,6 +1277,23 @@ namespace FirstREST.Lib_Primavera
                 objActivity.set_IDContactoPrincipal(null);
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
+            if (myActivity.opportunity_id != null && !myActivity.opportunity_id.Equals(""))
+            {
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 ID AS DBOpportunityId " +
+                    "FROM CabecOportunidadesVenda " +
+                    "WHERE Oportunidade LIKE '" + myActivity.opportunity_id + "'"
+                    );
+                if (objList.Vazia())
+                    throw new Exception("Invalid opportunity id");
+                else
+                {
+                    string dbOpportunityId = objList.Valor("DBOpportunityId");
+                    objActivity.set_IDCabecOVenda(dbOpportunityId);
+                }
+            }
+            else
+                objActivity.set_IDCabecOVenda(null);
             objActivity.set_Descricao(myActivity.notes);
             objActivity.set_Estado("0");    // Estado: Pendente
             objActivity.set_Prioridade("1");    // Prioridade: Normal
