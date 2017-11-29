@@ -12,9 +12,9 @@ namespace FirstREST.Lib_Primavera
 {
     public class PriIntegration
     {
-        const string dateDivisor = "-";
-        const string hourDivisor = ":";
-        const string dateHourDivisor = " ";
+        const string dateSeparator = "-";
+        const string hourSeparator = ":";
+        const string dateHourSeparator = " ";
 
 
         # region Cliente
@@ -1000,7 +1000,7 @@ namespace FirstREST.Lib_Primavera
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
-                string[] dateParts = date.Split(new string[] { dateDivisor }, System.StringSplitOptions.None);
+                string[] dateParts = date.Split(new string[] { dateSeparator }, System.StringSplitOptions.None);
                 string year = dateParts[0];
                 string month = dateParts[1];
                 string day = dateParts[2];
@@ -1683,17 +1683,17 @@ namespace FirstREST.Lib_Primavera
 
         private static string GetDate(DateTime dateTime)
         {
-            return dateTime.Year + dateDivisor + dateTime.Month + dateDivisor + dateTime.Day;
+            return dateTime.Year + dateSeparator + dateTime.Month + dateSeparator + dateTime.Day;
         }
 
         private static string GetHour(DateTime dateTime)
         {
-            return dateTime.Hour + hourDivisor + dateTime.Minute;
+            return dateTime.Hour + hourSeparator + dateTime.Minute;
         }
 
         private static string GetDateWithHour(DateTime dateTime)
         {
-            return GetDate(dateTime) + dateHourDivisor + GetHour(dateTime);
+            return GetDate(dateTime) + dateHourSeparator + GetHour(dateTime);
         }
 
         private static string GetDatabaseId(string primaveraId)

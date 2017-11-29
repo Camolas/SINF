@@ -229,6 +229,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Lib_Primavera\Model\ProductUnitsSold.cs" />
+    <Compile Include="Lib_Primavera\Model\ProductIncome.cs" />
     <Compile Include="Lib_Primavera\Model\Activity.cs" />
     <Compile Include="Lib_Primavera\Model\Dashboard.cs" />
     <Compile Include="Lib_Primavera\Model\Objectives.cs" />
