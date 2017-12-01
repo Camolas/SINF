@@ -292,6 +292,8 @@ namespace FirstREST.Lib_Primavera
         {
 
             StdBELista objList;
+            StdBELista objListCab;
+
 
             Model.Artigo art = new Model.Artigo();
             List<Model.Artigo> listArts = new List<Model.Artigo>();
@@ -303,11 +305,16 @@ namespace FirstREST.Lib_Primavera
 
                 while (!objList.NoFim())
                 {
+
                     art = new Model.Artigo();
                     art.CodArtigo = objList.Valor("artigo");
+                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='" + art.CodArtigo + "'");
                     art.DescArtigo = objList.Valor("descricao");
-                    //                  art.STKAtual = objList.Valor("stkatual");
-
+                    //art.STKAtual = objList.Valor("stkatual");
+                    art.PVP1 = objListCab.Valor("PVP1");
+                    art.PVP2 = objListCab.Valor("PVP2");
+                    art.PVP3 = objListCab.Valor("PVP3");
+                    
 
                     listArts.Add(art);
                     objList.Seguinte();

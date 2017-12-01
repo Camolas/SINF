@@ -73,6 +73,9 @@
 			print "Description: ";
 			print $obj->{'DescArtigo'};
 			echo '<br>';
+			print "Stock atual: ";
+			print $obj->{'STKAtual'};
+			echo '<br>';
 			print "PVP1: ";
 			print $obj->{'PVP1'};
 			echo '<br>';
