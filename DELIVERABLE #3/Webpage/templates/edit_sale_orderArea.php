@@ -1,13 +1,26 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#add").click(function() {
-			$('#form tbody>tr:last').clone(true).insertAfter('#form tbody>tr:last');
-			return false;
-			});
+			
+			//var $obj = $('#form tbody>tr:first').clone(true);obj.insertAfter
+			$('#form tbody:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td></tr>');
+		
+		});
+		
+		$('#select_product').select2();
 		});
 </script>
 
 <?php
+
+	// load products
+	$curl4 = curl_init();
+	curl_setopt($curl4, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/artigos/');
+	curl_setopt($curl4, CURLOPT_RETURNTRANSFER, TRUE);
+	$resp4 = curl_exec($curl4);
+	curl_close($curl4);	
+	$obj4 = json_decode($resp4);
+	
 	
 	if (!empty($_GET["entity"]) && !empty($_GET["serie"]))
 	{	
@@ -97,6 +110,14 @@
 				<br>
 				<label>Products</label>
 				<br>
+				<select id="select_product">
+					<option value=""></option>
+					<?php 
+						foreach($obj4 as $k => $cur)
+						{?>
+							<option value="<?php echo $cur->{'CodArtigo'}; ?>"> <?php echo ($cur->{'CodArtigo'} . " | " . $cur->{'DescArtigo'} . " | " . $cur->{'STKAtual'}. "<br>"); ?> </option>;
+					<?php } ?>
+				</select>
 				<a id="add"><button type="button" class="btn btn-primary btn-sm">Add Product</button></a>
 				<br><br>
 				<label>Product Code / Quantity / Discount / Unit price
@@ -111,11 +132,7 @@
 						</tr>
 								
 					<?php } ?>
-						<tr class="product">
-							<td><input class="form-control" name="prod_code[]" placeholder="Product Code"></td>
-							<td><input class="form-control" name="prod_quant[]" placeholder="Product Quantity"></td>
-							<td><input class="form-control" name="prod_discount[]" placeholder="Product Discount"></td>
-						</tr>
+					
 					</tbody>
 				</table>
 				<br>

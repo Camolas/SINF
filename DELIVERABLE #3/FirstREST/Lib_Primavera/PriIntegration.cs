@@ -16,6 +16,41 @@ namespace FirstREST.Lib_Primavera
         const string hourSeparator = ":";
         const string dateHourSeparator = " ";
 
+        #region Serie
+
+        public static IEnumerable<Model.Serie> GetSeries()
+        {
+            StdBELista objList;
+
+            List<Model.Serie> listSeries = new List<Model.Serie>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+
+                //objList = PriEngine.Engine.Comercial.Clientes.LstClientes();
+
+                objList = PriEngine.Engine.Consulta("SELECT Serie,DataUltimoDocumento FROM  SeriesVendas WHERE TipoDoc='ECL'");
+
+
+                while (!objList.NoFim())
+                {
+                    listSeries.Add(new Model.Serie
+                    {
+                        CodSerie = objList.Valor("Serie"),
+                        Data_UltDoc = objList.Valor("DataUltimoDocumento")
+
+                    });
+                    objList.Seguinte();
+
+                }
+
+                return listSeries;
+            }
+            else
+                return null;
+        }
+
+        #endregion
 
         # region Cliente
 
@@ -293,6 +328,7 @@ namespace FirstREST.Lib_Primavera
 
             StdBELista objList;
             StdBELista objListCab;
+            GcpBEArtigo objArtigo = new GcpBEArtigo();
 
 
             Model.Artigo art = new Model.Artigo();
@@ -309,8 +345,9 @@ namespace FirstREST.Lib_Primavera
                     art = new Model.Artigo();
                     art.CodArtigo = objList.Valor("artigo");
                     objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='" + art.CodArtigo + "'");
+                    objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(art.CodArtigo);
                     art.DescArtigo = objList.Valor("descricao");
-                    //art.STKAtual = objList.Valor("stkatual");
+                    art.STKAtual = objArtigo.get_StkActual();
                     art.PVP1 = objListCab.Valor("PVP1");
                     art.PVP2 = objListCab.Valor("PVP2");
                     art.PVP3 = objListCab.Valor("PVP3");
@@ -1402,6 +1439,8 @@ namespace FirstREST.Lib_Primavera
                     else
                         throw new Exception("Invalid opportunity state in database");
 
+                    string dbOpportunityId = objList.Valor("DBOpportunityId");
+
                     listOpportunities.Add(new Model.Opportunity
                     {
                         opportunity_id = objList.Valor("OpportunityId"),
@@ -1411,7 +1450,8 @@ namespace FirstREST.Lib_Primavera
                         product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
                         opportunity_state = opportunityState,
-                        representative_id = objList.Valor("RepresentativeId").ToString()
+                        representative_id = objList.Valor("RepresentativeId").ToString(),
+                        associated_activities = GetActivities(dbOpportunityId)
                     });
                     objList.Seguinte();
                 }
@@ -1466,6 +1506,7 @@ namespace FirstREST.Lib_Primavera
 
         }
 
+        // Deleting an opportunity will delete its associated activities.
         public static Lib_Primavera.Model.RespostaErro DelOpportunity(string opportunityId)
         {
             Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
@@ -1586,6 +1627,47 @@ namespace FirstREST.Lib_Primavera
                 objOpportunity.set_EstadoVenda(2);
             else
                 throw new Exception("Invalid opportunity state");
+        }
+
+        public static List<Model.Activity> GetActivities(string opportunityId)
+        {
+            List<Model.Activity> listActivities = new List<Model.Activity>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                string dbOpportunityId = GetDatabaseId(opportunityId);
+
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
+                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
+                    "AND Tarefas.IDCabecOVenda LIKE '" + dbOpportunityId + "'"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listActivities.Add(new Model.Activity
+                    {
+                        id = objList.Valor("ActivityId"),
+                        start_date = GetDateWithHour(objList.Valor("StartDate")),
+                        end_date = GetDateWithHour(objList.Valor("EndDate")),
+                        title = objList.Valor("Title"),
+                        type = objList.Valor("Type"),
+                        client = objList.Valor("Client"),
+                        contact_id = GetContactId(objList.Valor("DBContactId")),
+                        representative_id = objList.Valor("RepresentativeId"),
+                        location = objList.Valor("Location"),
+                        opportunity_id = objList.Valor("OpportunityId"),
+                        notes = objList.Valor("Notes")
+                    });
+                    objList.Seguinte();
+                }
+
+                return listActivities;
+            }
+            else
+                return null;
         }
 
         #endregion

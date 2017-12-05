@@ -2,12 +2,75 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#add").click(function() {
-			$('#form tbody>tr:last').clone(true).insertAfter('#form tbody>tr:last');
-			return false;
+			
+			
+			//var $obj = $('#form tbody>tr:first').clone(true);obj.insertAfter
+			$('#form tbody>tr:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td></tr>');
+		
+		});
+		
+		$("#delete").click(function() {
+			 $(this).closest('td').remove();
+		});
+		
+		$('.js-example-basic-single').select2({
+			width:'fit',
+			dropdownAutoWidth : true,
+			allowClear: true,
+			placeholder: "Select an option",
 			});
+			
+
+		
+		$("#select_entity").change(function(){
+			$("#entity_input").val(this.value);
+			console.log($("#entity_input").val());
+			
+		});
+		
+		$("#select_serie").change(function(){
+			$("#serie_input").val(this.value);
+		});
+		
+		$('#select_product').select2();
+		
 		});
 </script>
+
+
 <?php
+	// load clients
+	$curl2 = curl_init();
+	curl_setopt($curl2, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/clientes/');
+	curl_setopt($curl2, CURLOPT_RETURNTRANSFER, TRUE);
+	$resp2 = curl_exec($curl2);
+	curl_close($curl2);	
+	$obj2 = json_decode($resp2);
+	
+	
+	// load series
+	$curl3 = curl_init();
+	curl_setopt($curl3, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/series/');
+	curl_setopt($curl3, CURLOPT_RETURNTRANSFER, TRUE);
+	$resp3 = curl_exec($curl3);
+	curl_close($curl3);	
+	$obj3 = json_decode($resp3);
+	
+	// load products
+	$curl4 = curl_init();
+	curl_setopt($curl4, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/artigos/');
+	curl_setopt($curl4, CURLOPT_RETURNTRANSFER, TRUE);
+	$resp4 = curl_exec($curl4);
+	curl_close($curl4);	
+	$obj4 = json_decode($resp4);
+	
+	
+	/*foreach($obj4 as $k => $cur)
+	{
+		echo $cur->{'CodArtigo'};echo ( '<br>');//echo $cur->{'DescArtigo'};echo ( '<br>');echo $cur->{'STKAtual'};echo ( '<br>');
+	}*/
+	
+
 	
 	if (!empty($_GET["entity"]) && !empty($_GET["serie"]) && !empty($_GET["prod_code"]) && !empty($_GET["prod_quant"]))
 	{
@@ -67,27 +130,59 @@
 	<div class="well">
 	
 		<div class="form-group">
+		
 			<form action="new_sale_order.php">
-				<label>Entity</label>
-				<input class="form-control" name="entity" placeholder="Entity">
+				
+				<label>Entity</label><br>
+				<select class="js-example-basic-single" id="select_entity">
+					<option value=""></option>
+					<?php 
+						foreach($obj2 as $k => $cur)
+						{?>
+							<option value="<?php echo $cur->{'CodCliente'}; ?>"> <?php echo $cur->{'CodCliente'}; ?> </option>;
+					<?php } ?>
+				</select>
+	
+				<input class="form-control" name="entity" placeholder="Entity" id="entity_input" value="example" type="hidden">
+				<br><br>
+				
+				<label>Serie</label><br>
+				<select class="js-example-basic-single" id="select_serie">
+					<option value=""></option>
+					<?php 
+						foreach($obj3 as $k => $cur)
+						{?>
+							<option value="<?php echo $cur->{'CodSerie'}; ?>"> <?php echo $cur->{'CodSerie'}; ?> </option>;
+					<?php } ?>
+				</select>
+				
+				<input class="form-control" name="serie" placeholder="Serie" id="serie_input" value="example" type="hidden">
+				<br><br>
+				
+				<label>Products( Product code | Name | Actual Stock )</label>
 				<br>
-				<label>Serie</label>
-				<input class="form-control" name="serie" placeholder="Serie">
-				<br>
-				<label>Products</label>
-				<br>
+				<select id="select_product">
+					<option value=""></option>
+					<?php 
+						foreach($obj4 as $k => $cur)
+						{?>
+							<option value="<?php echo $cur->{'CodArtigo'}; ?>"> <?php echo ($cur->{'CodArtigo'} . " | " . $cur->{'DescArtigo'} . " | " . $cur->{'STKAtual'}. "<br>"); ?> </option>;
+					<?php } ?>
+				</select>
 				<a id="add"><button type="button" class="btn btn-primary btn-sm">Add Product</button></a>
 				<br><br>
-				<label>Product Code / Quantity / Discount / Unit price
-				<table id="form">
+				<label>Product / Quantity / Discount</label>
+				
+				<table id="form" >
 					<tbody>
-						<tr class="product">
-							<td><input class="form-control" name="prod_code[]" placeholder="Product Code"></td>
-							<td><input class="form-control" name="prod_quant[]" placeholder="Product Quantity"></td>
-							<td><input class="form-control" name="prod_discount[]" placeholder="Product Discount"></td>
+						<tr class="product" >
+							<td><input class="form-control" name="prod_code[]" placeholder="Product Code" type="hidden" disabled></td>
+							<td><input class="form-control" name="prod_quant[]" placeholder="Product Quantity" type="hidden" disabled></td>
+							<td><input class="form-control" name="prod_discount[]" placeholder="Product Discount" type="hidden" disabled></td>
 						</tr>
 					</tbody>
 				</table>
+				
 				<br>
 				<input type="submit" class="btn btn-default btn" value="Submit">
 			</form>
