@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,10 +12,45 @@ namespace FirstREST.Lib_Primavera
 {
     public class PriIntegration
     {
-        const string dateDivisor = "-";
-        const string hourDivisor = ":";
-        const string dateHourDivisor = " ";
+        const string dateSeparator = "-";
+        const string hourSeparator = ":";
+        const string dateHourSeparator = " ";
 
+        #region Serie
+
+        public static IEnumerable<Model.Serie> GetSeries()
+        {
+            StdBELista objList;
+
+            List<Model.Serie> listSeries = new List<Model.Serie>();
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+
+                //objList = PriEngine.Engine.Comercial.Clientes.LstClientes();
+
+                objList = PriEngine.Engine.Consulta("SELECT Serie,DataUltimoDocumento FROM  SeriesVendas WHERE TipoDoc='ECL'");
+
+
+                while (!objList.NoFim())
+                {
+                    listSeries.Add(new Model.Serie
+                    {
+                        CodSerie = objList.Valor("Serie"),
+                        Data_UltDoc = objList.Valor("DataUltimoDocumento")
+
+                    });
+                    objList.Seguinte();
+
+                }
+
+                return listSeries;
+            }
+            else
+                return null;
+        }
+
+        #endregion
 
         # region Cliente
 
@@ -292,6 +327,9 @@ namespace FirstREST.Lib_Primavera
         {
 
             StdBELista objList;
+            StdBELista objListCab;
+            GcpBEArtigo objArtigo = new GcpBEArtigo();
+
 
             Model.Artigo art = new Model.Artigo();
             List<Model.Artigo> listArts = new List<Model.Artigo>();
@@ -303,11 +341,17 @@ namespace FirstREST.Lib_Primavera
 
                 while (!objList.NoFim())
                 {
+
                     art = new Model.Artigo();
                     art.CodArtigo = objList.Valor("artigo");
+                    objListCab = PriEngine.Engine.Consulta("SELECT PVP1,PVP2,PVP3 From ArtigoMoeda where Artigo='" + art.CodArtigo + "'");
+                    objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(art.CodArtigo);
                     art.DescArtigo = objList.Valor("descricao");
-                    //                  art.STKAtual = objList.Valor("stkatual");
-
+                    art.STKAtual = objArtigo.get_StkActual();
+                    art.PVP1 = objListCab.Valor("PVP1");
+                    art.PVP2 = objListCab.Valor("PVP2");
+                    art.PVP3 = objListCab.Valor("PVP3");
+                    
 
                     listArts.Add(art);
                     objList.Seguinte();
@@ -590,7 +634,69 @@ namespace FirstREST.Lib_Primavera
             return listdv;
         }
 
+		public static List<Model.DocVenda> Encomendas_List_Article(string artigo)
+        {
 
+            StdBELista objListCab;
+            StdBELista objListLin;
+            Model.DocVenda dv = new Model.DocVenda();
+            List<Model.DocVenda> listdv = new List<Model.DocVenda>();
+            Model.LinhaDocVenda lindv = new Model.LinhaDocVenda();
+            List<Model.LinhaDocVenda> listlindv = new
+            List<Model.LinhaDocVenda>();
+            int numDoc = 50;
+
+            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            {
+              
+                    objListLin = PriEngine.Engine.Consulta("SELECT idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido, Data from LinhasDoc where Artigo='" + artigo + "' ORDER BY Data DESC");
+                    
+
+                    while (!objListLin.NoFim())
+                    {
+                        if (numDoc == 0)
+                            break;
+
+                        listlindv = new List<Model.LinhaDocVenda>();
+                        lindv = new Model.LinhaDocVenda();
+                        lindv.IdCabecDoc = objListLin.Valor("idCabecDoc");
+                        lindv.CodArtigo = objListLin.Valor("Artigo");
+                        lindv.DescArtigo = objListLin.Valor("Descricao");
+                        lindv.Quantidade = objListLin.Valor("Quantidade");
+                        lindv.Unidade = objListLin.Valor("Unidade");
+                        lindv.Desconto = objListLin.Valor("Desconto1");
+                        lindv.PrecoUnitario = objListLin.Valor("PrecUnit");
+                        lindv.TotalILiquido = objListLin.Valor("TotalILiquido");
+                        lindv.TotalLiquido = objListLin.Valor("PrecoLiquido");
+
+                        listlindv.Add(lindv);
+
+                        objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, NumDoc, Serie, TipoDoc From CabecDoc where id='" + lindv.IdCabecDoc+"'");
+
+   
+                        dv = new Model.DocVenda();
+                        dv.id = objListCab.Valor("id");
+                        dv.Entidade = objListCab.Valor("Entidade");
+                        dv.NumDoc = objListCab.Valor("NumDoc");
+                        dv.Data = objListLin.Valor("Data");
+                        dv.Serie = objListCab.Valor("Serie");
+
+                        dv.LinhasDoc = listlindv;
+                        if (objListCab.Valor("TipoDoc") == "ECL"){
+                            listdv.Add(dv);
+                            numDoc--;
+                        }
+
+                        
+                        
+                        objListLin.Seguinte();
+                    }
+
+   
+                }
+            return listdv;
+        }
+		
         public static List<Model.DocVenda> Encomendas_List(string entity)
         {
 
@@ -640,55 +746,6 @@ namespace FirstREST.Lib_Primavera
                 }
             }
             return listdv;
-        }
-
-
-        public static Model.DocVenda Encomenda_Get(string numdoc)
-        {
-
-
-            StdBELista objListCab;
-            StdBELista objListLin;
-            Model.DocVenda dv = new Model.DocVenda();
-            Model.LinhaDocVenda lindv = new Model.LinhaDocVenda();
-            List<Model.LinhaDocVenda> listlindv = new List<Model.LinhaDocVenda>();
-
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
-            {
-
-
-                string st = "SELECT id, Entidade, Data, NumDoc, TotalMerc, Serie From CabecDoc where TipoDoc='ECL' and NumDoc='" + numdoc + "'";
-                objListCab = PriEngine.Engine.Consulta(st);
-                dv = new Model.DocVenda();
-                dv.id = objListCab.Valor("id");
-                dv.Entidade = objListCab.Valor("Entidade");
-                dv.NumDoc = objListCab.Valor("NumDoc");
-                dv.Data = objListCab.Valor("Data");
-                dv.TotalMerc = objListCab.Valor("TotalMerc");
-                dv.Serie = objListCab.Valor("Serie");
-                objListLin = PriEngine.Engine.Consulta("SELECT idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido from LinhasDoc where IdCabecDoc='" + dv.id + "' order By NumLinha");
-                listlindv = new List<Model.LinhaDocVenda>();
-
-                while (!objListLin.NoFim())
-                {
-                    lindv = new Model.LinhaDocVenda();
-                    lindv.IdCabecDoc = objListLin.Valor("idCabecDoc");
-                    lindv.CodArtigo = objListLin.Valor("Artigo");
-                    lindv.DescArtigo = objListLin.Valor("Descricao");
-                    lindv.Quantidade = objListLin.Valor("Quantidade");
-                    lindv.Unidade = objListLin.Valor("Unidade");
-                    lindv.Desconto = objListLin.Valor("Desconto1");
-                    lindv.PrecoUnitario = objListLin.Valor("PrecUnit");
-                    lindv.TotalILiquido = objListLin.Valor("TotalILiquido");
-                    lindv.TotalLiquido = objListLin.Valor("PrecoLiquido");
-                    listlindv.Add(lindv);
-                    objListLin.Seguinte();
-                }
-
-                dv.LinhasDoc = listlindv;
-                return dv;
-            }
-            return null;
         }
 
         public static Model.DocVenda Encomenda_Get(string serie, string numdoc)
@@ -741,7 +798,7 @@ namespace FirstREST.Lib_Primavera
             return null;
         }
 
-        public static Lib_Primavera.Model.RespostaErro UpdOrder(string id, Lib_Primavera.Model.DocVenda dv)
+         public static Lib_Primavera.Model.RespostaErro UpdOrder(string id, Lib_Primavera.Model.DocVenda dv)
         {
             Lib_Primavera.Model.RespostaErro erro = new Model.RespostaErro();
 
@@ -987,15 +1044,16 @@ namespace FirstREST.Lib_Primavera
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
-                string[] dateParts = date.Split(new string[] { dateDivisor }, System.StringSplitOptions.None);
+                string[] dateParts = date.Split(new string[] { dateSeparator }, System.StringSplitOptions.None);
                 string year = dateParts[0];
                 string month = dateParts[1];
                 string day = dateParts[2];
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
+                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
                     "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' " +
                     "AND Year(Tarefas.DataInicio) = " + year + " " +
                     "AND Month(Tarefas.DataInicio) = " + month + " " +
@@ -1014,8 +1072,10 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
+                        opportunity_id = objList.Valor("OpportunityId"),
                         notes = objList.Valor("Notes")
                     });
                     objList.Seguinte();
@@ -1029,18 +1089,18 @@ namespace FirstREST.Lib_Primavera
 
         public static List<Model.Activity> ListActivities(string representativeId)
         {
-            StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
-                objList = PriEngine.Engine.Consulta(
-                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa " +
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
+                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
                     "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "' "
+                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
+                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
@@ -1053,8 +1113,10 @@ namespace FirstREST.Lib_Primavera
                         title = objList.Valor("Title"),
                         type = objList.Valor("Type"),
                         client = objList.Valor("Client"),
+                        contact_id = GetContactId(objList.Valor("DBContactId")),
                         representative_id = objList.Valor("RepresentativeId"),
                         location = objList.Valor("Location"),
+                        opportunity_id = objList.Valor("OpportunityId"),
                         notes = objList.Valor("Notes")
                     });
                     objList.Seguinte();
@@ -1201,7 +1263,7 @@ namespace FirstREST.Lib_Primavera
             }
         }
 
-        public static string GetActivityTypeId(string activityType)
+        private static string GetActivityTypeId(string activityType)
         {
             StdBELista objList;
 
@@ -1240,9 +1302,62 @@ namespace FirstREST.Lib_Primavera
             objActivity.set_Resumo(myActivity.title);
             objActivity.set_IDTipoActividade(GetActivityTypeId(myActivity.type));
             objActivity.set_EntidadePrincipal(myActivity.client);
+            if (myActivity.contact_id != null && !myActivity.contact_id.Equals(""))
+            {
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 Id AS DBContactId " +
+                    "FROM Contactos " +
+                    "WHERE Contacto LIKE '" + myActivity.contact_id + "'"
+                    );
+                if (objList.Vazia())
+                    throw new Exception("Invalid contact id");
+                else
+                {
+                    string dbContactId = objList.Valor("DBContactId");
+                    objActivity.set_IDContactoPrincipal(dbContactId);
+                }
+            }
+            else
+                objActivity.set_IDContactoPrincipal(null);
             objActivity.set_Utilizador(myActivity.representative_id);
             objActivity.set_LocalRealizacao(myActivity.location);
+            if (myActivity.opportunity_id != null && !myActivity.opportunity_id.Equals(""))
+            {
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT TOP 1 ID AS DBOpportunityId " +
+                    "FROM CabecOportunidadesVenda " +
+                    "WHERE Oportunidade LIKE '" + myActivity.opportunity_id + "'"
+                    );
+                if (objList.Vazia())
+                    throw new Exception("Invalid opportunity id");
+                else
+                {
+                    string dbOpportunityId = objList.Valor("DBOpportunityId");
+                    objActivity.set_IDCabecOVenda(dbOpportunityId);
+                }
+            }
+            else
+                objActivity.set_IDCabecOVenda(null);
             objActivity.set_Descricao(myActivity.notes);
+            objActivity.set_Estado("0");    // Estado: Pendente
+            objActivity.set_Prioridade("1");    // Prioridade: Normal
+            objActivity.set_TipoEntidadePrincipal("C"); // Tipo: Cliente
+        }
+
+        private static string GetContactId(string dbContactId)
+        {
+            string myDBContactId = GetDatabaseId(dbContactId);
+            string contactId = "";
+            if (myDBContactId != null && !myDBContactId.Equals(""))
+            {
+                StdBELista objList2 = PriEngine.Engine.Consulta(
+                    "SELECT Contacto AS ContactId " +
+                    "FROM Contactos " +
+                    "WHERE Id LIKE '" + myDBContactId + "'"
+                    );
+                contactId = objList2.Valor("ContactId");
+            }
+            return contactId;
         }
 
         #endregion Agenda
@@ -1302,16 +1417,28 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.CriadoPor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, Artigo " +
+                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
-                    "AND CabecOportunidadesVenda.CriadoPor = '" + dbRepresentativeId + "'" +
-                    "AND CabecOportunidadesVenda.DataFecho IS NULL"
+                    "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"    // "' " +
+                    //"AND CabecOportunidadesVenda.DataFecho IS NULL"
                     );
 
                 while (!objList.NoFim())
                 {
+                    int state = objList.Valor("OpportunityState");
+                    string opportunityState;
+                    if(state == 0)
+                        opportunityState = "Open";
+                    else if(state == 1)
+                        opportunityState = "Wins";
+                    else if(state == 2)
+                        opportunityState = "Lost";
+                    else
+                        throw new Exception("Invalid opportunity state in database");
+
                     listOpportunities.Add(new Model.Opportunity
                     {
                         opportunity_id = objList.Valor("OpportunityId"),
@@ -1320,6 +1447,7 @@ namespace FirstREST.Lib_Primavera
                         product_id = objList.Valor("ProductId"),
                         product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
+                        opportunity_state = opportunityState,
                         representative_id = objList.Valor("RepresentativeId").ToString()
                     });
                     objList.Seguinte();
@@ -1351,10 +1479,7 @@ namespace FirstREST.Lib_Primavera
                         objOpportunity = PriEngine.Engine.CRM.OportunidadesVenda.Edita(opportunity.opportunity_id);
                         objOpportunity.set_EmModoEdicao(true);
 
-                        objOpportunity.set_Descricao(opportunity.opportunity_type);
-                        objOpportunity.set_Entidade(opportunity.customer_id);
-                        objOpportunity.set_Resumo(opportunity.product_id);
-
+                        setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
 
                         erro.Erro = 0;
@@ -1403,9 +1528,10 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.CRM.PropostasOPV.Remove(objOpportunity.get_ID());
                         PriEngine.Engine.CRM.OportunidadesVenda.Remove(opportunityId);*/
 
-                        objOpportunity.set_EmModoEdicao(true);
+                        /*objOpportunity.set_EmModoEdicao(true);
                         objOpportunity.set_DataFecho(DateTime.Now);
-                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                        PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);*/
+                        PriEngine.Engine.CRM.OportunidadesVenda.RemoveID(objOpportunity.get_ID()); 
 
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1436,19 +1562,18 @@ namespace FirstREST.Lib_Primavera
                 if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
                 {
                     StdBELista objList = PriEngine.Engine.Consulta(
-                        "SELECT COUNT(Oportunidade) AS NumOpportunities " +
-                        "FROM CabecOportunidadesVenda"
+                        "SELECT TOP 1 Oportunidade AS LastOpportunity " +
+                        "FROM CabecOportunidadesVenda " +
+                        "ORDER BY Oportunidade DESC"
                         );
 
-                    int numOpportunities = objList.Valor("NumOpportunities");
-                    string opportunityNumber = (numOpportunities + 1).ToString();
+                    string lastOpportunity = objList.Valor("LastOpportunity");
+                    int lastOpportunityNumber = int.Parse(lastOpportunity.Substring(3));
+                    string opportunityNumber = (lastOpportunityNumber + 1).ToString();
                     string opportunityId = "OPV" + (opportunityNumber.Length >= 3 ? opportunityNumber : opportunityNumber.PadLeft(3, '0'));
 
                     objOpportunity.set_Oportunidade(opportunityId);
-                    objOpportunity.set_Vendedor("1");
-                    objOpportunity.set_Descricao(opportunity.opportunity_type);
-                    objOpportunity.set_Entidade(opportunity.customer_id);
-                    objOpportunity.set_Resumo(opportunity.product_id);
+                    setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
                     objOpportunity.set_TipoEntidade("C");
                     objOpportunity.set_CicloVenda("CV_HW");
                     objOpportunity.set_CriadoPor(opportunity.representative_id);
@@ -1484,6 +1609,22 @@ namespace FirstREST.Lib_Primavera
             }
         }
 
+        private static void setMainCrmBEOportunidadeVendaFields(Model.Opportunity opportunity, Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity)
+        {
+            objOpportunity.set_Vendedor(opportunity.representative_id);
+            objOpportunity.set_Descricao(opportunity.opportunity_type);
+            objOpportunity.set_Entidade(opportunity.customer_id);
+            objOpportunity.set_Resumo(opportunity.product_id);
+            if (opportunity.opportunity_state.Equals("Open"))
+                objOpportunity.set_EstadoVenda(0);
+            else if (opportunity.opportunity_state.Equals("Wins"))
+                objOpportunity.set_EstadoVenda(1);
+            else if (opportunity.opportunity_state.Equals("Lost"))
+                objOpportunity.set_EstadoVenda(2);
+            else
+                throw new Exception("Invalid opportunity state");
+        }
+
         #endregion
 
         #region Dashboard
@@ -1493,16 +1634,112 @@ namespace FirstREST.Lib_Primavera
             return ListActivities(representativeId, GetDate(DateTime.Today));
         }
 
-        public static List<Model.Objectives> GetDashboardObjectives(string representativeId)
+        public static Model.Objectives GetDashboardObjectives(string representativeId)
         {
-            // TODO
-            return new List<Model.Objectives>();
+            int month = DateTime.Now.Month;
+            int year = DateTime.Now.Year;
+
+            StdBELista objList1 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Clients.Client) AS NumClients " +
+                "FROM " +
+                "   (SELECT DISTINCT Entidade AS Client " +
+                "   FROM CabecDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Clients"
+                );
+
+            StdBELista objList2 = PriEngine.Engine.Consulta(
+                "SELECT COUNT(Products.Product) AS NumProducts " +
+                "FROM " +
+                "   (SELECT DISTINCT Artigo AS Product " +
+                "   FROM LinhasDoc " +
+                "   WHERE MONTH(Data) = " + month + " " +
+                "   AND YEAR(Data) = " + year + ") AS Products"
+                );
+
+            StdBELista objList3 = PriEngine.Engine.Consulta(
+                "SELECT SUM(TotalMerc) AS Revenue " +
+                "FROM CabecDoc " +
+                "WHERE MONTH(Data) = " + month + " " +
+                "AND YEAR(Data) = " + year
+                );
+
+            Model.Objectives objectives = new Model.Objectives();
+            objectives.clients = objList1.Valor("NumClients").ToString();
+            objectives.products = objList2.Valor("NumProducts").ToString();
+            objectives.earnings = objList3.Valor("Revenue").ToString();
+            if (objectives.earnings.Equals(""))
+                objectives.earnings = "0";
+
+            return objectives;
         }
 
-        public static List<Model.Statistics> GetDashboardStatistics(string representativeId)
+        public static Model.Statistics GetDashboardStatistics(string representativeId)
         {
-            // TODO
-            return new List<Model.Statistics>();
+            int month = DateTime.Now.Month;
+            int year = DateTime.Now.Year;
+
+            StdBELista objList1 = PriEngine.Engine.Consulta(
+                "SELECT TOP 25 LinhasDoc.Artigo AS ProductId, LinhasDoc.Descricao AS ProductName, SUM(LinhasDoc.Quantidade) AS UnitsSold " +
+                "FROM LinhasDoc, CabecDoc " +
+                "WHERE LinhasDoc.Artigo IS NOT NULL " +
+                "AND LinhasDoc.IdCabecDoc LIKE CabecDoc.Id " +
+                "AND YEAR(CabecDoc.Data) = " + year + " " +
+                "AND MONTH(CabecDoc.Data) = " + month + " " +
+                "GROUP BY LinhasDoc.Artigo, LinhasDoc.Descricao " +
+                "ORDER BY UnitsSold DESC"
+                );
+
+            List<Model.ProductUnitsSold> listProductUnitsSold = new List<Model.ProductUnitsSold>();
+            while (!objList1.NoFim())
+            {
+                Model.ProductUnitsSold productUnitsSold = new Model.ProductUnitsSold();
+                productUnitsSold.product_id = objList1.Valor("ProductId");
+                productUnitsSold.product_name = objList1.Valor("ProductName");
+                productUnitsSold.product_units_sold = objList1.Valor("UnitsSold").ToString();
+                listProductUnitsSold.Add(productUnitsSold);
+                objList1.Seguinte();
+            }
+
+            StdBELista objList2 = PriEngine.Engine.Consulta(
+                "SELECT TOP 25 ProductId, ProductName, SUM(UnitsSold * UnitPrice) AS ProductIncome " +
+                "FROM " +
+                "   (SELECT LinhasDoc.Artigo AS ProductId, LinhasDoc.Descricao AS ProductName, LinhasDoc.PrecUnit AS UnitPrice, SUM(LinhasDoc.Quantidade) AS UnitsSold " +
+                "   FROM LinhasDoc, CabecDoc " +
+                "   WHERE LinhasDoc.Artigo IS NOT NULL " +
+                "   AND LinhasDoc.IdCabecDoc LIKE CabecDoc.Id " +
+                "   AND YEAR(CabecDoc.Data) = " + year + " " +
+                "   AND MONTH(CabecDoc.Data) = " + month + " " +
+                "   GROUP BY LinhasDoc.Artigo, LinhasDoc.Descricao, LinhasDoc.PrecUnit) AS ProductsAggregatedData " +
+                "GROUP BY ProductId, ProductName " +
+                "ORDER BY ProductIncome DESC"
+                );
+
+            List<Model.ProductIncome> listProductIncome = new List<Model.ProductIncome>();
+            while (!objList2.NoFim())
+            {
+                Model.ProductIncome productIncome = new Model.ProductIncome();
+                productIncome.product_id = objList2.Valor("ProductId");
+                productIncome.product_name = objList2.Valor("ProductName");
+                productIncome.product_income = objList2.Valor("ProductIncome").ToString();
+                listProductIncome.Add(productIncome);
+                objList2.Seguinte();
+            }
+
+            Model.Statistics statistics = new Model.Statistics();
+            statistics.most_sold_products = listProductUnitsSold;
+            statistics.most_income_products = listProductIncome;
+
+            return statistics;
+        }
+
+        public static Model.Dashboard GetDashboard(string representativeId)
+        {
+            Model.Dashboard dashboard = new Model.Dashboard();
+            dashboard.today_agenda = GetDashboardTodayAgenda(representativeId);
+            dashboard.objectives = GetDashboardObjectives(representativeId);
+            dashboard.statistics = GetDashboardStatistics(representativeId);
+            return dashboard;
         }
 
         #endregion
@@ -1511,17 +1748,17 @@ namespace FirstREST.Lib_Primavera
 
         private static string GetDate(DateTime dateTime)
         {
-            return dateTime.Year + dateDivisor + dateTime.Month + dateDivisor + dateTime.Day;
+            return dateTime.Year + dateSeparator + dateTime.Month + dateSeparator + dateTime.Day;
         }
 
         private static string GetHour(DateTime dateTime)
         {
-            return dateTime.Hour + hourDivisor + dateTime.Minute;
+            return dateTime.Hour + hourSeparator + dateTime.Minute;
         }
 
         private static string GetDateWithHour(DateTime dateTime)
         {
-            return GetDate(dateTime) + dateHourDivisor + GetHour(dateTime);
+            return GetDate(dateTime) + dateHourSeparator + GetHour(dateTime);
         }
 
         private static string GetDatabaseId(string primaveraId)
