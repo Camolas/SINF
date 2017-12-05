@@ -1417,7 +1417,7 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
+                    "SELECT CabecOportunidadesVenda.ID AS DBOpportunityId, CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
                     "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
