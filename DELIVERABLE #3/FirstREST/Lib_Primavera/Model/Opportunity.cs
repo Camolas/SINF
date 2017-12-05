@@ -55,5 +55,11 @@ namespace FirstREST.Lib_Primavera.Model
             get;
             set;
         }
+
+        public List<Activity> associated_activities
+        {
+            get;
+            set;
+        }
     }
 }
