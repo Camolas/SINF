@@ -1629,12 +1629,11 @@ namespace FirstREST.Lib_Primavera
                 throw new Exception("Invalid opportunity state");
         }
 
+
+        //assuming that PriEngine.InitializeCompany has ben called
         public static List<Model.Activity> GetActivities(string opportunityId)
         {
             List<Model.Activity> listActivities = new List<Model.Activity>();
-
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
-            {
                 string dbOpportunityId = GetDatabaseId(opportunityId);
 
                 StdBELista objList = PriEngine.Engine.Consulta(
@@ -1665,9 +1664,6 @@ namespace FirstREST.Lib_Primavera
                 }
 
                 return listActivities;
-            }
-            else
-                return null;
         }
 
         #endregion
