@@ -3,12 +3,63 @@
 		$("#add").click(function() {
 			
 			//var $obj = $('#form tbody>tr:first').clone(true);obj.insertAfter
-			$('#form tbody:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td></tr>');
+			$('#form tbody:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td><td> <a class="delete" ><button type="button" class="btn btn-danger btn-xs">Delete</button></a></td></tr>');
 		
 		});
 		
 		$('#select_product').select2();
+		
+		
+		
+		
+		$('select')
+			.filter(function() {
+				return this.id.match(/select_product[0-99]/);
+			}).select2();
+		
+		$('select')
+			.filter(function() {
+				return this.id.match(/select_product[0-99]/);
+			}).load(function(){
+			var id = this.id.match(/\d+/);
+			var k = 0;
+			$('input[name^="prod_code"]').each(function() {
+				if (k == id[0])
+					$('#select_product'+id[0]+' option[value="'+ $(this).val() +'"]').attr('selected', 'selected');
+				k++;
+			});	
 		});
+				
+		$('select')
+			.filter(function() {
+				return this.id.match(/select_product[0-99]/);
+			}).change(function(){
+			var id = this.id.match(/\d+/);
+			var new_value = this.value;
+			var k = 0;
+			$('input[name^="prod_code"]').each(function() {
+				if (k == id[0])
+					$(this).val(new_value);
+				k++;
+			});			
+		});
+		
+		$("#select_entity").change(function(){
+			$("#entity_input").val(this.value);
+			console.log($("#entity_input").val());
+		});
+		
+		
+		$("#form .delete").on("click",function() {
+        var td = $(this).parent();
+        var tr = td.parent();
+        tr.fadeOut(400, function(){
+            tr.remove();
+			});
+		});
+		
+		
+	});
 </script>
 
 <?php
@@ -126,9 +177,24 @@
 					<?php
 						for ($i = 0; $i < sizeof($products); $i++){?>
 						<tr class="product">
-							<td><input class="form-control" name="prod_code[]" placeholder="Product Code" type="text" value="<?php echo $products[$i][0]; ?>"></td>
-							<td><input class="form-control" name="prod_quant[]" placeholder="Product Quantity" type="text" value="<?php echo $products[$i][1]; ?>"></td>
-							<td><input class="form-control" name="prod_discount[]" placeholder="Product Discount" type="text" value="<?php echo $products[$i][2]; ?>"></td>
+							<td>
+							<select id="select_product<?php echo $i ;?>">
+								<option value=""></option>
+								<?php 
+									foreach($obj4 as $k => $cur)
+									{   if ($products[$i][0] == $cur->{'CodArtigo'}){?>
+											<option value="<?php echo $cur->{'CodArtigo'}; ?>" selected> <?php echo ($cur->{'CodArtigo'} . " | " . $cur->{'DescArtigo'} . " | " . $cur->{'STKAtual'}. "<br>"); ?> </option>
+									<?php }else{ ?>
+											<option value="<?php echo $cur->{'CodArtigo'}; ?>" > <?php echo ($cur->{'CodArtigo'} . " | " . $cur->{'DescArtigo'} . " | " . $cur->{'STKAtual'}. "<br>"); ?> </option>
+									<?php }} ?>
+							</select>
+							
+							<input class="form-control" name="prod_code[]" placeholder="Product Code" value="<?php echo $products[$i][0]; ?>" type="hidden">
+						
+							</td>
+							<td><input class="form-control" name="prod_quant[]" placeholder="Product Quantity" value="<?php echo $products[$i][1]; ?>"></td>
+							<td><input class="form-control" name="prod_discount[]" placeholder="Product Discount" value="<?php echo $products[$i][2]; ?>"></td>
+							<td> <a class="delete" ><button type="button" class="btn btn-danger btn-xs">Delete</button></a></td>
 						</tr>
 								
 					<?php } ?>
