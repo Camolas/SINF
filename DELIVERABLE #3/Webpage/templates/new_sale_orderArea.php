@@ -5,7 +5,7 @@
 			
 			
 			//var $obj = $('#form tbody>tr:first').clone(true);obj.insertAfter
-			$('#form tbody>tr:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td></tr>');
+			$('#form tbody:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td><td><a class="delete" ><button type="button" class="btn btn-danger btn-xs">Delete</button></a></td></tr>');
 		
 		});
 		
@@ -34,7 +34,20 @@
 		
 		$('#select_product').select2();
 		
+		$("#form").on("click",".delete",function() {
+        console.log("aqui");
+		var td = $(this).parent();
+        var tr = td.parent();
+		console.log(tr);
+		console.log("aqui");
+        tr.fadeOut(400, function(){
+            tr.remove();
+			});
 		});
+		
+		});
+		
+
 </script>
 
 

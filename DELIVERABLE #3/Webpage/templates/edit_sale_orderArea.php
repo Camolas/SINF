@@ -1,16 +1,13 @@
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#add").click(function() {
-			
+
+		$("#add").click(function() {			
 			//var $obj = $('#form tbody>tr:first').clone(true);obj.insertAfter
 			$('#form tbody:last').append('<tr class="product" style="width:100%;"><td style="width:60%;"><label>'+ $("#select_product option:selected").text() + '</label><input class="form-control" name="prod_code[]" placeholder="Product Code" value='+ $("#select_product").val() + ' type="hidden"></td><td><input class="form-control" name="prod_quant[]" placeholder="Quantity" ></td><td><input class="form-control" name="prod_discount[]" placeholder="Discount" ></td><td> <a class="delete" ><button type="button" class="btn btn-danger btn-xs">Delete</button></a></td></tr>');
 		
 		});
 		
 		$('#select_product').select2();
-		
-		
-		
 		
 		$('select')
 			.filter(function() {
@@ -50,7 +47,7 @@
 		});
 		
 		
-		$("#form .delete").on("click",function() {
+		$("#form").on("click",".delete",function() {
         var td = $(this).parent();
         var tr = td.parent();
         tr.fadeOut(400, function(){
