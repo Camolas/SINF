@@ -62,6 +62,8 @@ namespace FirstREST.Lib_Primavera
 
             List<Model.Cliente> listClientes = new List<Model.Cliente>();
 
+            
+
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
 
@@ -72,6 +74,9 @@ namespace FirstREST.Lib_Primavera
 
                 while (!objList.NoFim())
                 {
+                    GcpBECliente client_info = new GcpBECliente();
+                    string cod = objList.Valor("Cliente");
+                    client_info = PriEngine.Engine.Comercial.Clientes.Edita(cod);
                     listClientes.Add(new Model.Cliente
                     {
                         CodCliente = objList.Valor("Cliente"),
@@ -79,7 +84,8 @@ namespace FirstREST.Lib_Primavera
                         Moeda = objList.Valor("Moeda"),
                         NumContribuinte = objList.Valor("NumContribuinte"),
                         Morada = objList.Valor("campo_exemplo"),
-                        Email = objList.Valor("Email")
+                        Email = objList.Valor("Email"),
+                        PVP = client_info.get_LinhaPrecos()
                     });
                     objList.Seguinte();
 
