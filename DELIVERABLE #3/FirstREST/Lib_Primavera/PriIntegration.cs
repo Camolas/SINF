@@ -77,6 +77,10 @@ namespace FirstREST.Lib_Primavera
                     GcpBECliente client_info = new GcpBECliente();
                     string cod = objList.Valor("Cliente");
                     client_info = PriEngine.Engine.Comercial.Clientes.Edita(cod);
+                    string pvp_s = client_info.get_LinhaPrecos();
+                    int pvp = 0;
+                    if (pvp_s != "")
+                        pvp = int.Parse(pvp_s)+1;// 0 - PVP1 etc
                     listClientes.Add(new Model.Cliente
                     {
                         CodCliente = objList.Valor("Cliente"),
@@ -85,7 +89,7 @@ namespace FirstREST.Lib_Primavera
                         NumContribuinte = objList.Valor("NumContribuinte"),
                         Morada = objList.Valor("campo_exemplo"),
                         Email = objList.Valor("Email"),
-                        PVP = client_info.get_LinhaPrecos()
+                        PVP = pvp
                     });
                     objList.Seguinte();
 

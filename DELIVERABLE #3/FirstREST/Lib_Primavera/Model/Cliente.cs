@@ -53,7 +53,7 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public string PVP
+        public int PVP
         {
             get;
             set;
