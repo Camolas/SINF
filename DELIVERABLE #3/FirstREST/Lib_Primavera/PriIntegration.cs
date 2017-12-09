@@ -320,6 +320,7 @@ namespace FirstREST.Lib_Primavera
                     myArt.PVP1 = objListCab.Valor("PVP1");
                     myArt.PVP2 = objListCab.Valor("PVP2");
                     myArt.PVP3 = objListCab.Valor("PVP3");
+                    myArt.IVA = objArtigo.get_IVA();
                     myArt.TotalEarnings = Convert.ToDouble(objListCab2.Valor("TotalEarnings").ToString("N3")); ;
 
                     return myArt;
@@ -361,7 +362,7 @@ namespace FirstREST.Lib_Primavera
                     art.PVP1 = objListCab.Valor("PVP1");
                     art.PVP2 = objListCab.Valor("PVP2");
                     art.PVP3 = objListCab.Valor("PVP3");
-                    
+                    art.IVA = objArtigo.get_IVA();
 
                     listArts.Add(art);
                     objList.Seguinte();
