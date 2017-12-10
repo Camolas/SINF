@@ -896,6 +896,7 @@ namespace FirstREST.Lib_Primavera
                                 preco_unitario = 0;
 
                             System.Diagnostics.Debug.WriteLine(preco_unitario);
+                            preco_unitario = preco_unitario + preco_unitario * (double.Parse(artigo_info.IVA) * 0.01);//work around for PrecoIvaIncluido = true in AdicionaLinha
                             PriEngine.Engine.Comercial.Vendas.AdicionaLinha(objCli, lin.CodArtigo, lin.Quantidade, "", "", preco_unitario, lin.Desconto);
 
                         }
