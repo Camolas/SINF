@@ -602,7 +602,7 @@ namespace FirstREST.Lib_Primavera
 
             if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
             {
-                objListCab = PriEngine.Engine.Consulta("SELECT TOP 50 id, Entidade, Data, NumDoc, TotalMerc, Serie From CabecDoc where TipoDoc='ECL' ORDER BY Data DESC");
+                objListCab = PriEngine.Engine.Consulta("SELECT TOP 50 id, Entidade, Data, NumDoc, TotalMerc,TotalIva, Serie From CabecDoc where TipoDoc='ECL' ORDER BY Data DESC");
 
                 while (!objListCab.NoFim())
                 {
@@ -615,6 +615,7 @@ namespace FirstREST.Lib_Primavera
                     dv.Data = objListCab.Valor("Data");
                     dv.Desconto = desc.Valor("Desconto");
                     dv.TotalMerc = objListCab.Valor("TotalMerc");
+                    dv.TotalIva = objListCab.Valor("TotalIva");
                     dv.Serie = objListCab.Valor("Serie");
                     dv.Anulado = Convert.ToBoolean(anulado.Valor("Anulado"));
                     objListLin = PriEngine.Engine.Consulta("SELECT idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido from LinhasDoc where IdCabecDoc='" + dv.id + "' order By NumLinha");

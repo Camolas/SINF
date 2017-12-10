@@ -44,6 +44,12 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
+        public double TotalIva
+        {
+            get;
+            set;
+        }
+
         public string Serie
         {
             get;
