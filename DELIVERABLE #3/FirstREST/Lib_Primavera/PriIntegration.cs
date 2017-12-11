@@ -1389,7 +1389,7 @@ namespace FirstREST.Lib_Primavera
 
         #endregion Agenda
 
-        #region TargetCustomers
+        /*#region TargetCustomers
 
         public static List<Model.TargetCustomer> ListTargetCustomers(string representativeId, string targetCustomer = null)
         {
@@ -1429,7 +1429,7 @@ namespace FirstREST.Lib_Primavera
                 return null;
         }
 
-        #endregion
+        #endregion*/
 
         #region Opportunities
 
