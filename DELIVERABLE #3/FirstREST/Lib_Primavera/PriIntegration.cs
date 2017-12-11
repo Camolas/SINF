@@ -1715,31 +1715,39 @@ namespace FirstREST.Lib_Primavera
                 "SELECT COUNT(Clients.Client) AS NumClients " +
                 "FROM " +
                 "   (SELECT DISTINCT Entidade AS Client " +
-                "   FROM CabecDoc " +
-                "   WHERE MONTH(Data) = " + month + " " +
-                "   AND YEAR(Data) = " + year + ") AS Clients"
+                "   FROM CabecOportunidadesVenda " +
+                "   WHERE Vendedor LIKE " + representativeId + " " +
+                "   AND MONTH(DataUltimaAct) = " + month + " " +
+                "   AND YEAR(DataUltimaAct) = " + year + ") AS Clients"
                 );
 
             StdBELista objList2 = PriEngine.Engine.Consulta(
                 "SELECT COUNT(Products.Product) AS NumProducts " +
                 "FROM " +
                 "   (SELECT DISTINCT Artigo AS Product " +
-                "   FROM LinhasDoc " +
-                "   WHERE MONTH(Data) = " + month + " " +
-                "   AND YEAR(Data) = " + year + ") AS Products"
+                "   FROM CabecOportunidadesVenda, LinhasPropostasOPV " +
+                "   WHERE CabecOportunidadesVenda.ID LIKE LinhasPropostasOPV.IdOportunidade " +
+                "   AND CabecOportunidadesVenda.EstadoVenda = 1 " +   // winned opportunity
+                "   AND CabecOportunidadesVenda.EncomendaEfectuada = 1 " +
+                "   AND CabecOportunidadesVenda.Vendedor LIKE " + representativeId + " " +
+                "   AND MONTH(DataUltimaAct) = " + month + " " +
+                "   AND YEAR(DataUltimaAct) = " + year + ") AS Products"
                 );
 
             StdBELista objList3 = PriEngine.Engine.Consulta(
-                "SELECT SUM(TotalMerc) AS Revenue " +
-                "FROM CabecDoc " +
-                "WHERE MONTH(Data) = " + month + " " +
-                "AND YEAR(Data) = " + year
+                "SELECT SUM(LinhasPropostasOPV.Rentabilidade * LinhasPropostasOPV.Quantidade) AS Profit " +
+                "FROM CabecOportunidadesVenda, LinhasPropostasOPV " +
+                "WHERE CabecOportunidadesVenda.ID LIKE LinhasPropostasOPV.IdOportunidade " +
+                "AND CabecOportunidadesVenda.EstadoVenda = 1 " +   // winned opportunity
+                "AND CabecOportunidadesVenda.EncomendaEfectuada = 1 " +
+                "AND MONTH(DataUltimaAct) = " + month + " " +
+                "AND YEAR(DataUltimaAct) = " + year
                 );
 
             Model.Objectives objectives = new Model.Objectives();
             objectives.clients = objList1.Valor("NumClients").ToString();
             objectives.products = objList2.Valor("NumProducts").ToString();
-            objectives.earnings = objList3.Valor("Revenue").ToString();
+            objectives.earnings = objList3.Valor("Profit").ToString();
             if (objectives.earnings.Equals(""))
                 objectives.earnings = "0";
 
