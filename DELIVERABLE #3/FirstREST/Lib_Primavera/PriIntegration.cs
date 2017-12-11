@@ -15,6 +15,17 @@ namespace FirstREST.Lib_Primavera
         const string dateSeparator = "-";
         const string hourSeparator = ":";
         const string dateHourSeparator = " ";
+        static bool companyInitialized = false;
+
+        private static bool InitializeCompany()
+        {
+            if (!companyInitialized)
+                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                    companyInitialized = true;
+                else
+                    companyInitialized = false;
+            return companyInitialized;
+        }
 
         #region Serie
 
@@ -24,7 +35,7 @@ namespace FirstREST.Lib_Primavera
 
             List<Model.Serie> listSeries = new List<Model.Serie>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
 
                 //objList = PriEngine.Engine.Comercial.Clientes.LstClientes();
@@ -62,9 +73,9 @@ namespace FirstREST.Lib_Primavera
 
             List<Model.Cliente> listClientes = new List<Model.Cliente>();
 
-            
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+
+            if (InitializeCompany())
             {
 
                 //objList = PriEngine.Engine.Comercial.Clientes.LstClientes();
@@ -111,7 +122,7 @@ namespace FirstREST.Lib_Primavera
 
             Model.Cliente myCli = new Model.Cliente();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
 
                 if (PriEngine.Engine.Comercial.Clientes.Existe(codCliente) == true)
@@ -147,7 +158,7 @@ namespace FirstREST.Lib_Primavera
             try
             {
 
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
 
                     if (PriEngine.Engine.Comercial.Clientes.Existe(cliente.CodCliente) == false)
@@ -204,7 +215,7 @@ namespace FirstREST.Lib_Primavera
             try
             {
 
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.Comercial.Clientes.Existe(codCliente) == false)
                     {
@@ -251,7 +262,7 @@ namespace FirstREST.Lib_Primavera
 
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
 
                     myCli.set_Cliente(cli.CodCliente);
@@ -301,7 +312,7 @@ namespace FirstREST.Lib_Primavera
             StdBELista objListCab;
             StdBELista objListCab2;
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
 
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codArtigo) == false)
@@ -348,7 +359,7 @@ namespace FirstREST.Lib_Primavera
             Model.Artigo art = new Model.Artigo();
             List<Model.Artigo> listArts = new List<Model.Artigo>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
 
                 objList = PriEngine.Engine.Comercial.Artigos.LstArtigos();
@@ -397,7 +408,7 @@ namespace FirstREST.Lib_Primavera
             Model.LinhaDocCompra lindc = new Model.LinhaDocCompra();
             List<Model.LinhaDocCompra> listlindc = new List<Model.LinhaDocCompra>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 objListCab = PriEngine.Engine.Consulta("SELECT id, NumDocExterno, Entidade, DataDoc, NumDoc, TotalMerc, Serie From CabecCompras where TipoDoc='VGR'");
                 while (!objListCab.NoFim())
@@ -456,7 +467,7 @@ namespace FirstREST.Lib_Primavera
 
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     // Atribui valores ao cabecalho do doc
                     //myEnc.set_DataDoc(dv.Data);
@@ -524,7 +535,7 @@ namespace FirstREST.Lib_Primavera
 
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     // Atribui valores ao cabecalho do doc
                     //myEnc.set_DataDoc(dv.Data);
@@ -603,7 +614,7 @@ namespace FirstREST.Lib_Primavera
             List<Model.LinhaDocVenda> listlindv = new
             List<Model.LinhaDocVenda>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 objListCab = PriEngine.Engine.Consulta("SELECT TOP 50 id, Entidade, Data, NumDoc, TotalMerc,TotalIva, Serie From CabecDoc where TipoDoc='ECL' ORDER BY Data DESC");
 
@@ -661,7 +672,7 @@ namespace FirstREST.Lib_Primavera
             List<Model.LinhaDocVenda>();
             int numDoc = 50;
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
               
                     objListLin = PriEngine.Engine.Consulta("SELECT idCabecDoc, Artigo, Descricao, Quantidade, Unidade, PrecUnit, Desconto1, TotalILiquido, PrecoLiquido, Data from LinhasDoc where Artigo='" + artigo + "' ORDER BY Data DESC");
@@ -723,7 +734,7 @@ namespace FirstREST.Lib_Primavera
             List<Model.LinhaDocVenda> listlindv = new
             List<Model.LinhaDocVenda>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 objListCab = PriEngine.Engine.Consulta("SELECT TOP 50 id, Entidade, Data, NumDoc, TotalMerc, Serie From CabecDoc where TipoDoc='ECL' and Entidade='" + entity + "' ORDER BY Data DESC");
                 while (!objListCab.NoFim())
@@ -775,7 +786,7 @@ namespace FirstREST.Lib_Primavera
             Model.LinhaDocVenda lindv = new Model.LinhaDocVenda();
             List<Model.LinhaDocVenda> listlindv = new List<Model.LinhaDocVenda>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
 
 
@@ -826,7 +837,7 @@ namespace FirstREST.Lib_Primavera
             try
             {
 
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
 
                     //string idVenda = Convert.ToString(id);
@@ -970,7 +981,7 @@ namespace FirstREST.Lib_Primavera
             try
             {
 
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.Comercial.Vendas.ExisteID(id) == false)//("", "ECL", "A", id) == false)//.TabVendas.Existe(idVenda) //.ExisteID(idVenda))//.DocVenda.Existe(id) == false)
                     {
@@ -1021,7 +1032,7 @@ namespace FirstREST.Lib_Primavera
             StdBELista objList;
             List<string> listNumActivities = new List<string>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
                 int numberOfDays = DateTime.DaysInMonth(int.Parse(year), int.Parse(month));
@@ -1057,7 +1068,7 @@ namespace FirstREST.Lib_Primavera
             StdBELista objList;
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
                 string[] dateParts = date.Split(new string[] { dateSeparator }, System.StringSplitOptions.None);
@@ -1107,7 +1118,7 @@ namespace FirstREST.Lib_Primavera
         {
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
@@ -1146,7 +1157,7 @@ namespace FirstREST.Lib_Primavera
 
         /*public static Model.Activity GetActivity(string activityId)
         {
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 Interop.CrmBE900.CrmBEActividade objActivity = PriEngine.Engine.CRM.Actividades.Edita(activityId);
                 if (objActivity == null)
@@ -1173,7 +1184,7 @@ namespace FirstREST.Lib_Primavera
             Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.CRM.Actividades.Existe(activity.id) == false)
                     {
@@ -1215,7 +1226,7 @@ namespace FirstREST.Lib_Primavera
             Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.CRM.Actividades.Existe(activityId) == false)
                     {
@@ -1252,7 +1263,7 @@ namespace FirstREST.Lib_Primavera
             Interop.CrmBE900.CrmBEActividade objActivity = new Interop.CrmBE900.CrmBEActividade();
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     setCrmBEActividadeFields(activity, objActivity);
                     objActivity = PriEngine.Engine.CRM.Actividades.PreencheDadosRelacionados(objActivity);
@@ -1283,7 +1294,7 @@ namespace FirstREST.Lib_Primavera
         {
             StdBELista objList;
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 objList = PriEngine.Engine.Consulta(
                     "SELECT TOP 1 Id " +
@@ -1299,7 +1310,7 @@ namespace FirstREST.Lib_Primavera
 
         /*public static string GetActivityType(string activityTypeId)
         {
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 Interop.CrmBE900.CrmBETipoActividade objActivityType = PriEngine.Engine.CRM.TiposActividade.Edita(activityTypeId);
                 if (objActivityType != null)
@@ -1386,7 +1397,7 @@ namespace FirstREST.Lib_Primavera
 
             List<Model.TargetCustomer> listTargetCustomers = new List<Model.TargetCustomer>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
@@ -1428,12 +1439,12 @@ namespace FirstREST.Lib_Primavera
 
             List<Model.Opportunity> listOpportunities = new List<Model.Opportunity>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
+                    "SELECT CabecOportunidadesVenda.ID AS DBOpportunityId, CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
                     "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
                     "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
@@ -1485,7 +1496,7 @@ namespace FirstREST.Lib_Primavera
             try
             {
 
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunity.opportunity_id) == false)
                     {
@@ -1529,7 +1540,7 @@ namespace FirstREST.Lib_Primavera
             Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     if (PriEngine.Engine.CRM.OportunidadesVenda.Existe(opportunityId) == false)
                     {
@@ -1579,7 +1590,7 @@ namespace FirstREST.Lib_Primavera
             Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity = new Interop.CrmBE900.CrmBEOportunidadeVenda();
             try
             {
-                if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+                if (InitializeCompany())
                 {
                     StdBELista objList = PriEngine.Engine.Consulta(
                         "SELECT TOP 1 Oportunidade AS LastOpportunity " +
@@ -1649,7 +1660,7 @@ namespace FirstREST.Lib_Primavera
         {
             List<Model.Activity> listActivities = new List<Model.Activity>();
 
-            if (PriEngine.InitializeCompany(FirstREST.Properties.Settings.Default.Company.Trim(), FirstREST.Properties.Settings.Default.User.Trim(), FirstREST.Properties.Settings.Default.Password.Trim()) == true)
+            if (InitializeCompany())
             {
                 string dbOpportunityId = GetDatabaseId(opportunityId);
 
