@@ -69,7 +69,7 @@ namespace FirstREST.Lib_Primavera
 
                 //objList = PriEngine.Engine.Comercial.Clientes.LstClientes();
 
-                objList = PriEngine.Engine.Consulta("SELECT Cliente, Nome, Moeda, NumContrib as NumContribuinte, Fac_Mor AS campo_exemplo, CDU_Email as Email FROM  CLIENTES");
+                objList = PriEngine.Engine.Consulta("SELECT Cliente, Nome, Moeda, NumContrib as NumContribuinte, Fac_Mor,Fac_Tel, CDU_Email as Email FROM  CLIENTES");
 
 
                 while (!objList.NoFim())
@@ -87,8 +87,9 @@ namespace FirstREST.Lib_Primavera
                         NomeCliente = objList.Valor("Nome"),
                         Moeda = objList.Valor("Moeda"),
                         NumContribuinte = objList.Valor("NumContribuinte"),
-                        Morada = objList.Valor("campo_exemplo"),
+                        Morada = objList.Valor("Fac_Mor"),
                         Email = objList.Valor("Email"),
+                        Telefone = objList.Valor("Fac_Tel"),//Fac_Tel	nvarchar(020)	Número de telefone.
                         PVP = pvp
                     });
                     objList.Seguinte();
@@ -123,7 +124,7 @@ namespace FirstREST.Lib_Primavera
                     myCli.NumContribuinte = objCli.get_NumContribuinte();
                     myCli.Morada = objCli.get_Morada();
                     myCli.Email = PriEngine.Engine.Comercial.Clientes.DaValorAtributo(codCliente, "CDU_Email");
-
+                    myCli.Telefone = objCli.get_Telefone();
 
                     return myCli;
                 }
@@ -256,11 +257,13 @@ namespace FirstREST.Lib_Primavera
                     myCli.set_Cliente(cli.CodCliente);
                     myCli.set_Nome(cli.NomeCliente);
                     myCli.set_NumContribuinte(cli.NumContribuinte);
-                    myCli.set_Moeda(cli.Moeda);
+                    myCli.set_Moeda("EUR");
                     myCli.set_Morada(cli.Morada);
-
+                    myCli.set_Telefone(cli.Telefone);
+                    myCli.set_Pais("PT");
+                    myCli.set_CondPag("1");
                     PriEngine.Engine.Comercial.Clientes.Actualiza(myCli);
-
+                    
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
                     return erro;

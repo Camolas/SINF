@@ -81,5 +81,8 @@
 			echo '<br>';
 			print "Morada: ";
 			print $obj->{'Morada'};
+			echo '<br>';
+			print "Telefone: ";
+			print $obj->{'Telefone'};
 		?>
     </div>

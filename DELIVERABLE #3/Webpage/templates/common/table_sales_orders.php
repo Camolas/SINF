@@ -2,6 +2,9 @@
         <div class="col-lg-12">
             <h1 class="page-header">Sales Orders
 			<div style="float:right">
+				<a href="new_client.php">
+					<button type="button" class="btn btn-primary btn-lg">Add client</button>
+				</a>
 				<?php include('../templates/orderButton.php'); ?>
 			</div>
 			</h1>
