@@ -18,7 +18,7 @@
 	$entries = [];
 	foreach($obj as $k => $cur)
 	{
-		$table_headers = ["Date","Entity","Serie(NumDoc)","Product Code","Product (QTY) (PPU)(€) (TP)(€)","Client DISC(%)","TotalMerc(€)"," "];
+		$table_headers = ["Date","Entity","Serie(NumDoc)","Product Code","Product (QTY) (PPU)(€) (TP)(€)","Client DISC(%)","TotalMerc(€)","TotalMerc(€)(c/ IVA)"," "];
 		
 		$LinhasDoc = $cur->{'LinhasDoc'};
 		
@@ -47,6 +47,7 @@
 				"Product (QTY) (PPU)(€) (TP)(€)" => $products_info,
 				"Client DISC(%)" => $cur->{'Desconto'},
 				"TotalMerc(€)"=> $cur->{'TotalMerc'},
+				"TotalMerc(€)(c/ IVA)"=> ($cur->{'TotalMerc'}+$cur->{'TotalIva'}),
 				" "=> ($cur->{'Anulado'} ? '<button type="button" class="btn btn-primary btn-xs">Canceled Order</button>' : 
 												'<a href="edit_sale_order.php?docNum='.$cur->{'NumDoc'}.'&id='.$cur->{'id'}.'&serie='.$cur->{'Serie'}.'"><button type="button" class="btn btn-success btn-xs">Edit Order</button></a>
 						<br><br><a id="cancel" href="cancel_sale_order.php?id='.$cur->{'id'}.'"><button type="button" class="btn btn-danger btn-xs">Cancel Order</button></a>')
@@ -63,7 +64,7 @@
 		array_push($entries, $entry);
 	}
 	include('../templates/common/header.php');
-	include('../templates/common/table.php');
-	include('../templates/orderButton.php');
+	include('../templates/common/table_sales_orders.php');
+	
 	include('../templates/common/footer.php');
 ?>
