@@ -2,55 +2,48 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class Opportunity
+    public class ProposalProduct
     {
-        public string opportunity_id
+        public string product_id
         {
             get;
             set;
         }
 
-        public string customer_id
+        public string product_name
         {
             get;
             set;
         }
 
-        public string customer_name
+        public string product_quantity
         {
             get;
             set;
         }
 
-        public List<ProposalProduct> products
+        public string cost
         {
             get;
             set;
         }
 
-        public string opportunity_type
+        public string selling_price
         {
             get;
             set;
         }
 
-        public string opportunity_state
+        public string profitability
         {
             get;
             set;
         }
 
-        public string representative_id
-        {
-            get;
-            set;
-        }
-
-        public List<Activity> associated_activities
+        public string margin
         {
             get;
             set;
