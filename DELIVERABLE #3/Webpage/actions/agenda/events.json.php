@@ -1,4 +1,4 @@
-<?php 
+<?php
 include('../../config/init.php');
 
 $curl = curl_init();
@@ -6,7 +6,7 @@ curl_setopt($curl, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/agenda/?representative
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 $resp = curl_exec($curl);
 curl_close($curl);
-	
+
 $obj = json_decode($resp, true);
 $string = '{"success": 1,"result": [';
 
@@ -41,6 +41,7 @@ foreach ($obj as $key => $value) {
 																	'&notes=' . $value['notes'] .
 																	'&start_date=' . $value['start_date'] .
 																	'&end_date=' . $value['end_date'] .
+																	'&opportunity_id=' . $value['opportunity_id'] .
 																	'&id=' . $value['id'] .'",
 							"class": "' . $class . '",
 							"start": "' . (strtotime($value['start_date'])+1*3600)*1000 . '",

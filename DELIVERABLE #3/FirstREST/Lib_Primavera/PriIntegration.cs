@@ -1131,10 +1131,8 @@ namespace FirstREST.Lib_Primavera
 
                 StdBELista objList = PriEngine.Engine.Consulta(
                     "SELECT Tarefas.Id AS ActivityId, Tarefas.DataInicio AS StartDate, Tarefas.DataFim AS EndDate, Tarefas.Resumo AS Title, TiposTarefa.Descricao AS Type, Tarefas.EntidadePrincipal AS Client, Tarefas.IdContactoPrincipal AS DBContactId, Tarefas.Utilizador AS RepresentativeId, Tarefas.LocalRealizacao AS Location, CabecOportunidadesVenda.Oportunidade AS OpportunityId, Tarefas.Descricao AS Notes " +
-                    "FROM Tarefas, TiposTarefa, CabecOportunidadesVenda " +
-                    "WHERE Tarefas.IdTipoActividade = TiposTarefa.Id " +
-                    "AND Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
-                    "AND Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
+                    "FROM Tarefas JOIN TiposTarefa ON Tarefas.IdTipoActividade = TiposTarefa.Id LEFT JOIN CabecOportunidadesVenda ON Tarefas.IDCabecOVenda LIKE CabecOportunidadesVenda.ID " +
+                    "WHERE Tarefas.Utilizador LIKE '" + dbRepresentativeId + "'"
                     );
 
                 while (!objList.NoFim())
