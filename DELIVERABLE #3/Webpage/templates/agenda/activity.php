@@ -21,13 +21,25 @@ body {width:90%;}
 <label>End Date</label>
 <p><?= $_GET['end_date'] ?></p>
 <label>Client</label>
-<p><?= $_GET['client'] ?></p>
+  <?php
+  foreach($clients as $client)
+  { if(strcmp($client['CodCliente'], $_GET['client']) == 0){?>
+    <p><?= $client['NomeCliente'] ?></p>
+  <?php }} ?>
 <label>Location</label>
 <p><?= $_GET['location'] ?></p>
 <label>Notes</label>
 <p><?= $_GET['notes'] ?></p>
+<?php if($_GET['opportunity_id']) { ?>
+  <label>Opportunity</label>
+  <?php foreach($oports as $oppotunity){
+    if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
+      <p> <?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </p>
+    <?php }
+  } ?>
+<?php } ?>
 
-<a href="<?=$BASE_URL?>pages/update_event.php?id=<?=$_GET['id']?>&title=<?=$_GET['title']?>&type=<?=$_GET['type']?>&start_date=<?=$_GET['start_date']?>&end_date=<?=$_GET['end_date']?>&client=<?=$_GET['client']?>&location=<?=$_GET['location']?>&notes=<?=$_GET['notes']?>"><button type="button" class="btn btn-primary">Update</button></a>
+<a href="<?=$BASE_URL?>pages/update_event.php?id=<?=$_GET['id']?>&title=<?=$_GET['title']?>&type=<?=$_GET['type']?>&start_date=<?=$_GET['start_date']?>&end_date=<?=$_GET['end_date']?>&client=<?=$_GET['client']?>&location=<?=$_GET['location']?>&notes=<?=$_GET['notes']?>&opportunity_id=<?=$_GET['opportunity_id']?>"> <button type="button" class="btn btn-primary">Update</button></a>
 <a href="<?=$BASE_URL?>actions/event/delete_event.php?id=<?=$_GET['id']?>"><button type="button" class="btn btn-danger">Delete</button></a>
 </body>
 </html>
