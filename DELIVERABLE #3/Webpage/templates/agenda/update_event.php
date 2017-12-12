@@ -74,7 +74,7 @@
         <br>
         <label>Opportunity</label>
         <select name="opportunity_id" class="form-control">
-          <option value="null"></option>
+          <option value="null">No Opporunity</option>
           <?php foreach($oports as $oppotunity){
             if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
               <option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>

@@ -10,7 +10,9 @@ $activity['notes'] = $_POST['notes'];
 $activity['start_date'] = explode ('T' , $_POST['start_date'])[0] . ' ' . explode ('T' , $_POST['start_date'])[1];
 $activity['end_date'] = explode ('T' , $_POST['end_date'])[0] . ' ' . explode ('T' , $_POST['end_date'])[1];
 $activity['representative_id'] = $_SESSION['user_id'];
-$activity['opportunity_id'] = $_POST['opportunity_id'];
+if(strcmp($_POST['opportunity_id'], "null") != 0) {
+	$activity['opportunity_id'] = $_POST['opportunity_id'];
+}
 
 $json_act = json_encode($activity);
 

@@ -50,6 +50,19 @@
 			<label>End Date</label>
 			<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . (date('H') - date('O')[2]) . date(':i')?>" name="end_date">
 			<br>
+			<label>Opportunity</label>
+			<br>
+			<select id="opportunities" name="opportunity_id">
+				<option value="null">No Opporunity</option>
+				<?php foreach($oports as $oppotunity){
+					if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
+						<option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+					<?php } else { ?>
+						<option value="<?= $oppotunity['opportunity_id']?>"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+					<?php }
+				} ?>
+			</select>
+			<br>
 			<br>
 			<input type="submit" class="btn btn-default btn" value="Create">
 		</form>
@@ -59,4 +72,5 @@
 
 <script type="text/javascript">
 $('#customer_id').select2();
+$('#opportunities').select2();
 </script>
