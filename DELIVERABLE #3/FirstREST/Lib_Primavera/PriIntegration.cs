@@ -1486,8 +1486,8 @@ namespace FirstREST.Lib_Primavera
                         opportunity_id = objList.Valor("OpportunityId"),
                         customer_id = objList.Valor("CustomerId"),
                         customer_name = objList.Valor("CustomerName"),
-                        product_id = objList.Valor("ProductId"),
-                        product_name = objList.Valor("ProductName"),
+                        //product_id = objList.Valor("ProductId"),
+                        //product_name = objList.Valor("ProductName"),
                         opportunity_type = objList.Valor("OpportunityType"),
                         opportunity_state = opportunityState,
                         representative_id = objList.Valor("RepresentativeId").ToString(),
@@ -1525,6 +1525,7 @@ namespace FirstREST.Lib_Primavera
                         setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
                         PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                        InsertProductsInOpportunityProposal(opportunity, objOpportunity);
                         PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1636,9 +1637,8 @@ namespace FirstREST.Lib_Primavera
                     Model.Cliente customer = GetCliente(opportunity.customer_id);
                     if (customer != null)
                         opportunity.customer_name = customer.NomeCliente;
-                    Model.Artigo product = GetArtigo(opportunity.product_id);
-                    if (product != null)
-                        opportunity.product_name = product.DescArtigo;
+
+                    InsertProductsInOpportunityProposal(opportunity, objOpportunity);
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
@@ -1665,7 +1665,6 @@ namespace FirstREST.Lib_Primavera
             objOpportunity.set_Vendedor(opportunity.representative_id);
             objOpportunity.set_Descricao(opportunity.opportunity_type);
             objOpportunity.set_Entidade(opportunity.customer_id);
-            objOpportunity.set_Resumo(opportunity.product_id);
             if (opportunity.opportunity_state.Equals("Open"))
                 objOpportunity.set_EstadoVenda(0);
             else if (opportunity.opportunity_state.Equals("Wins"))
@@ -1715,6 +1714,88 @@ namespace FirstREST.Lib_Primavera
             }
             else
                 return null;
+        }
+
+        /*private static string GetDBOpportunityId(string opportunityId)
+        {
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT ID " +
+                    "FROM CabecOportunidadesVenda " +
+                    "WHERE Oportunidade LIKE '" + opportunityId + "'"
+                    );
+                if (objList.NumLinhas() == 0)
+                    return null;
+                else
+                    return objList.Valor("ID");
+        }*/
+
+        private static void InsertProductsInOpportunityProposal(Model.Opportunity opportunity, Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity)
+        {
+            const short proposalNumber = 1;
+            Double proposalsValue = 0;
+            Double proposalsProfitability = 0;
+
+            Interop.CrmBE900.CrmBEPropostaOPV objProposal;
+
+            if (PriEngine.Engine.CRM.PropostasOPV.Existe(objOpportunity.get_ID(), proposalNumber))
+            {
+                objProposal = PriEngine.Engine.CRM.PropostasOPV.Edita(objOpportunity.get_ID(), proposalNumber);
+                objProposal.set_EmModoEdicao(true);
+            }
+            else
+            {
+                objProposal = new Interop.CrmBE900.CrmBEPropostaOPV();
+                objProposal.set_IdOportunidade(objOpportunity.get_ID());
+                objProposal.set_IdCabecOrigem(objOpportunity.get_ID());
+                objProposal.set_NumProposta(proposalNumber);
+                PriEngine.Engine.CRM.PropostasOPV.GeraDocumento(objOpportunity, objProposal, "M", "1", "1");
+            }
+
+            Interop.CrmBE900.CrmBELinhasPropostaOPV objProposalLines = PriEngine.Engine.CRM.PropostasOPV.EditaLinhas(objOpportunity.get_ID(), proposalNumber);
+
+            Double proposalValue = 0;
+            Double proposalProfitability = 0;
+            Double proposalMargin = 0;
+            foreach (Model.ProposalProduct product in opportunity.products)
+            {
+                Interop.CrmBE900.CrmBELinhaPropostaOPV objProposalLine = new Interop.CrmBE900.CrmBELinhaPropostaOPV();
+                objProposalLine.set_EmModoEdicao(true);
+
+                objProposalLine.set_IdOportunidade(objOpportunity.get_ID());
+                objProposalLine.set_Artigo(product.product_id);
+
+                Model.Artigo myProduct = GetArtigo(product.product_id);
+                if (myProduct != null)
+                {
+                    objProposalLine.set_Descricao(myProduct.DescArtigo);
+                    product.product_name = objProposalLine.get_Descricao();
+                }
+
+                objProposalLine.set_Quantidade(Double.Parse(product.product_quantity));
+                objProposalLine.set_PrecoCusto(Double.Parse(product.cost));
+                objProposalLine.set_PrecoVenda(Double.Parse(product.selling_price));
+                proposalsValue += objProposalLine.get_PrecoVenda() * objProposalLine.get_Quantidade();
+                proposalValue += objProposalLine.get_PrecoVenda();
+                objProposalLine.set_Rentabilidade(objProposalLine.get_PrecoVenda() - objProposalLine.get_PrecoCusto());
+                product.profitability = objProposalLine.get_Rentabilidade().ToString();
+                proposalsProfitability += objProposalLine.get_Rentabilidade();
+                proposalProfitability += objProposalLine.get_Rentabilidade();
+                objProposalLine.set_Margem(objProposalLine.get_Rentabilidade() / objProposalLine.get_PrecoVenda());
+                product.margin = objProposalLine.get_Margem().ToString();
+                proposalMargin += objProposalLine.get_Margem();
+                objProposalLine.set_NumProposta(objProposal.get_NumProposta());
+
+                objProposalLines.Insere(objProposalLine);
+            }
+
+            objProposal.set_Linhas(objProposalLines);
+            objProposal.set_Custo(proposalValue);
+            objProposal.set_Rentabilidade(proposalProfitability);
+            objProposal.set_Margem(proposalMargin);
+
+            PriEngine.Engine.CRM.PropostasOPV.Actualiza(objProposal);
+            PriEngine.Engine.CRM.PropostasOPV.ActualizaValorAtributo(objOpportunity.get_ID(), 1, "Rentabilidade", proposalsProfitability);
+            PriEngine.Engine.CRM.OportunidadesVenda.ActualizaValorAtributo(objOpportunity.get_ID(), "ValorTotalOV", proposalsValue);
         }
 
         #endregion
