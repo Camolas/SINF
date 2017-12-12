@@ -30,10 +30,13 @@
 			<br>
 			<select id="customer_id" name="client">
 				<?php
-				foreach($clients as $id => $client)
-				{?>
-					<option value="<?= $client['CodCliente']?>"><?= $client['NomeCliente']?> </option>;
-				<?php } ?>
+				foreach($clients as $id => $client){
+					if(strcmp($client['CodCliente'], $_GET['CodCliente']) == 0){ ?>
+						<option value="<?= $client['CodCliente']?>" selected="selected"><?= $client['NomeCliente']?> </option>;
+					<?php } else {?>
+						<option value="<?= $client['CodCliente']?>"><?= $client['NomeCliente']?> </option>;
+					<?php }
+				} ?>
 			</select>
 			<br>
 			<br>

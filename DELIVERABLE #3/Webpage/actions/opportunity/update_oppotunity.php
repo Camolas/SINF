@@ -6,7 +6,13 @@ $activity['customer_id'] = $_GET['customer_id'];
 $activity['product_id'] = $_GET['product_id'];
 $activity['opportunity_type'] = $_GET['opportunity_type'];
 $activity['representative_id'] = $_SESSION['user_id'];
-$activity['opportunity_state'] = "Open";
+if(!$_GET['opportunity_state'] || strcmp($_GET['opportunity_state'], "Update") == 0){
+ 	$activity['opportunity_state']= "Open";
+} else if(strcmp($_GET['opportunity_state'], "Mark as Won") == 0) {
+	$activity['opportunity_state']= "Wins";
+} else if(strcmp($_GET['opportunity_state'], "Mark as Lost") == 0) {
+	$activity['opportunity_state']= "Lost";
+}
 
 $json_act = json_encode($activity);
 
@@ -25,5 +31,7 @@ curl_close($curl);
 
 if(strcmp($resp, "Sucesso") ==-1) {
 	header("Location: " . $BASE_URL . "pages/opportunities.php");
+} else {
+	pr($resp);
 }
 ?>

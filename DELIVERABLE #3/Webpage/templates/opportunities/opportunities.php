@@ -12,7 +12,7 @@
 <?php
 function printRest($arr, $type) {
   foreach ($arr as $key => $value) {
-    if(strcmp($value['opportunity_type'], $type)==0){
+    if(strcmp($value['opportunity_type'], $type)==0 && strcmp($value['opportunity_state'],"Open")==0){
       echo '<div class="panel panel-default" data-toggle="modal" data-target="#moreinfo">
       <div class="opor_id" hidden>' . $value['opportunity_id'] .'</div>
       <div class="opor_id" hidden>' . $value['customer_id'] .'</div>
@@ -161,13 +161,15 @@ function printRest($arr, $type) {
           <br>
           <div id="activities_block">
           </div>
-
+          <a id="addNeEventButton"><button type="button" class="btn btn-primary">Create an Event</button></a>
           <br>
 
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <input type="submit" class="btn btn-info" value="Update">
+          <input type="submit" class="btn btn-info" value="Update" name="opportunity_state">
+          <input type="submit" class="btn btn-success" value="Mark as Won" name="opportunity_state">
+          <input type="submit" class="btn btn-danger" value="Mark as Lost" name="opportunity_state">
           <a id="deleteButton"><button type="button" class="btn btn-danger">Delete</button></a>
         </div>
       </form>

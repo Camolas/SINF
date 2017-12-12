@@ -62,17 +62,26 @@ $(".panel").click(function() {
     var customer_id = $( this )[0].children[1].innerText;
     var product_id = $( this )[0].children[2].innerText;
     var ativities = $( this )[0].children[3].innerText;
-    var array = JSON.parse(ativities)[0];
+    var array = JSON.parse(ativities);
     console.log(array);
     var opportunity_type = $( this )[0].parentNode.parentNode.parentNode.children[0].innerText;
     elmEspera = product_id;
 
-
+    $('#activities_block').empty();
     document.getElementById("opportunity_type").value = opportunity_type;
     $( "#customer_id" )[0].value = customer_id;
     $( "#product_id" )[0].value = product_id;
     $( "#opportunity_id" )[0].value = opportunity_id;
     $( "#deleteButton" ).attr("href", $BASE_URL + "actions/opportunity/delete_opportunity.php?opportunity_id=" + opportunity_id);
+    $( "#addNeEventButton" ).attr("href", $BASE_URL + "pages/create_event.php?opportunity_id=" + opportunity_id + "&CodCliente=" + customer_id);
+    for(var i = 0; i < array.length; i++){
+      $('#activities_block').append('<div class="sm_activit_block">' +
+                                      ' <b>Title: </b>' + array[i]['title'] +
+                                      ' <br> <b>Start Date:</b>' + array[i]['start_date'] +
+                                      ' <br> <b>End Date: </b>' + array[i]['end_date'] +
+                                      ' <br> <b>Type: </b>' + array[i]['type'] +
+                                      '</div>');
+    }
   }
 });
 
