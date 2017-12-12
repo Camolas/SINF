@@ -178,8 +178,9 @@ namespace FirstREST.Lib_Primavera
                         objCli.set_Moeda(cliente.Moeda);
                         objCli.set_Morada(cliente.Morada);
 
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.Comercial.Clientes.Actualiza(objCli);
-
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -194,9 +195,9 @@ namespace FirstREST.Lib_Primavera
                 }
 
             }
-
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -225,8 +226,9 @@ namespace FirstREST.Lib_Primavera
                     }
                     else
                     {
-
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.Comercial.Clientes.Remove(codCliente);
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -240,9 +242,9 @@ namespace FirstREST.Lib_Primavera
                     return erro;
                 }
             }
-
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -273,8 +275,10 @@ namespace FirstREST.Lib_Primavera
                     myCli.set_Telefone(cli.Telefone);
                     myCli.set_Pais("PT");
                     myCli.set_CondPag("1");
+
+                    PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.Comercial.Clientes.Actualiza(myCli);
-                    
+                    PriEngine.Engine.TerminaTransaccao();
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
                     return erro;
@@ -286,9 +290,9 @@ namespace FirstREST.Lib_Primavera
                     return erro;
                 }
             }
-
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -484,7 +488,6 @@ namespace FirstREST.Lib_Primavera
                     {
                         PriEngine.Engine.Comercial.Compras.AdicionaLinha(myGR, lin.CodArtigo, lin.Quantidade, lin.Armazem, "", lin.PrecoUnitario, lin.Desconto);
                     }
-
 
                     PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.Comercial.Compras.Actualiza(myGR, "Teste");
@@ -919,8 +922,9 @@ namespace FirstREST.Lib_Primavera
 
                         //if (objCli.get_Entidade() != dv.Entidade) 
                         //objCli.set_Entidade(dv.Entidade);
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.Comercial.Vendas.Actualiza(objCli);
-
+                        PriEngine.Engine.TerminaTransaccao();
                         //PriEngine.Engine.Comercial.Vendas.ActualizaValorAtributoID(id, "Entidade", dv.Entidade);
 
                         //if (objCli.get_Serie() != dv.Serie)
@@ -957,9 +961,9 @@ namespace FirstREST.Lib_Primavera
                 }
 
             }
-
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -996,8 +1000,10 @@ namespace FirstREST.Lib_Primavera
                         System.Diagnostics.Debug.WriteLine(objCli.get_Serie());
                         objCli.set_EmModoEdicao(true);
                         objCli.set_Anulado(true);
-                        PriEngine.Engine.Comercial.Vendas.Actualiza(objCli);
 
+                        PriEngine.Engine.IniciaTransaccao();
+                        PriEngine.Engine.Comercial.Vendas.Actualiza(objCli);
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1012,9 +1018,9 @@ namespace FirstREST.Lib_Primavera
                     return erro;
                 }
             }
-
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1198,8 +1204,9 @@ namespace FirstREST.Lib_Primavera
                         objActivity.set_EmModoEdicao(true);
 
                         setCrmBEActividadeFields(activity, objActivity);
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
-
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1214,6 +1221,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1236,7 +1244,9 @@ namespace FirstREST.Lib_Primavera
                     }
                     else
                     {
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.Actividades.Remove(activityId);
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1251,6 +1261,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1268,7 +1279,9 @@ namespace FirstREST.Lib_Primavera
                     setCrmBEActividadeFields(activity, objActivity);
                     objActivity = PriEngine.Engine.CRM.Actividades.PreencheDadosRelacionados(objActivity);
 
+                    PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.CRM.Actividades.Actualiza(objActivity);
+                    PriEngine.Engine.TerminaTransaccao();
                     activity.id = objActivity.get_ID();
 
                     erro.Erro = 0;
@@ -1284,6 +1297,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1510,8 +1524,9 @@ namespace FirstREST.Lib_Primavera
                         objOpportunity.set_EmModoEdicao(true);
 
                         setMainCrmBEOportunidadeVendaFields(opportunity, objOpportunity);
+                        PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
-
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1526,6 +1541,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1562,8 +1578,9 @@ namespace FirstREST.Lib_Primavera
                         /*objOpportunity.set_EmModoEdicao(true);
                         objOpportunity.set_DataFecho(DateTime.Now);
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);*/
-                        PriEngine.Engine.CRM.OportunidadesVenda.RemoveID(objOpportunity.get_ID()); 
-
+                        PriEngine.Engine.IniciaTransaccao();
+                        PriEngine.Engine.CRM.OportunidadesVenda.RemoveID(objOpportunity.get_ID());
+                        PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
                         return erro;
@@ -1578,6 +1595,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
@@ -1612,7 +1630,9 @@ namespace FirstREST.Lib_Primavera
                     objOpportunity.set_DataExpiracao(new DateTime(5000, 1, 1));
                     objOpportunity.set_Moeda("EUR");
 
+                    PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
+                    PriEngine.Engine.TerminaTransaccao();
                     opportunity.opportunity_id = objOpportunity.get_Oportunidade();
                     Model.Cliente customer = GetCliente(opportunity.customer_id);
                     if (customer != null)
@@ -1634,6 +1654,7 @@ namespace FirstREST.Lib_Primavera
             }
             catch (Exception ex)
             {
+                PriEngine.Engine.DesfazTransaccao();
                 erro.Erro = 1;
                 erro.Descricao = ex.Message;
                 return erro;
