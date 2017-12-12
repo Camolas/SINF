@@ -17,7 +17,7 @@ function printRest($arr, $type) {
       <div class="opor_id" hidden>' . $value['opportunity_id'] .'</div>
       <div class="opor_id" hidden>' . $value['customer_id'] .'</div>
       <div class="opor_id" hidden>' . $value['product_id'] .'</div>
-      <div class="opor_id" hidden>' . $value['associated_activities'] .'</div>
+      <div class="opor_id" hidden>' . json_encode($value['associated_activities']) .'</div>
       <div class="panel-heading">' . $value['customer_name'] . '</div>
       <div class="panel-body">
       <div class="opor-card-content opor-card-name">' . $value['product_name'] .'</div>
@@ -157,8 +157,12 @@ function printRest($arr, $type) {
 
           <input type="hidden" name="opportunity_id" id="opportunity_id">
 
-          Activities: <br>
+          Activities:
+          <br>
+          <div id="activities_block">
+          </div>
 
+          <br>
 
         </div>
         <div class="modal-footer">

@@ -61,6 +61,9 @@ $(".panel").click(function() {
     var opportunity_id = $( this )[0].children[0].innerText;
     var customer_id = $( this )[0].children[1].innerText;
     var product_id = $( this )[0].children[2].innerText;
+    var ativities = $( this )[0].children[3].innerText;
+    var array = JSON.parse(ativities)[0];
+    console.log(array);
     var opportunity_type = $( this )[0].parentNode.parentNode.parentNode.children[0].innerText;
     elmEspera = product_id;
 
@@ -85,9 +88,10 @@ $('#create_client_id').append($('<option>', {
 }));
 $( "#create_client_id" )[0].value = -1;
 
-$('#messages').append($('<p>', {
+$('#messages').append('<div class="loader"></div>').append($('<div>', {
   text: "Aguarde..."
 }));
+
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
