@@ -10,14 +10,6 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 $resp = json_decode(curl_exec($curl), true);
 curl_close($curl);
 
-//Load products
-$curl4 = curl_init();
-curl_setopt($curl4, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/artigos/');
-curl_setopt($curl4, CURLOPT_RETURNTRANSFER, TRUE);
-$resp4 = curl_exec($curl4);
-curl_close($curl4);
-$products = json_decode($resp4, true);
-
 // load clients
 $curl2 = curl_init();
 curl_setopt($curl2, CURLOPT_URL, $PRIMAVERA_ADDRESS . 'api/clientes/');

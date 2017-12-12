@@ -17,8 +17,8 @@ function printRest($arr, $type) {
       <div class="opor_id" hidden>' . $value['opportunity_id'] .'</div>
       <div class="opor_id" hidden>' . $value['customer_id'] .'</div>
       <div class="opor_id" hidden>' . $value['product_id'] .'</div>
-      <div class="opor_id" hidden>' . $value['product_id'] .'</div>
-      <div class="panel-heading">' . $value['associated_activities'] . '</div>
+      <div class="opor_id" hidden>' . $value['associated_activities'] .'</div>
+      <div class="panel-heading">' . $value['customer_name'] . '</div>
       <div class="panel-body">
       <div class="opor-card-content opor-card-name">' . $value['product_name'] .'</div>
       </div>
@@ -97,12 +97,7 @@ function printRest($arr, $type) {
 
           <br>
           Product id:<br>
-          <select name="product_id">
-            <?php
-            foreach($products as $id => $product)
-            {?>
-              <option value="<?= $product['CodArtigo']?>"><?= $product['DescArtigo']?> </option>;
-            <?php } ?>
+          <select name="product_id" id="create_client_id">
           </select>
           <br>
           Opportunity:<br>
@@ -148,11 +143,6 @@ function printRest($arr, $type) {
           <br>
           Product id:<br>
           <select id="product_id" name="product_id">
-            <?php
-            foreach($products as $id => $product)
-            {?>
-              <option value="<?= $product['CodArtigo']?>"><?= $product['DescArtigo']?> </option>;
-            <?php } ?>
           </select>
           <br>
           Opportunity:<br>
