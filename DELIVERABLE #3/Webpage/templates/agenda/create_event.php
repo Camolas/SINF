@@ -5,9 +5,7 @@
 </div>
 
 
-
 <div class="well">
-
 	<div class="form-group">
 		<form action="<?= $BASE_URL?>actions/event/create_event.php" method="post">
 			<label>Title</label>
@@ -46,23 +44,26 @@
 			<label>Notes</label>
 			<textarea class="form-control" rows="4" name="notes"></textarea>
 			<br>
-			<label>Start Date</label>
-			<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . (date('H') - date('O')[2]) . date(':i')?>" name="start_date">
 
+			<?php $varu = new DateTime(); $varu->modify(-date('O')[2] . ' hour') ;?>
+			<label>Start Date</label>
+			<input class="form-control" type="datetime-local" value="<?= $varu->format('Y-m-d\TH:i')?>" name="start_date">
 			<br>
 			<label>End Date</label>
-			<input class="form-control" type="datetime-local" value="<?= date("Y-m-d") . 'T' . (date('H') - date('O')[2]) . date(':i')?>" name="end_date">
+			<input class="form-control" type="datetime-local" value="<?= $varu->format('Y-m-d\TH:i')?>" name="end_date">
 			<br>
 			<label>Opportunity</label>
 			<br>
 			<select id="opportunities" name="opportunity_id">
 				<option value="null">No Opporunity</option>
 				<?php foreach($oports as $oppotunity){
-					if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
-						<option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
-					<?php } else { ?>
-						<option value="<?= $oppotunity['opportunity_id']?>"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
-					<?php }
+					if(strcmp($oppotunity['opportunity_state'], 'Open') == 0) {
+						if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
+							<option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+						<?php } else { ?>
+							<option value="<?= $oppotunity['opportunity_id']?>"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+						<?php }
+					}
 				} ?>
 			</select>
 			<br>
