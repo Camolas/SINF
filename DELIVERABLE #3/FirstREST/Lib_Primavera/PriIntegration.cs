@@ -1526,6 +1526,8 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
                         InsertProductsInOpportunityProposal(opportunity, objOpportunity);
+                        if (objOpportunity.get_EstadoVenda() == 1)
+                            CreateSalesOrder(opportunity);
                         PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1632,13 +1634,15 @@ namespace FirstREST.Lib_Primavera
 
                     PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
-                    PriEngine.Engine.TerminaTransaccao();
                     opportunity.opportunity_id = objOpportunity.get_Oportunidade();
                     Model.Cliente customer = GetCliente(opportunity.customer_id);
                     if (customer != null)
                         opportunity.customer_name = customer.NomeCliente;
 
                     InsertProductsInOpportunityProposal(opportunity, objOpportunity);
+                    if (objOpportunity.get_EstadoVenda() == 1)
+                        CreateSalesOrder(opportunity);
+                    PriEngine.Engine.TerminaTransaccao();
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
@@ -1759,7 +1763,6 @@ namespace FirstREST.Lib_Primavera
             foreach (Model.ProposalProduct product in opportunity.products)
             {
                 Interop.CrmBE900.CrmBELinhaPropostaOPV objProposalLine = new Interop.CrmBE900.CrmBELinhaPropostaOPV();
-                objProposalLine.set_EmModoEdicao(true);
 
                 objProposalLine.set_IdOportunidade(objOpportunity.get_ID());
                 objProposalLine.set_Artigo(product.product_id);
@@ -1796,6 +1799,23 @@ namespace FirstREST.Lib_Primavera
             PriEngine.Engine.CRM.PropostasOPV.Actualiza(objProposal);
             PriEngine.Engine.CRM.PropostasOPV.ActualizaValorAtributo(objOpportunity.get_ID(), 1, "Rentabilidade", proposalsProfitability);
             PriEngine.Engine.CRM.OportunidadesVenda.ActualizaValorAtributo(objOpportunity.get_ID(), "ValorTotalOV", proposalsValue);
+        }
+
+        private static void CreateSalesOrder(Model.Opportunity opportunity)
+        {
+            Model.DocVenda opportunity_order = new Model.DocVenda();
+            opportunity_order.LinhasDoc = new List<FirstREST.Lib_Primavera.Model.LinhaDocVenda>();
+            opportunity_order.Entidade = opportunity.customer_id;
+            opportunity_order.Serie = "A";
+            foreach (Model.ProposalProduct product in opportunity.products)
+            {
+                Model.LinhaDocVenda lin = new Model.LinhaDocVenda();
+                lin.CodArtigo = product.product_id;
+                lin.Desconto = 0.0;
+                lin.Quantidade = Double.Parse(product.product_quantity);
+                opportunity_order.LinhasDoc.Add(lin);
+            }
+            Encomendas_New(opportunity_order);
         }
 
         #endregion
