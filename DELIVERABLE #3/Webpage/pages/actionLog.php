@@ -25,7 +25,7 @@
     }
     if($user_data != false) {
         $password_hash = generate_password_hash($password);
-        $user_id = $user_data['user_id'];
+        $user_id = $user_data['id'];
         if($user_data['password_hash'] == $password_hash) {
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $email;
@@ -40,8 +40,6 @@
         $_SESSION['form_values'] = $_POST;
         $_SESSION['error_messages'][] = 'Invalid email.';
     }
-
-    pr($_SESSION);
-    exit();
+    
     header('Location: ' . $BASE_URL);
 ?>

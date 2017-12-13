@@ -5,8 +5,8 @@
 
     function get_user_data($email) {
 	    global $conn;
-	    $stmt = $conn->prepare('SELECT user_id, password_hash FROM user WHERE email = ?');
-	    $stmt->execute(array($email));
+	    $stmt = $conn->prepare("SELECT * FROM users WHERE users.email LIKE ?");
+	    $stmt->execute(array("$email"));
 	    $data = $stmt->fetch();
 	    return $data;
     }
