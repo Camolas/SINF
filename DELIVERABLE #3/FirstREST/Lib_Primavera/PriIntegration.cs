@@ -1527,7 +1527,7 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
                         InsertProductsInOpportunityProposal(opportunity, objOpportunity);
                         if (objOpportunity.get_EncomendaEfectuada())
-                            CreateSalesOrder(opportunity, objOpportunity);
+                            CreateSalesOrder(opportunity);
                         PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1641,7 +1641,7 @@ namespace FirstREST.Lib_Primavera
 
                     InsertProductsInOpportunityProposal(opportunity, objOpportunity);
                     if (objOpportunity.get_EncomendaEfectuada())
-                        CreateSalesOrder(opportunity, objOpportunity);
+                        CreateSalesOrder(opportunity);
                     PriEngine.Engine.TerminaTransaccao();
 
                     erro.Erro = 0;
@@ -1835,7 +1835,7 @@ namespace FirstREST.Lib_Primavera
                 StdBELista objList = PriEngine.Engine.Consulta(
                     "SELECT Artigo AS ProductId, Descricao AS ProductName, PrecoCusto AS Cost, PrecoVenda AS SellingPrice, Rentabilidade AS Profitability, Margem AS Margin " +
                     "FROM LinhasPropostasOPV " +
-                    "WHERE IdOportunidade LIKE " + myDBOpportunityId
+                    "WHERE IdOportunidade LIKE '" + myDBOpportunityId + "'"
                     );
 
                 while (!objList.NoFim())
