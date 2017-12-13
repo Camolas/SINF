@@ -3,9 +3,9 @@ include('../../config/init.php');
 
 $activity['opportunity_id'] = $_GET['opportunity_id'];
 $activity['customer_id'] = $_GET['customer_id'];
-$activity['product_id'] = $_GET['product_id'];
+$activity['products'] = $_GET['products'];
 $activity['opportunity_type'] = $_GET['opportunity_type'];
-$activity['representative_id'] = $_SESSION['user_id'];
+$activity['representative_id'] = $_SESSION['user_id'] . '';
 if(!$_GET['opportunity_state'] || strcmp($_GET['opportunity_state'], "Update") == 0){
  	$activity['opportunity_state']= "Open";
 } else if(strcmp($_GET['opportunity_state'], "Mark as Won") == 0) {

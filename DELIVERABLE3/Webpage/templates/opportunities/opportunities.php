@@ -16,11 +16,11 @@ function printRest($arr, $type) {
       echo '<div class="panel panel-default" data-toggle="modal" data-target="#moreinfo">
       <div class="opor_id" hidden>' . $value['opportunity_id'] .'</div>
       <div class="opor_id" hidden>' . $value['customer_id'] .'</div>
-      <div class="opor_id" hidden>' . $value['product_id'] .'</div>
       <div class="opor_id" hidden>' . json_encode($value['associated_activities']) .'</div>
+      <div class="opor_id" hidden>' . json_encode($value['products']) .'</div>
       <div class="panel-heading">' . $value['customer_name'] . '</div>
       <div class="panel-body">
-      <div class="opor-card-content opor-card-name">' . $value['product_name'] .'</div>
+      <div class="opor-card-content opor-card-name"> Profitability: ' . calcTotalProfit($value['products']) .'</div>
       </div>
       </div>';
     }
@@ -79,14 +79,14 @@ function printRest($arr, $type) {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Create a new oportunity</h5>
+        <h1 class="modal-title" id="exampleModalLongTitle">Create a new oportunity</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <form action="<?= $BASE_URL?>actions/opportunity/create_opportunity.php" method="post">
         <div class="modal-body">
-          Customer id:<br>
+          <h4>Customer id:</h4>
           <select name="customer_id">
             <?php
             foreach($clients as $id => $client)
@@ -95,12 +95,12 @@ function printRest($arr, $type) {
             <?php } ?>
           </select>
 
-          <br>
-          Product id:<br>
-          <select name="product_id" id="create_client_id">
-          </select>
-          <br>
-          Opportunity:<br>
+          <h4>Products:</h4>
+          <div id="products_blocK_create">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="addNewFilingBox()">Add a new Product</button>
+
+          <h4>Opportunity:</h4>
           <select name="opportunity_type">
             <option value="Qualification">Qualification</option>
             <option value="Needs analysis">Needs analysis</option>
@@ -124,14 +124,14 @@ function printRest($arr, $type) {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Info</h5>
+        <h1 class="modal-title" id="exampleModalLongTitle">Info</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <form action="<?= $BASE_URL?>actions/opportunity/update_oppotunity.php" method="get">
         <div class="modal-body">
-          Customer id:<br>
+        <h4>Customer id:</h4>
           <select id="customer_id" name="customer_id">
             <?php
             foreach($clients as $id => $client)
@@ -140,12 +140,7 @@ function printRest($arr, $type) {
             <?php } ?>
           </select>
 
-          <br>
-          Product id:<br>
-          <select id="product_id" name="product_id">
-          </select>
-          <br>
-          Opportunity:<br>
+          <h4>Opportunity:</h4>
           <select name="opportunity_type" id="opportunity_type">
             <option value="Qualification">Qualification</option>
             <option value="Needs analysis">Needs analysis</option>
@@ -157,12 +152,14 @@ function printRest($arr, $type) {
 
           <input type="hidden" name="opportunity_id" id="opportunity_id">
 
-          Activities:
-          <br>
+          <h4>Activities:</h4>
           <div id="activities_block">
           </div>
           <a id="addNeEventButton"><button type="button" class="btn btn-primary">Create an Event</button></a>
-          <br>
+          <h4>Products:</h4>
+          <div id="products_block">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="addNewFilingBoxE()">Add a new Product</button>
 
         </div>
         <div class="modal-footer">

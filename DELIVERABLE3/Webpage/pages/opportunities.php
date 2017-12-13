@@ -18,6 +18,14 @@ $resp2 = curl_exec($curl2);
 curl_close($curl2);
 $clients = json_decode($resp2, true);
 
+function calcTotalProfit($array) {
+  $sum = 0;
+  foreach ($array as $value) {
+    $sum += $value['profitability'];
+  }
+  return $sum;
+}
+
 include('../templates/common/header.php');
 include('../templates/opportunities/opportunities.php');
 include('../templates/common/footer.php');

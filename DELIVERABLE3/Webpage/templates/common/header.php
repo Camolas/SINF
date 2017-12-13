@@ -23,7 +23,8 @@
   <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
   <!-- Morris Charts CSS -->
-  <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 
   <!-- Custom Fonts -->
   <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">

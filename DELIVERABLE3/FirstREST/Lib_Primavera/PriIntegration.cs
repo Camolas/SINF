@@ -1847,7 +1847,7 @@ namespace FirstREST.Lib_Primavera
                 string myDBOpportunityId = GetDatabaseId(dbOpportunityId);
 
                 StdBELista objList = PriEngine.Engine.Consulta(
-                    "SELECT Artigo AS ProductId, Descricao AS ProductName, PrecoCusto AS Cost, PrecoVenda AS SellingPrice, Rentabilidade AS Profitability, Margem AS Margin " +
+                    "SELECT Artigo AS ProductId, Descricao AS ProductName, PrecoCusto AS Cost, PrecoVenda AS SellingPrice, Rentabilidade AS Profitability, Margem AS Margin, Quantidade AS Quantity " +
                     "FROM LinhasPropostasOPV " +
                     "WHERE IdOportunidade LIKE '" + myDBOpportunityId + "'"
                     );
@@ -1861,6 +1861,7 @@ namespace FirstREST.Lib_Primavera
                         cost = objList.Valor("Cost").ToString(),
                         selling_price = objList.Valor("SellingPrice").ToString(),
                         profitability = objList.Valor("Profitability").ToString(),
+                        product_quantity = objList.Valor("Quantity").ToString(),
                         margin = objList.Valor("Margin").ToString()
                     });
                     objList.Seguinte();

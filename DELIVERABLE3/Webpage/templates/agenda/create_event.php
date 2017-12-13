@@ -59,9 +59,9 @@
 				<?php foreach($oports as $oppotunity){
 					if(strcmp($oppotunity['opportunity_state'], 'Open') == 0) {
 						if(strcmp($oppotunity['opportunity_id'], $_GET['opportunity_id']) == 0){ ?>
-							<option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+							<option value="<?= $oppotunity['opportunity_id']?>" selected="selected"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?></option>
 						<?php } else { ?>
-							<option value="<?= $oppotunity['opportunity_id']?>"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> (<?= $oppotunity['product_name']?>) </option>
+							<option value="<?= $oppotunity['opportunity_id']?>"><?= $oppotunity['opportunity_type']?>: <?= $oppotunity['customer_name']?> </option>
 						<?php }
 					}
 				} ?>

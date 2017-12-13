@@ -2,10 +2,10 @@
 include('../../config/init.php');
 
 $activity ['customer_id'] = $_POST['customer_id'];
-$activity ['product_id'] = $_POST['product_id'];
 $activity ['opportunity_type'] = $_POST['opportunity_type'];
-$activity ['representative_id'] = $_SESSION['user_id'];
-$activity['opportunity_state'] = "Open";
+$activity ['representative_id'] = $_SESSION['user_id'] . '';
+$activity ['opportunity_state'] = "Open";
+$activity ['products'] = $_POST['products'];
 
 $json_act = json_encode($activity);
 
@@ -21,5 +21,6 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, array(
 $resp = curl_exec($curl);
 
 curl_close($curl);
+
 header("Location: ". $BASE_URL . 'pages/opportunities.php');
 ?>
