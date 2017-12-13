@@ -1825,7 +1825,7 @@ namespace FirstREST.Lib_Primavera
                 lin.Desconto = 0.0;
                 lin.Quantidade = Double.Parse(product.product_quantity);
                 opportunity_order.LinhasDoc.Add(lin);
-                value += lin.PrecoUnitario * lin.Quantidade;
+                value += Double.Parse(product.selling_price) * Double.Parse(product.product_quantity);
             }
             Encomendas_New(opportunity_order);
 
