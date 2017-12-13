@@ -550,6 +550,8 @@ namespace FirstREST.Lib_Primavera
                     System.Diagnostics.Debug.WriteLine(dv.Entidade);
                     myEnc.set_Tipodoc("ECL");
                     myEnc.set_TipoEntidade("C");
+                    if (dv.IdOportunidadeDB != null)
+                        myEnc.set_IdOportunidade(dv.IdOportunidadeDB);
                     // Linhas do documento para a lista de linhas
                     lstlindv = dv.LinhasDoc;
                     //PriEngine.Engine.Comercial.Vendas.PreencheDadosRelacionados(myEnc, rl);
@@ -1526,8 +1528,8 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
                         InsertProductsInOpportunityProposal(opportunity, objOpportunity);
-                        if (objOpportunity.get_EncomendaEfectuada())
-                            CreateSalesOrder(opportunity);
+                        if (objOpportunity.get_EstadoVenda() == 1)
+                            CreateSalesOrder(opportunity, objOpportunity);
                         PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1640,8 +1642,8 @@ namespace FirstREST.Lib_Primavera
                         opportunity.customer_name = customer.NomeCliente;
 
                     InsertProductsInOpportunityProposal(opportunity, objOpportunity);
-                    if (objOpportunity.get_EncomendaEfectuada())
-                        CreateSalesOrder(opportunity);
+                    if (objOpportunity.get_EstadoVenda() == 1)
+                        CreateSalesOrder(opportunity, objOpportunity);
                     PriEngine.Engine.TerminaTransaccao();
 
                     erro.Erro = 0;
@@ -1675,7 +1677,6 @@ namespace FirstREST.Lib_Primavera
             {
                 objOpportunity.set_EstadoVenda(1);
                 objOpportunity.set_DataFecho(DateTime.Now);
-                objOpportunity.set_EncomendaEfectuada(true);
             }
             else if (opportunity.opportunity_state.Equals("Lost"))
             {
@@ -1808,12 +1809,15 @@ namespace FirstREST.Lib_Primavera
             PriEngine.Engine.CRM.OportunidadesVenda.ActualizaValorAtributo(objOpportunity.get_ID(), "ValorTotalOV", proposalsValue);
         }
 
-        private static void CreateSalesOrder(Model.Opportunity opportunity)
+        private static void CreateSalesOrder(Model.Opportunity opportunity, Interop.CrmBE900.CrmBEOportunidadeVenda objOpportunity)
         {
             Model.DocVenda opportunity_order = new Model.DocVenda();
             opportunity_order.LinhasDoc = new List<FirstREST.Lib_Primavera.Model.LinhaDocVenda>();
             opportunity_order.Entidade = opportunity.customer_id;
             opportunity_order.Serie = "A";
+            opportunity_order.IdOportunidadeDB = objOpportunity.get_ID();
+
+            double value = 0;
             foreach (Model.ProposalProduct product in opportunity.products)
             {
                 Model.LinhaDocVenda lin = new Model.LinhaDocVenda();
@@ -1821,11 +1825,21 @@ namespace FirstREST.Lib_Primavera
                 lin.Desconto = 0.0;
                 lin.Quantidade = Double.Parse(product.product_quantity);
                 opportunity_order.LinhasDoc.Add(lin);
+                value += lin.PrecoUnitario * lin.Quantidade;
             }
             Encomendas_New(opportunity_order);
+
+            objOpportunity.set_EmModoEdicao(true);
+            objOpportunity.set_DataEncomenda(DateTime.Now);
+            objOpportunity.set_DataRealEncomenda(DateTime.Now);
+            objOpportunity.set_EncomendaEfectuada(true);
+            objOpportunity.set_ValorEncomendaOV(value);
+            objOpportunity.set_ValorPropostoOV(value);
+            objOpportunity.set_ValorTotalOV(value);
+            PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
         }
 
-         public static List<Model.ProposalProduct> ListOpportunityProposalProducts(string dbOpportunityId)
+        public static List<Model.ProposalProduct> ListOpportunityProposalProducts(string dbOpportunityId)
         {
             if (InitializeCompany())
             {
