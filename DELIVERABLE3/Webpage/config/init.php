@@ -3,9 +3,8 @@ session_set_cookie_params(3600);
 session_start();
 
 $BASE_DIR = 'C:\\xampp\\htdocs\\SINF\\DELIVERABLE #3\\Webpage\\'; //NAO USADO!!
-$BASE_URL = 'http://localhost/Sinf/DELIVERABLE%20%233/Webpage/';
-pr($_SESSION);
-exit();
+$BASE_URL = 'http://localhost/Sinf/DELIVERABLE3/Webpage/';
+
 error_reporting(E_ERROR | E_WARNING); // E_NOTICE by default
 
 //DBO using pgadmin
