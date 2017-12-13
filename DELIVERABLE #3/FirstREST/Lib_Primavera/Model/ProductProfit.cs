@@ -5,7 +5,7 @@ using System.Web;
 
 namespace FirstREST.Lib_Primavera.Model
 {
-    public class ProductIncome
+    public class ProductProfit
     {
         public string product_id
         {
@@ -19,7 +19,7 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public string product_income
+        public string product_profit
         {
             get;
             set;

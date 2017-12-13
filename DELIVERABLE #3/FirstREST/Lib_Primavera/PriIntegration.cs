@@ -1457,13 +1457,14 @@ namespace FirstREST.Lib_Primavera
                 string dbRepresentativeId = GetDatabaseId(representativeId);
 
                 objList = PriEngine.Engine.Consulta(
-                    "SELECT CabecOportunidadesVenda.ID AS DBOpportunityId, CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, Artigo.Artigo AS ProductId, Artigo.Descricao AS ProductName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
-                    "FROM CabecOportunidadesVenda, Clientes, Artigo, Vendedores " +
+                    "SELECT CabecOportunidadesVenda.ID AS DBOpportunityId, CabecOportunidadesVenda.Oportunidade AS OpportunityId, CabecOportunidadesVenda.Entidade AS CustomerId, Clientes.Nome AS CustomerName, CabecOportunidadesVenda.Descricao AS OpportunityType, CabecOportunidadesVenda.EstadoVenda AS OpportunityState, Vendedores.Vendedor AS RepresentativeId " +
+                    "FROM CabecOportunidadesVenda, Clientes, Vendedores " +
                     "WHERE CabecOportunidadesVenda.Entidade LIKE Clientes.Cliente " +
-                    "AND CabecOportunidadesVenda.Resumo LIKE Artigo.Artigo " +
                     "AND CabecOportunidadesVenda.Vendedor = Vendedores.Vendedor " +
-                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "'"    // "' " +
-                    //"AND CabecOportunidadesVenda.DataFecho IS NULL"
+                    "AND Vendedores.Vendedor = '" + dbRepresentativeId + "' " +
+                    "AND CabecOportunidadesVenda.DataFecho IS NULL " +
+                    "AND CabecOportunidadesVenda.EstadoVenda = 0 " +   // open opportunity
+                    "AND CabecOportunidadesVenda.EncomendaEfectuada = 0"
                     );
 
                 while (!objList.NoFim())
@@ -1486,8 +1487,7 @@ namespace FirstREST.Lib_Primavera
                         opportunity_id = objList.Valor("OpportunityId"),
                         customer_id = objList.Valor("CustomerId"),
                         customer_name = objList.Valor("CustomerName"),
-                        //product_id = objList.Valor("ProductId"),
-                        //product_name = objList.Valor("ProductName"),
+                        products = ListOpportunityProposalProducts(dbOpportunityId),
                         opportunity_type = objList.Valor("OpportunityType"),
                         opportunity_state = opportunityState,
                         representative_id = objList.Valor("RepresentativeId").ToString(),
@@ -1526,6 +1526,8 @@ namespace FirstREST.Lib_Primavera
                         PriEngine.Engine.IniciaTransaccao();
                         PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
                         InsertProductsInOpportunityProposal(opportunity, objOpportunity);
+                        if (objOpportunity.get_EncomendaEfectuada())
+                            CreateSalesOrder(opportunity);
                         PriEngine.Engine.TerminaTransaccao();
                         erro.Erro = 0;
                         erro.Descricao = "Sucesso";
@@ -1632,13 +1634,15 @@ namespace FirstREST.Lib_Primavera
 
                     PriEngine.Engine.IniciaTransaccao();
                     PriEngine.Engine.CRM.OportunidadesVenda.Actualiza(objOpportunity);
-                    PriEngine.Engine.TerminaTransaccao();
                     opportunity.opportunity_id = objOpportunity.get_Oportunidade();
                     Model.Cliente customer = GetCliente(opportunity.customer_id);
                     if (customer != null)
                         opportunity.customer_name = customer.NomeCliente;
 
                     InsertProductsInOpportunityProposal(opportunity, objOpportunity);
+                    if (objOpportunity.get_EncomendaEfectuada())
+                        CreateSalesOrder(opportunity);
+                    PriEngine.Engine.TerminaTransaccao();
 
                     erro.Erro = 0;
                     erro.Descricao = "Sucesso";
@@ -1668,9 +1672,16 @@ namespace FirstREST.Lib_Primavera
             if (opportunity.opportunity_state.Equals("Open"))
                 objOpportunity.set_EstadoVenda(0);
             else if (opportunity.opportunity_state.Equals("Wins"))
+            {
                 objOpportunity.set_EstadoVenda(1);
+                objOpportunity.set_DataFecho(DateTime.Now);
+                objOpportunity.set_EncomendaEfectuada(true);
+            }
             else if (opportunity.opportunity_state.Equals("Lost"))
+            {
                 objOpportunity.set_EstadoVenda(2);
+                objOpportunity.set_DataFecho(DateTime.Now);
+            }
             else
                 throw new Exception("Invalid opportunity state");
         }
@@ -1759,7 +1770,6 @@ namespace FirstREST.Lib_Primavera
             foreach (Model.ProposalProduct product in opportunity.products)
             {
                 Interop.CrmBE900.CrmBELinhaPropostaOPV objProposalLine = new Interop.CrmBE900.CrmBELinhaPropostaOPV();
-                objProposalLine.set_EmModoEdicao(true);
 
                 objProposalLine.set_IdOportunidade(objOpportunity.get_ID());
                 objProposalLine.set_Artigo(product.product_id);
@@ -1796,6 +1806,56 @@ namespace FirstREST.Lib_Primavera
             PriEngine.Engine.CRM.PropostasOPV.Actualiza(objProposal);
             PriEngine.Engine.CRM.PropostasOPV.ActualizaValorAtributo(objOpportunity.get_ID(), 1, "Rentabilidade", proposalsProfitability);
             PriEngine.Engine.CRM.OportunidadesVenda.ActualizaValorAtributo(objOpportunity.get_ID(), "ValorTotalOV", proposalsValue);
+        }
+
+        private static void CreateSalesOrder(Model.Opportunity opportunity)
+        {
+            Model.DocVenda opportunity_order = new Model.DocVenda();
+            opportunity_order.LinhasDoc = new List<FirstREST.Lib_Primavera.Model.LinhaDocVenda>();
+            opportunity_order.Entidade = opportunity.customer_id;
+            opportunity_order.Serie = "A";
+            foreach (Model.ProposalProduct product in opportunity.products)
+            {
+                Model.LinhaDocVenda lin = new Model.LinhaDocVenda();
+                lin.CodArtigo = product.product_id;
+                lin.Desconto = 0.0;
+                lin.Quantidade = Double.Parse(product.product_quantity);
+                opportunity_order.LinhasDoc.Add(lin);
+            }
+            Encomendas_New(opportunity_order);
+        }
+
+         public static List<Model.ProposalProduct> ListOpportunityProposalProducts(string dbOpportunityId)
+        {
+            if (InitializeCompany())
+            {
+                List<Model.ProposalProduct> listProducts = new List<Model.ProposalProduct>();
+                string myDBOpportunityId = GetDatabaseId(dbOpportunityId);
+
+                StdBELista objList = PriEngine.Engine.Consulta(
+                    "SELECT Artigo AS ProductId, Descricao AS ProductName, PrecoCusto AS Cost, PrecoVenda AS SellingPrice, Rentabilidade AS Profitability, Margem AS Margin " +
+                    "FROM LinhasPropostasOPV " +
+                    "WHERE IdOportunidade LIKE '" + myDBOpportunityId + "'"
+                    );
+
+                while (!objList.NoFim())
+                {
+                    listProducts.Add(new Model.ProposalProduct
+                    {
+                        product_id = objList.Valor("ProductId"),
+                        product_name = objList.Valor("ProductName"),
+                        cost = objList.Valor("Cost").ToString(),
+                        selling_price = objList.Valor("SellingPrice").ToString(),
+                        profitability = objList.Valor("Profitability").ToString(),
+                        margin = objList.Valor("Margin").ToString()
+                    });
+                    objList.Seguinte();
+                }
+
+                return listProducts;
+            }
+            else
+                return null;
         }
 
         #endregion
@@ -1883,33 +1943,32 @@ namespace FirstREST.Lib_Primavera
             }
 
             StdBELista objList2 = PriEngine.Engine.Consulta(
-                "SELECT TOP 25 ProductId, ProductName, SUM(UnitsSold * UnitPrice) AS ProductIncome " +
-                "FROM " +
-                "   (SELECT LinhasDoc.Artigo AS ProductId, LinhasDoc.Descricao AS ProductName, LinhasDoc.PrecUnit AS UnitPrice, SUM(LinhasDoc.Quantidade) AS UnitsSold " +
-                "   FROM LinhasDoc, CabecDoc " +
-                "   WHERE LinhasDoc.Artigo IS NOT NULL " +
-                "   AND LinhasDoc.IdCabecDoc LIKE CabecDoc.Id " +
-                "   AND YEAR(CabecDoc.Data) = " + year + " " +
-                "   AND MONTH(CabecDoc.Data) = " + month + " " +
-                "   GROUP BY LinhasDoc.Artigo, LinhasDoc.Descricao, LinhasDoc.PrecUnit) AS ProductsAggregatedData " +
-                "GROUP BY ProductId, ProductName " +
-                "ORDER BY ProductIncome DESC"
+                "SELECT LinhasPropostasOPV.Artigo AS ProductId, LinhasPropostasOPV.Descricao AS ProductName, SUM(LinhasPropostasOPV.Quantidade * LinhasPropostasOPV.Rentabilidade) AS AggregatedProfit " +
+                "FROM CabecOportunidadesVenda, LinhasPropostasOPV " +
+                "WHERE CabecOportunidadesVenda.ID LIKE LinhasPropostasOPV.IdOportunidade " +
+                "AND CabecOportunidadesVenda.EstadoVenda = 1 " +   // winned opportunity
+                "AND CabecOportunidadesVenda.EncomendaEfectuada = 1 " +
+                "AND Vendedor = " + representativeId + " " +
+                "AND YEAR(CabecOportunidadesVenda.DataFecho) = " + year + " " +
+                "AND MONTH(CabecOportunidadesVenda.DataFecho) = " + month + " " +
+                "GROUP BY LinhasPropostasOPV.Artigo, LinhasPropostasOPV.Descricao " +
+                "ORDER BY AggregatedProfit DESC"
                 );
 
-            List<Model.ProductIncome> listProductIncome = new List<Model.ProductIncome>();
+            List<Model.ProductProfit> listProductProfit = new List<Model.ProductProfit>();
             while (!objList2.NoFim())
             {
-                Model.ProductIncome productIncome = new Model.ProductIncome();
-                productIncome.product_id = objList2.Valor("ProductId");
-                productIncome.product_name = objList2.Valor("ProductName");
-                productIncome.product_income = objList2.Valor("ProductIncome").ToString();
-                listProductIncome.Add(productIncome);
+                Model.ProductProfit productProfit = new Model.ProductProfit();
+                productProfit.product_id = objList2.Valor("ProductId");
+                productProfit.product_name = objList2.Valor("ProductName");
+                productProfit.product_profit = objList2.Valor("AggregatedProfit").ToString();
+                listProductProfit.Add(productProfit);
                 objList2.Seguinte();
             }
 
             Model.Statistics statistics = new Model.Statistics();
             statistics.most_sold_products = listProductUnitsSold;
-            statistics.most_income_products = listProductIncome;
+            statistics.most_profit_products = listProductProfit;
 
             return statistics;
         }

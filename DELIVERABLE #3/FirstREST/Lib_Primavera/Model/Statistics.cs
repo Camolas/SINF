@@ -15,7 +15,7 @@ namespace FirstREST.Lib_Primavera.Model
             set;
         }
 
-        public List<ProductIncome> most_income_products
+        public List<ProductProfit> most_profit_products
         {
             get;
             set;
