@@ -1,13 +1,14 @@
 <?php
-$BASE_DIR = 'C:\\xampp\\htdocs\\SINF\\DELIVERABLE #3\\Webpage\\'; //NAO USADO!!
-$BASE_URL = 'http://localhost/Sinf/DELIVERABLE%20%233/Webpage/';
-
-session_set_cookie_params(3600, $BASE_DIR);
+session_set_cookie_params(3600);
 session_start();
 
+$BASE_DIR = 'C:\\xampp\\htdocs\\SINF\\DELIVERABLE #3\\Webpage\\'; //NAO USADO!!
+$BASE_URL = 'http://localhost/Sinf/DELIVERABLE%20%233/Webpage/';
+pr($_SESSION);
+exit();
 error_reporting(E_ERROR | E_WARNING); // E_NOTICE by default
 
-//Uncoment when the DB is ready!!
+//DBO using pgadmin
 $conn = new PDO('pgsql:host=localhost;dbname=postgres', 'postgres', '1234567890');
 $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
