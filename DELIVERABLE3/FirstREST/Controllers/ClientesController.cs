@@ -12,7 +12,7 @@ namespace FirstREST.Controllers
     public class ClientesController : ApiController
     {
         //
-        // GET: /Clientes/
+        // GET: /clientes/
 
         public IEnumerable<Lib_Primavera.Model.Cliente> Get()
         {
@@ -20,7 +20,7 @@ namespace FirstREST.Controllers
         }
 
 
-        // GET api/cliente/5    
+        // GET api/clientes/<id>    
         public Cliente Get(string id)
         {
             System.Diagnostics.Debug.WriteLine(id);

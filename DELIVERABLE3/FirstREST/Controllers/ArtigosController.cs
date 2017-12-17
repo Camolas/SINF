@@ -14,7 +14,7 @@ namespace FirstREST.Controllers
     public class ArtigosController : ApiController
     {
         //
-        // GET: /Artigos/
+        // GET: /artigos/
 
         public IEnumerable<Lib_Primavera.Model.Artigo> Get()
         {
@@ -22,7 +22,7 @@ namespace FirstREST.Controllers
         }
 
 
-        // GET api/artigo/5    
+        // GET api/artigos/id=<id>
         public Artigo Get(string id)
         {
             Lib_Primavera.Model.Artigo artigo = Lib_Primavera.PriIntegration.GetArtigo(id);
