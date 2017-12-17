@@ -8,7 +8,6 @@
 	$resp = curl_exec($curl);
 	curl_close($curl);
 	$arr = json_decode($resp, true);
-	pr( $arr);
 	$table_headersAgenda = ['Start Date', 'End Date', 'Title', 'Type', 'Client', 'Location'];
 
 	include('../templates/common/header.php');
