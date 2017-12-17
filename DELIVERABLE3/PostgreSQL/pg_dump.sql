@@ -135,7 +135,7 @@ INSERT INTO objectives (id, type, limit_value, representative_id) VALUES (3, 'ea
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO users (id, email, password_hash, primavera_id) VALUES (1, '123@fe.up.pt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '1');
+INSERT INTO users (id, email, password_hash, primavera_id) VALUES (1, 'filipedias@demosinf.pt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '1');
 
 
 --
